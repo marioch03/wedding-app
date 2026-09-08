@@ -104,3 +104,5 @@ application-local.properties
 application-local.yml
 application-dev.properties
 application-dev.yml
+.vscode/settings.json
+.vscode/launch.json
