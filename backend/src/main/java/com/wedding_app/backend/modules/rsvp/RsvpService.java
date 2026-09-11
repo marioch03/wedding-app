@@ -8,10 +8,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.wedding_app.backend.modules.event.EventRepository;
 import com.wedding_app.backend.modules.event.dto.EventDto;
-import com.wedding_app.backend.modules.guest.GuestDto;
 import com.wedding_app.backend.modules.guest.GuestEvent;
 import com.wedding_app.backend.modules.guest.GuestEventRepository;
 import com.wedding_app.backend.modules.guest.GuestRepository;
+import com.wedding_app.backend.modules.guest.dto.GuestDto;
 import com.wedding_app.backend.modules.menu.MenuOptionDto;
 import com.wedding_app.backend.modules.menu.MenuOptionRepository;
 import com.wedding_app.backend.modules.party.PartyEventRepository;
