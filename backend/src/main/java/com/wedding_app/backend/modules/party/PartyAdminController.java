@@ -22,16 +22,14 @@ import com.wedding_app.backend.modules.party.dto.PartyResponse;
 import com.wedding_app.backend.modules.party.dto.PartyUpsertRequest;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/admin/parties")
+@RequiredArgsConstructor
+@RequestMapping("/api/v1/admin/parties")
 public class PartyAdminController {
 
   private final PartyService partyService;
-
-  public PartyAdminController(PartyService partyService) {
-    this.partyService = partyService;
-  }
 
   @PostMapping
   public ResponseEntity<PartyResponse> create(@Valid @RequestBody PartyUpsertRequest request) {

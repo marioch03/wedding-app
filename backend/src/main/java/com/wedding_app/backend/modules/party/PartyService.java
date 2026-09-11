@@ -13,19 +13,16 @@ import com.wedding_app.backend.modules.party.dto.PartyUpsertRequest;
 import com.wedding_app.backend.modules.party.model.Party;
 import com.wedding_app.backend.modules.party.model.PartyStatus;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
-@Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class PartyService {
 
   private static final int MAX_TOKEN_GENERATION_ATTEMPTS = 5;
 
   private final PartyRepository partyRepository;
   private final RsvpTokenGenerator rsvpTokenGenerator;
-
-  public PartyService(PartyRepository partyRepository, RsvpTokenGenerator rsvpTokenGenerator) {
-    this.partyRepository = partyRepository;
-    this.rsvpTokenGenerator = rsvpTokenGenerator;
-  }
 
   // =========================================================================
   // API para el controller de admin (entrada/salida en DTO)

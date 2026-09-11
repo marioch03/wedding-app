@@ -1,0 +1,158 @@
+### Variables
+@baseUrl = http://localhost:8080
+@weddingId = aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
+
+# IDs de los eventos del seed
+@ceremonyId   = e1111111-1111-4111-8111-111111111101
+@cocktailId   = e2222222-2222-4222-8222-222222222202
+@banquetId    = e3333333-3333-4333-8333-333333333303
+@partyId      = e4444444-4444-4444-8444-444444444404
+
+# IDs de las opciones de menú del seed
+@menuStdId    = a1111111-1111-4111-8111-111111111101
+@menuVegId    = a2222222-2222-4222-8222-222222222202
+
+# Sustituir tras el paso CREATE
+@newEventId   = 6510054d-18c4-4c91-b1d6-645b3f8ded9
+@newMenuOptId = <pega-el-id-aqui>
+
+
+### ============================================================
+### EVENTS
+### ============================================================
+
+### 1. Listar todos los eventos (con sus opciones de menú)
+GET {{baseUrl}}/api/v1/admin/events
+
+###
+
+### 2. Detalle de la Ceremonia Civil
+GET {{baseUrl}}/api/v1/admin/events/{{ceremonyId}}
+
+###
+
+### 3. Detalle del Banquete (debe incluir 4 opciones de menú)
+GET {{baseUrl}}/api/v1/admin/events/{{banquetId}}
+
+###
+
+### 4. Crear un nuevo evento (Brunch del día siguiente)
+POST {{baseUrl}}/api/v1/admin/events
+Content-Type: application/json
+
+{
+  "weddingId": "{{weddingId}}",
+  "name": "Brunch post-boda",
+  "eventType": "OTHER",
+  "description": "Brunch informal el día siguiente para los más íntimos.",
+  "startDatetime": "2026-06-22T11:00:00+02:00",
+  "endDatetime": "2026-06-22T14:00:00+02:00",
+  "venueName": "Finca El Robledal",
+  "address": "Carretera de Brunete, km 12, Madrid",
+  "latitude": 40.371200,
+  "longitude": -3.894500,
+  "displayOrder": 5,
+  "isPublic": false
+}
+
+###
+
+### 5. Actualizar el evento recién creado (sustituye @newEventId)
+PUT {{baseUrl}}/api/v1/admin/events/76d7e7a9-7510-451d-99d3-ba44e992284e
+Content-Type: application/json
+
+{
+  "weddingId": "{{weddingId}}",
+  "name": "Brunch post-boda (actualizado)",
+  "eventType": "OTHER",
+  "description": "Actualizado: desayuno informal para familia directa.",
+  "startDatetime": "2026-06-22T10:30:00+02:00",
+  "endDatetime": "2026-06-22T13:00:00+02:00",
+  "venueName": "Finca El Robledal",
+  "address": "Carretera de Brunete, km 12, Madrid",
+  "displayOrder": 5,
+  "isPublic": false
+}
+
+###
+
+### 6. Borrar el evento de prueba
+DELETE {{baseUrl}}/api/v1/admin/events/76d7e7a9-7510-451d-99d3-ba44e992284e
+
+###
+
+
+### ============================================================
+### MENU OPTIONS
+### ============================================================
+
+### 7. Listar opciones de menú del Banquete (deben ser 4)
+GET {{baseUrl}}/api/v1/admin/events/{{banquetId}}/menu-options
+
+###
+
+### 8. Añadir una opción de menú al Banquete
+POST {{baseUrl}}/api/v1/admin/events/{{banquetId}}/menu-options
+Content-Type: application/json
+
+{
+  "name": "Menú Sin Gluten",
+  "description": "Alternativa sin gluten para celíacos.",
+  "dietType": "OTHER",
+  "displayOrder": 5
+}
+
+###
+
+### 9. Actualizar la opción recién creada (sustituye @newMenuOptId)
+PUT {{baseUrl}}/api/v1/admin/events/{{banquetId}}/menu-options/902ff5d6-2d77-4f96-a394-546eadc7fdde
+Content-Type: application/json
+
+{
+  "name": "Menú Sin Gluten (revisado)",
+  "description": "Apto para celíacos e intolerantes al gluten.",
+  "dietType": "OTHER",
+  "displayOrder": 5
+}
+
+###
+
+### 10. Borrar la opción de menú de prueba
+DELETE {{baseUrl}}/api/v1/admin/events/{{banquetId}}/menu-options/902ff5d6-2d77-4f96-a394-546eadc7fdde
+###
+
+
+### ============================================================
+### CASOS DE ERROR
+### ============================================================
+
+### 11. 404 - Evento que no existe
+GET {{baseUrl}}/api/v1/admin/events/00000000-0000-0000-0000-000000000000
+
+###
+
+### 12. 400 - UUID mal formado en la ruta
+GET {{baseUrl}}/api/v1/admin/events/no-es-un-uuid
+
+###
+
+### 13. 400 - Bean Validation: name vacío y eventType inválido
+POST {{baseUrl}}/api/v1/admin/events
+Content-Type: application/json
+
+{
+  "weddingId": "{{weddingId}}",
+  "name": "",
+  "eventType": "TIPO_INVALIDO",
+  "startDatetime": "2026-06-21T12:00:00+02:00"
+}
+
+###
+
+### 14. 400 - Añadir menú a un evento que no existe
+POST {{baseUrl}}/api/v1/admin/events/00000000-0000-0000-0000-000000000000/menu-options
+Content-Type: application/json
+
+{
+  "name": "Menú fantasma"
+}

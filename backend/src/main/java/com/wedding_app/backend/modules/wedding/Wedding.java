@@ -16,16 +16,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Configuracion global del sitio publico. Fila unica en el MVP (single
- * wedding).
- *
- * `content` es el UNICO campo JSONB del dominio: contenido editable desde el
- * admin (hero, historia de la pareja, secciones, tema visual) sin necesidad
- * de desplegar cambios de codigo. Mapeado con el soporte nativo de JSON de
- * Hibernate 6 (@JdbcTypeCode(SqlTypes.JSON)) - no requiere dependencias
- * externas como hypersistence-utils, que solo hacia falta con Hibernate 5.
- */
 @Entity
 @Table(name = "wedding")
 @Getter

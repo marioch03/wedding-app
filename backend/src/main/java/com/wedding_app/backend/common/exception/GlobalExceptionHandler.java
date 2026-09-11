@@ -69,4 +69,9 @@ public class GlobalExceptionHandler {
         fieldErrors);
     return ResponseEntity.status(status).body(body);
   }
+
+  @ExceptionHandler(IllegalArgumentException.class)
+  public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException ex, HttpServletRequest request) {
+    return build(HttpStatus.BAD_REQUEST, ex.getMessage(), request, null);
+  }
 }
