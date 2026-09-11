@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.wedding_app.backend.common.exception.ResourceNotFoundException;
+import com.wedding_app.backend.common.exception.InvalidRsvpTokenException;
 import com.wedding_app.backend.modules.event.EventRepository;
 import com.wedding_app.backend.modules.event.dto.EventDto;
 import com.wedding_app.backend.modules.guest.Guest;
@@ -193,7 +193,7 @@ public class RsvpService {
 
   private Party findPartyByToken(String token) {
     return partyRepository.findByRsvpToken(token)
-        .orElseThrow(() -> ResourceNotFoundException.of("Token de RSVP no válido o caducado", token));
+        .orElseThrow(InvalidRsvpTokenException::new);
   }
 
   private PartyStatus computePartyStatus(RsvpSubmitRequest request) {
