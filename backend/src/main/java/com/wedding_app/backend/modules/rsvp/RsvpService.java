@@ -2,16 +2,22 @@ package com.wedding_app.backend.modules.rsvp;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.wedding_app.backend.common.exception.ResourceNotFoundException;
 import com.wedding_app.backend.modules.event.EventRepository;
 import com.wedding_app.backend.modules.event.dto.EventDto;
+import com.wedding_app.backend.modules.guest.Guest;
 import com.wedding_app.backend.modules.guest.GuestEvent;
 import com.wedding_app.backend.modules.guest.GuestEventRepository;
 import com.wedding_app.backend.modules.guest.GuestRepository;
 import com.wedding_app.backend.modules.guest.dto.GuestDto;
+import com.wedding_app.backend.modules.menu.MenuOption;
 import com.wedding_app.backend.modules.menu.MenuOptionDto;
 import com.wedding_app.backend.modules.menu.MenuOptionRepository;
 import com.wedding_app.backend.modules.party.PartyEventRepository;
@@ -21,6 +27,7 @@ import com.wedding_app.backend.modules.party.model.PartyStatus;
 import com.wedding_app.backend.modules.rsvp.dto.EventRsvpDto;
 import com.wedding_app.backend.modules.rsvp.dto.GuestRsvpDto;
 import com.wedding_app.backend.modules.rsvp.dto.RsvpInfoResponse;
+import com.wedding_app.backend.modules.rsvp.dto.RsvpStatsResponse;
 import com.wedding_app.backend.modules.rsvp.dto.RsvpSubmitRequest;
 
 import lombok.RequiredArgsConstructor;
@@ -75,44 +82,67 @@ public class RsvpService {
     Party party = findPartyByToken(token);
     Instant now = Instant.now();
 
+    // Obtener los IDs de los eventos permitidos para este grupo (Party)
+    Set<UUID> allowedEventIds = partyEventRepository.findByPartyIdWithEvent(party.getId()).stream()
+        .map(pe -> pe.getEvent().getId())
+        .collect(Collectors.toSet());
+
     for (GuestRsvpDto guestDto : request.guests()) {
       // Validar que el guest pertenece a esta party
-      var guest = guestRepository.findById(guestDto.guestId())
+      Guest guest = guestRepository.findById(guestDto.guestId())
           .filter(g -> g.getParty().getId().equals(party.getId()))
           .orElseThrow(() -> new IllegalArgumentException(
-              "Guest no válido para esta party: " + guestDto.guestId()));
+              "El invitado con ID " + guestDto.guestId() + " no pertenece a este grupo de invitación"));
 
       // Si es +1, permitir actualizar nombre
       if (Boolean.TRUE.equals(guest.getIsPlusOne())) {
-        if (guestDto.firstName() != null)
-          guest.setFirstName(guestDto.firstName());
-        if (guestDto.lastName() != null)
-          guest.setLastName(guestDto.lastName());
+        if (guestDto.firstName() != null && !guestDto.firstName().isBlank()) {
+          guest.setFirstName(guestDto.firstName().trim());
+        }
+        if (guestDto.lastName() != null && !guestDto.lastName().isBlank()) {
+          guest.setLastName(guestDto.lastName().trim());
+        }
       }
 
-      // Dieta/alergias
+      // Dieta / alergias
       if (guestDto.dietaryRequirements() != null) {
-        guest.setDietaryRestrictions(guestDto.dietaryRequirements());
+        guest.setDietaryRestrictions(guestDto.dietaryRequirements().trim());
       }
 
-      // UPSERT en guest_event por cada evento respondido
-      for (EventRsvpDto eventDto : guestDto.events()) {
-        GuestEvent ge = guestEventRepository
-            .findByGuestIdAndEventId(guest.getId(), eventDto.eventId())
-            .orElseGet(() -> {
-              GuestEvent newGe = new GuestEvent();
-              newGe.setGuest(guest);
-              newGe.setEvent(eventRepository.getReferenceById(eventDto.eventId()));
-              return newGe;
-            });
+      if (guestDto.events() != null) {
+        for (EventRsvpDto eventDto : guestDto.events()) {
+          // Validar que el evento está permitido para esta party
+          if (!allowedEventIds.contains(eventDto.eventId())) {
+            throw new IllegalArgumentException(
+                "El evento " + eventDto.eventId() + " no está autorizado para este grupo de invitación");
+          }
 
-        ge.setAttending(eventDto.attending());
-        ge.setRespondedAt(now);
-        ge.setMenuOption(eventDto.menuOptionId() != null
-            ? menuOptionRepository.getReferenceById(eventDto.menuOptionId())
-            : null);
+          // Validar opción de menú si asiste
+          MenuOption menuOption = null;
+          if (eventDto.attending() && eventDto.menuOptionId() != null) {
+            menuOption = menuOptionRepository.findById(eventDto.menuOptionId())
+                .filter(m -> m.getEvent().getId().equals(eventDto.eventId()))
+                .orElseThrow(() -> new IllegalArgumentException(
+                    "La opción de menú seleccionada (" + eventDto.menuOptionId() + ") no es válida para el evento"));
+          }
 
-        guestEventRepository.save(ge);
+          // Guardar o actualizar respuesta en guest_event
+          GuestEvent ge = guestEventRepository
+              .findByGuestIdAndEventId(guest.getId(), eventDto.eventId())
+              .orElseGet(() -> {
+                GuestEvent newGe = new GuestEvent();
+                newGe.setGuest(guest);
+                newGe.setEvent(eventRepository.getReferenceById(eventDto.eventId()));
+                return newGe;
+              });
+
+          ge.setAttending(eventDto.attending());
+          ge.setMenuOption(menuOption);
+          ge.setSpecialNotes(eventDto.specialNotes() != null ? eventDto.specialNotes().trim() : null);
+          ge.setRespondedAt(now);
+
+          guestEventRepository.save(ge);
+        }
       }
     }
 
@@ -122,26 +152,71 @@ public class RsvpService {
   }
 
   // ---------------------------------------------------------------------------
+  // Métricas para Panel de Administración
+  // ---------------------------------------------------------------------------
+
+  @Transactional(readOnly = true)
+  public RsvpStatsResponse getRsvpStats() {
+    List<Party> allParties = partyRepository.findAll();
+    long totalParties = allParties.size();
+    long confirmedParties = allParties.stream().filter(p -> p.getStatus() == PartyStatus.CONFIRMED).count();
+    long declinedParties = allParties.stream().filter(p -> p.getStatus() == PartyStatus.DECLINED).count();
+    long partialParties = allParties.stream().filter(p -> p.getStatus() == PartyStatus.PARTIAL).count();
+    long pendingParties = allParties.stream().filter(p -> p.getStatus() == PartyStatus.PENDING).count();
+
+    List<Guest> allGuests = guestRepository.findAll();
+    long totalGuests = allGuests.size();
+    long confirmedGuests = allGuests.stream().filter(g -> g.getParty().getStatus() == PartyStatus.CONFIRMED).count();
+    long declinedGuests = allGuests.stream().filter(g -> g.getParty().getStatus() == PartyStatus.DECLINED).count();
+    long pendingGuests = allGuests.stream().filter(g -> g.getParty().getStatus() == PartyStatus.PENDING).count();
+
+    double responseRate = totalParties > 0
+        ? ((double) (totalParties - pendingParties) / totalParties) * 100.0
+        : 0.0;
+
+    return new RsvpStatsResponse(
+        totalParties,
+        confirmedParties,
+        declinedParties,
+        partialParties,
+        pendingParties,
+        totalGuests,
+        confirmedGuests,
+        declinedGuests,
+        pendingGuests,
+        Math.round(responseRate * 100.0) / 100.0);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Helpers privados
+  // ---------------------------------------------------------------------------
 
   private Party findPartyByToken(String token) {
     return partyRepository.findByRsvpToken(token)
-        .orElseThrow(() -> new RuntimeException("Token de RSVP inválido o expirado"));
+        .orElseThrow(() -> ResourceNotFoundException.of("Token de RSVP no válido o caducado", token));
   }
 
   private PartyStatus computePartyStatus(RsvpSubmitRequest request) {
-    if (request.guests().isEmpty())
+    if (request.guests() == null || request.guests().isEmpty()) {
       return PartyStatus.PENDING;
+    }
 
-    long total = request.guests().stream().flatMap(g -> g.events().stream()).count();
-    long attending = request.guests().stream()
+    List<EventRsvpDto> allEvents = request.guests().stream()
+        .filter(g -> g.events() != null)
         .flatMap(g -> g.events().stream())
-        .filter(EventRsvpDto::attending)
-        .count();
+        .toList();
 
-    if (attending == 0)
+    if (allEvents.isEmpty()) {
+      return PartyStatus.PENDING;
+    }
+
+    long attendingCount = allEvents.stream().filter(EventRsvpDto::attending).count();
+    if (attendingCount == 0) {
       return PartyStatus.DECLINED;
-    if (attending == total)
+    }
+    if (attendingCount == allEvents.size()) {
       return PartyStatus.CONFIRMED;
+    }
     return PartyStatus.PARTIAL;
   }
 }
