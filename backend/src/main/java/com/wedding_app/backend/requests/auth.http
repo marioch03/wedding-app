@@ -1,0 +1,85 @@
+### =========================================================================
+### auth.http
+### Pruebas de la lógica de autenticación/autorización JWT (Clerk + Spring Security)
+###
+### Cómo conseguir un JWT real sin tener frontend todavía (instancia DEV de Clerk):
+###   1. Abre en el navegador el Account Portal de tu instancia de Clerk, algo como:
+###      https://talented-marmot-7239.accounts.dev/sign-in
+###   2. Inicia sesión (o crea un usuario) con normalidad.
+###   3. Abre las DevTools > pestaña Application > Cookies, y copia el valor
+###      de la cookie "__session" del dominio *.accounts.dev (o *.clerk.accounts.dev).
+###      Ese valor ES el JWT firmado que espera el resource server.
+###   4. Pégalo abajo en @adminToken (si ese clerkUserId ya está en admin_user)
+###      o en @nonAdminToken (si el usuario NO está en admin_user).
+###
+### Nota: los tokens de sesión de Clerk expiran rápido (normalmente ~60s de
+### "leeway" aparte, pero el JWT en sí suele durar minutos), así que si te da
+### 401 por "token expirado", repite el paso 3 para sacar uno fresco.
+### =========================================================================
+
+### Variables
+@baseUrl = http://localhost:8080
+@adminToken = eyJhbGciOiJSUzI1NiIsImNhdCI6ImNsX0I3ZDRQRDExMUFBQSIsImtpZCI6Imluc18zSkJYZmNSYkwwVE1zazcwWHg1Y2pkb0FqUXIiLCJvaWF0IjoxNzg5MTY5MDk5LCJ0eXAiOiJKV1QifQ.eyJhenAiOiJodHRwczovL3RhbGVudGVkLW1hcm1vdC03MjM5LmFjY291bnRzLmRldiIsImV4cCI6MTc4OTE2OTE1OSwiZnZhIjpbMjcsMjZdLCJpYXQiOjE3ODkxNjkwOTksImlzcyI6Imh0dHBzOi8vdGFsZW50ZWQtbWFybW90LTcyMzkuY2xlcmsuYWNjb3VudHMuZGV2IiwibmJmIjoxNzg5MTY5MDg5LCJzaWQiOiJzZXNzXzNKQ2FQaU1WTjRhZjFqUlRqMHpmSnNaVXRVcCIsInN0cyI6ImFjdGl2ZSIsInN1YiI6InVzZXJfM0pCYTVudlR1dVR2UHg2UGFGcG9JR3JZRjJKIiwidiI6Mn0.sRYMxgTnoMrnCOsk9WpN-eZd2Lzt2Fope6D6p93-E6rX31CDpeshMM2NQwdbxJmNp6D-LmOmsKvCrEbee0UlhlJL2oHd3mSIVMGbIk-w1oam87dAhC1Y-3nksgev_aRTkOpuxIuhcCsfIOis_gBejYO1V6Ll6ahHcnZB7iEFxh9VNxptt0DV8Wy0cEqeRB1re5dI-Dc6SNj4gMZvyMbg_cb2HoFsCbrZ9zb535SD5ewC6j88BFc-sZjlOlcFi2Sootmo6nkJkkzDs1MVMQYB8uGr_lohbQqpnxZS7jPWPGwh0RZrsvJOTFSj_FK84mu5vyKgh9MnIO2ViHTQ_AVeew
+@nonAdminToken = PEGA_AQUI_UN_JWT_DE_UN_CLERK_USER_ID_QUE_NO_EXISTA_EN_ADMIN_USER
+@garciaId = 44444444-4444-4444-8444-444444444401
+
+### =========================================================================
+### 1. Endpoint público: debe seguir funcionando SIN token
+### =========================================================================
+
+### 1.1 200 OK esperado, sin Authorization header
+GET {{baseUrl}}/api/v1/public/wedding
+
+### =========================================================================
+### 2. Endpoint admin SIN token -> debe devolver 401 Unauthorized
+### =========================================================================
+
+### 2.1 401 esperado (no hay header Authorization)
+GET {{baseUrl}}/api/v1/admin/parties
+
+### =========================================================================
+### 3. Endpoint admin con token MAL FORMADO / inválido -> 401 Unauthorized
+### =========================================================================
+
+### 3.1 401 esperado (no es un JWT válido / firma no verificable)
+GET {{baseUrl}}/api/v1/admin/parties
+Authorization: Bearer esto-no-es-un-jwt-valido
+
+### 3.2 401 esperado (JWT con formato correcto pero expirado o de otro issuer)
+GET {{baseUrl}}/api/v1/admin/parties
+Authorization: Bearer eyJhbGciOiJSUzI1NiJ9.eyJleHAiOjB9.firma-invalida
+
+### =========================================================================
+### 4. Endpoint admin con JWT VÁLIDO pero de un usuario que NO es admin
+###    -> debe devolver 403 Forbidden (autenticado, pero sin ROLE_ADMIN)
+### =========================================================================
+
+### 4.1 403 esperado
+GET {{baseUrl}}/api/v1/admin/parties
+Authorization: Bearer {{nonAdminToken}}
+
+### =========================================================================
+### 5. Endpoint admin con JWT VÁLIDO de un clerk_user_id registrado en
+###    admin_user -> debe devolver 200 OK
+### =========================================================================
+
+### 5.1 200 OK esperado: listar parties
+GET {{baseUrl}}/api/v1/admin/parties
+Authorization: Bearer {{adminToken}}
+
+### 5.2 200 OK esperado: detalle de una party concreta
+GET {{baseUrl}}/api/v1/admin/parties/{{garciaId}}
+Authorization: Bearer {{adminToken}}
+
+### 5.3 200/204 esperado: acción de escritura (regenerar token RSVP)
+POST {{baseUrl}}/api/v1/admin/parties/{{garciaId}}/regenerate-token
+Authorization: Bearer {{adminToken}}
+
+### =========================================================================
+### 6. Comprobación cruzada: un token de admin válido NO debe verse afectado
+###    por las rutas públicas (deben seguir accesibles igual con o sin token)
+### =========================================================================
+
+### 6.1 200 OK esperado, funciona igual con token de admin de sobra
+GET {{baseUrl}}/api/v1/public/wedding
+Authorization: Bearer {{adminToken}}

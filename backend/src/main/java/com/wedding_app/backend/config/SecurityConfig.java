@@ -24,12 +24,8 @@ public class SecurityConfig {
         .cors(Customizer.withDefaults())
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> auth
-            // Endpoints públicos sin autenticación
             .requestMatchers("/api/v1/public/**").permitAll()
-            // Endpoints de administración requieren rol ADMIN
-            .requestMatchers("/api/v1/admin/**").permitAll()
-            // Cualquier otra petición (ej. Swagger o Actuator) requiere al menos
-            // autenticación
+            .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
             .anyRequest().authenticated())
         .oauth2ResourceServer(oauth2 -> oauth2
             .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)));
