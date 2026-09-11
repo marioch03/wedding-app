@@ -1,0 +1,100 @@
+### Variables
+@baseUrl = http://localhost:8080
+@weddingId = aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
+
+### =========================================================================
+### ENDPOINTS PÚBLICOS (Invitados y Web Pública)
+### =========================================================================
+
+### 1. Obtener la boda actual (datos generales y personalización para la web pública)
+GET {{baseUrl}}/api/v1/public/wedding
+
+### 2. Obtener boda pública por ID específico
+GET {{baseUrl}}/api/v1/public/wedding/{{weddingId}}
+
+### =========================================================================
+### ENDPOINTS DE ADMINISTRACIÓN (Panel Privado)
+### =========================================================================
+
+### 3. Obtener la configuración actual de la boda
+GET {{baseUrl}}/api/v1/admin/weddings/current
+
+### 4. Listar todas las bodas registradas
+GET {{baseUrl}}/api/v1/admin/weddings
+
+### 5. Obtener detalle de la boda por ID
+GET {{baseUrl}}/api/v1/admin/weddings/{{weddingId}}
+
+### 6. Actualizar la boda actual (incluyendo personalización JSONB de temas y contenido)
+PUT {{baseUrl}}/api/v1/admin/weddings/current
+Content-Type: application/json
+
+{
+  "partner1Name": "Mario",
+  "partner2Name": "Laura",
+  "weddingDate": "2026-06-21",
+  "content": {
+    "theme": "elegante-floral",
+    "primaryColor": "#d4af37",
+    "welcomeMessage": "¡Nos casamos y queremos celebrarlo contigo!",
+    "heroImageUrl": "https://res.cloudinary.com/demo/image/upload/sample.jpg",
+    "hashtag": "#BodaMarioYLaura2026",
+    "faqs": [
+      {
+        "question": "¿Hay código de vestimenta?",
+        "answer": "Traje formal / vestido de cóctel."
+      },
+      {
+        "question": "¿Habrá transporte?",
+        "answer": "Habrá autobuses desde el centro de la ciudad hacia la finca."
+      }
+    ]
+  }
+}
+
+### 7. Crear una nueva boda
+POST {{baseUrl}}/api/v1/admin/weddings
+Content-Type: application/json
+
+{
+  "partner1Name": "Alejandro",
+  "partner2Name": "Beatriz",
+  "weddingDate": "2027-05-15",
+  "content": {
+    "theme": "minimalista"
+  }
+}
+
+### 8. Actualizar boda por ID (sustituye {{newWeddingId}} por el devuelto en la petición 7)
+PUT {{baseUrl}}/api/v1/admin/weddings/aaea484f-ca10-4ca4-a52d-77f94eeca9c8
+Content-Type: application/json
+
+{
+  "partner1Name": "Alejandro",
+  "partner2Name": "Beatriz",
+  "weddingDate": "2027-05-16",
+  "content": {
+    "theme": "vintage",
+    "notes": "Fecha modificada al domingo"
+  }
+}
+
+### 9. Eliminar boda por ID
+DELETE {{baseUrl}}/api/v1/admin/weddings/aaea484f-ca10-4ca4-a52d-77f94eeca9c8
+
+### =========================================================================
+### CASOS DE ERROR Y VALIDACIÓN
+### =========================================================================
+
+### 10. 404 - Boda no encontrada por UUID inexistente
+GET {{baseUrl}}/api/v1/admin/weddings/00000000-0000-0000-0000-000000000000
+
+### 11. 400 - Validación fallida: nombres en blanco y fecha nula
+POST {{baseUrl}}/api/v1/admin/weddings
+Content-Type: application/json
+
+{
+  "partner1Name": "",
+  "partner2Name": "   ",
+  "weddingDate": null
+}
