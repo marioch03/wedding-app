@@ -1,4 +1,4 @@
-package com.wedding_app.backend.modules.party;
+package com.wedding_app.backend.modules.party.model;
 
 public enum PartyStatus {
   PENDING,

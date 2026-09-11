@@ -1,0 +1,56 @@
+### Variables
+@baseUrl = http://localhost:8080
+@garciaId = 44444444-4444-4444-8444-444444444401
+@anaDiegoId = 44444444-4444-4444-8444-444444444402
+
+### 1. Listar parties (paginado, orden por displayName)
+GET {{baseUrl}}/api/admin/parties
+
+### 2. Detalle de la familia Garcia (CONFIRMED, con alergia)
+GET {{baseUrl}}/api/admin/parties/{{garciaId}}
+
+### 3. Detalle de Ana y Diego (PENDING)
+GET {{baseUrl}}/api/admin/parties/{{anaDiegoId}}
+
+### 4. Crear una party nueva
+POST {{baseUrl}}/api/admin/parties
+Content-Type: application/json
+
+{
+  "displayName": "Familia de prueba",
+  "languagePreference": "es",
+  "internalNotes": "Creada desde el fichero .http"
+}
+
+### 5. Editar la party recien creada (sustituye {{newId}} por el id devuelto en el paso 4)
+PUT {{baseUrl}}/api/admin/parties/{{newId}}
+Content-Type: application/json
+
+{
+  "displayName": "Familia de prueba (editada)",
+  "languagePreference": "en",
+  "internalNotes": "Nota actualizada"
+}
+
+### 6. Regenerar el rsvp_token (invalida el enlace anterior)
+POST {{baseUrl}}/api/admin/parties/{{garciaId}}/regenerate-token
+
+### 7. Borrar la party de prueba
+DELETE {{baseUrl}}/api/admin/parties/{{newId}}
+
+### ---- Casos de error, para validar GlobalExceptionHandler ----
+
+### 8. 404 - UUID bien formado pero que no existe
+GET {{baseUrl}}/api/admin/parties/00000000-0000-0000-0000-000000000000
+
+### 9. 400 - UUID mal formado en la ruta (MethodArgumentTypeMismatchException)
+GET {{baseUrl}}/api/admin/parties/no-es-un-uuid
+
+### 10. 400 - Bean Validation: displayName vacio y languagePreference invalido
+POST {{baseUrl}}/api/admin/parties
+Content-Type: application/json
+
+{
+  "displayName": "",
+  "languagePreference": "espanol"
+}

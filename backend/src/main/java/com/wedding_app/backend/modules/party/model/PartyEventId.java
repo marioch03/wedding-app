@@ -1,4 +1,4 @@
-package com.wedding_app.backend.modules.party;
+package com.wedding_app.backend.modules.party.model;
 
 import java.io.Serializable;
 import java.util.UUID;
