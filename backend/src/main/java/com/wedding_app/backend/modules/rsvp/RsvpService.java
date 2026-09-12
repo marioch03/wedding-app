@@ -23,6 +23,7 @@ import com.wedding_app.backend.modules.menu.MenuOptionRepository;
 import com.wedding_app.backend.modules.party.PartyEventRepository;
 import com.wedding_app.backend.modules.party.PartyRepository;
 import com.wedding_app.backend.modules.party.model.Party;
+import com.wedding_app.backend.modules.party.model.PartyEvent;
 import com.wedding_app.backend.modules.party.model.PartyStatus;
 import com.wedding_app.backend.modules.rsvp.dto.EventRsvpDto;
 import com.wedding_app.backend.modules.rsvp.dto.GuestRsvpDto;
@@ -56,18 +57,36 @@ public class RsvpService {
             g.getIsPlusOne(), g.getDietaryRestrictions()))
         .toList();
 
-    List<EventDto> allowedEvents = partyEventRepository.findByPartyIdWithEvent(party.getId()).stream()
-        .map(pe -> {
-          var event = pe.getEvent();
-          List<MenuOptionDto> menuOptions = menuOptionRepository
-              .findByEventIdOrderByDisplayOrderAsc(event.getId()).stream()
-              .map(m -> new MenuOptionDto(m.getId(), m.getName(), m.getDescription(),
-                  m.getDietType().name()))
-              .toList();
-          return new EventDto(event.getId(), event.getName(), event.getDescription(),
-              event.getEventType().name(), menuOptions);
-        })
-        .toList();
+    List<PartyEvent> partyEvents = partyEventRepository.findByPartyIdWithEvent(party.getId());
+    List<EventDto> allowedEvents;
+
+    if (partyEvents.isEmpty()) {
+      // Fallback de seguridad: si no hay eventos asignados explícitamente, mostrar todos los eventos activos de la boda
+      allowedEvents = eventRepository.findAll().stream()
+          .map(event -> {
+            List<MenuOptionDto> menuOptions = menuOptionRepository
+                .findByEventIdOrderByDisplayOrderAsc(event.getId()).stream()
+                .map(m -> new MenuOptionDto(m.getId(), m.getName(), m.getDescription(),
+                    m.getDietType() != null ? m.getDietType().name() : "STANDARD"))
+                .toList();
+            return new EventDto(event.getId(), event.getName(), event.getDescription(),
+                event.getEventType() != null ? event.getEventType().name() : "OTHER", menuOptions);
+          })
+          .toList();
+    } else {
+      allowedEvents = partyEvents.stream()
+          .map(pe -> {
+            var event = pe.getEvent();
+            List<MenuOptionDto> menuOptions = menuOptionRepository
+                .findByEventIdOrderByDisplayOrderAsc(event.getId()).stream()
+                .map(m -> new MenuOptionDto(m.getId(), m.getName(), m.getDescription(),
+                    m.getDietType() != null ? m.getDietType().name() : "STANDARD"))
+                .toList();
+            return new EventDto(event.getId(), event.getName(), event.getDescription(),
+                event.getEventType() != null ? event.getEventType().name() : "OTHER", menuOptions);
+          })
+          .toList();
+    }
 
     return new RsvpInfoResponse(party.getId(), party.getDisplayName(),
         party.getStatus().name(), guests, allowedEvents);
@@ -83,9 +102,17 @@ public class RsvpService {
     Instant now = Instant.now();
 
     // Obtener los IDs de los eventos permitidos para este grupo (Party)
-    Set<UUID> allowedEventIds = partyEventRepository.findByPartyIdWithEvent(party.getId()).stream()
-        .map(pe -> pe.getEvent().getId())
-        .collect(Collectors.toSet());
+    List<PartyEvent> partyEvents = partyEventRepository.findByPartyIdWithEvent(party.getId());
+    Set<UUID> allowedEventIds;
+    if (partyEvents.isEmpty()) {
+      allowedEventIds = eventRepository.findAll().stream()
+          .map(com.wedding_app.backend.modules.event.Event::getId)
+          .collect(Collectors.toSet());
+    } else {
+      allowedEventIds = partyEvents.stream()
+          .map(pe -> pe.getEvent().getId())
+          .collect(Collectors.toSet());
+    }
 
     for (GuestRsvpDto guestDto : request.guests()) {
       // Validar que el guest pertenece a esta party

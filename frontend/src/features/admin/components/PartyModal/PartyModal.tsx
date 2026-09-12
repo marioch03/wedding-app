@@ -1,186 +1,191 @@
 import React, { useState, useEffect } from 'react';
-import type {
-  PartyResponse,
-  PartyUpsertRequest,
-  GuestResponse,
-  GuestRequest,
-  GuestType,
-} from '../../../../types';
+import type { PartyResponse, PartyUpsertRequest, GuestResponse, GuestRequest, GuestType, EventResponse } from '../../../../types';
 import { partiesApi } from '../../../../lib/api/parties';
 import { guestsApi } from '../../../../lib/api/guests';
-import { ConfirmModal } from '../../../../common/components';
+import { eventsApi } from '../../../../lib/api/events';
 import styles from './PartyModal.module.css';
 
 interface PartyModalProps {
-  party?: PartyResponse | null; // null if creating a new party
+  party: PartyResponse | null;
   onClose: () => void;
-  onSaved: (party: PartyResponse) => void;
+  onSaved: (savedParty: PartyResponse) => void;
 }
 
 export const PartyModal: React.FC<PartyModalProps> = ({ party, onClose, onSaved }) => {
   const isEditing = !!party;
-  const [activeTab, setActiveTab] = useState<'info' | 'guests'>('info');
+  const [activeTab, setActiveTab] = useState<'info' | 'guests' | 'events'>('info');
 
   // Party Form State
   const [displayName, setDisplayName] = useState(party?.displayName || '');
   const [languagePreference, setLanguagePreference] = useState(party?.languagePreference || 'es');
   const [internalNotes, setInternalNotes] = useState(party?.internalNotes || '');
-  const [savingParty, setSavingParty] = useState(false);
-  const [partyError, setPartyError] = useState<string | null>(null);
+  const [selectedEventIds, setSelectedEventIds] = useState<string[]>(party?.eventIds || []);
 
-  // Guests in this party
+  // Events list for association checklist
+  const [allEvents, setAllEvents] = useState<EventResponse[]>([]);
+
+  // Guests State
   const [guests, setGuests] = useState<GuestResponse[]>([]);
   const [loadingGuests, setLoadingGuests] = useState(false);
-
-  // Guest To Delete Confirmation State
-  const [guestToDelete, setGuestToDelete] = useState<GuestResponse | null>(null);
-  const [isDeletingGuest, setIsDeletingGuest] = useState(false);
-
-  // Inline Guest Form State (Adding or Editing)
+  const [isAddingGuest, setIsAddingGuest] = useState(false);
   const [editingGuestId, setEditingGuestId] = useState<string | null>(null);
-  const [showGuestForm, setShowGuestForm] = useState(false);
+
+  // Guest Form State
   const [guestFirstName, setGuestFirstName] = useState('');
   const [guestLastName, setGuestLastName] = useState('');
   const [guestType, setGuestType] = useState<GuestType>('ADULT');
-  const [isPlusOne, setIsPlusOne] = useState(false);
-  const [dietaryRestrictions, setDietaryRestrictions] = useState('');
+  const [guestIsPlusOne, setGuestIsPlusOne] = useState(false);
   const [guestEmail, setGuestEmail] = useState('');
   const [guestPhone, setGuestPhone] = useState('');
-  const [savingGuest, setSavingGuest] = useState(false);
-  const [guestError, setGuestError] = useState<string | null>(null);
+  const [guestDiet, setGuestDiet] = useState('');
 
-  // Load guests if editing existing party
+  // General State
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
-    if (party?.id) {
-      loadPartyGuests(party.id);
-    }
-  }, [party?.id]);
+    // Load all events for the checklist
+    eventsApi.list()
+      .then((evList) => {
+        setAllEvents(evList);
+        if (!party) {
+          // If creating a new party, check all events by default
+          setSelectedEventIds(evList.map((e) => e.id));
+        }
+      })
+      .catch((err) => console.error('Error loading events:', err));
 
-  const loadPartyGuests = async (partyId: string) => {
+    if (party) {
+      partiesApi.getById(party.id)
+        .then((freshParty) => {
+          if (freshParty.eventIds && freshParty.eventIds.length > 0) {
+            setSelectedEventIds(freshParty.eventIds);
+          }
+        })
+        .catch((err) => console.error('Error fetching party details:', err));
+    }
+  }, [party]);
+
+  useEffect(() => {
+    if (party) {
+      loadGuests(party.id);
+    }
+  }, [party]);
+
+  const loadGuests = async (partyId: string) => {
     try {
       setLoadingGuests(true);
-      const data = await guestsApi.listByParty(partyId);
-      setGuests(data);
-    } catch (err: unknown) {
-      console.error('Error loading guests:', err);
+      const res = await guestsApi.listByParty(partyId);
+      setGuests(res);
+    } catch (err: any) {
+      console.error('Error loading guests for party:', err);
     } finally {
       setLoadingGuests(false);
     }
   };
 
+  const handleToggleEvent = (eventId: string) => {
+    setSelectedEventIds((prev) =>
+      prev.includes(eventId) ? prev.filter((id) => id !== eventId) : [...prev, eventId]
+    );
+  };
+
   const resetGuestForm = () => {
-    setEditingGuestId(null);
     setGuestFirstName('');
     setGuestLastName('');
     setGuestType('ADULT');
-    setIsPlusOne(false);
-    setDietaryRestrictions('');
+    setGuestIsPlusOne(false);
     setGuestEmail('');
     setGuestPhone('');
-    setGuestError(null);
-    setShowGuestForm(false);
+    setGuestDiet('');
+    setIsAddingGuest(false);
+    setEditingGuestId(null);
   };
 
-  const handleOpenEditGuest = (guest: GuestResponse) => {
+  const handleStartEditGuest = (guest: GuestResponse) => {
     setEditingGuestId(guest.id);
     setGuestFirstName(guest.firstName || '');
     setGuestLastName(guest.lastName || '');
-    setGuestType(guest.guestType || 'ADULT');
-    setIsPlusOne(guest.isPlusOne || false);
-    setDietaryRestrictions(guest.dietaryRestrictions || '');
+    setGuestType(guest.guestType);
+    setGuestIsPlusOne(guest.isPlusOne);
     setGuestEmail(guest.email || '');
     setGuestPhone(guest.phone || '');
-    setGuestError(null);
-    setShowGuestForm(true);
+    setGuestDiet(guest.dietaryRestrictions || '');
+    setIsAddingGuest(true);
+  };
+
+  const handleSaveGuest = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!party) {
+      setError('Debes guardar primero el grupo para poder añadir invitados.');
+      return;
+    }
+
+    const guestPayload: GuestRequest = {
+      partyId: party.id,
+      firstName: guestFirstName.trim() || undefined,
+      lastName: guestLastName.trim() || undefined,
+      guestType,
+      isPlusOne: guestIsPlusOne,
+      email: guestEmail.trim() || undefined,
+      phone: guestPhone.trim() || undefined,
+      dietaryRestrictions: guestDiet.trim() || undefined,
+    };
+
+    try {
+      if (editingGuestId) {
+        await guestsApi.update(editingGuestId, guestPayload);
+      } else {
+        await guestsApi.createInParty(party.id, guestPayload);
+      }
+      resetGuestForm();
+      await loadGuests(party.id);
+    } catch (err: any) {
+      console.error('Error saving guest:', err);
+      setError(err?.message || 'Error al guardar el invitado');
+    }
+  };
+
+  const handleDeleteGuest = async (guestId: string) => {
+    if (!confirm('¿Eliminar este invitado del grupo?')) return;
+    try {
+      await guestsApi.delete(guestId);
+      if (party) await loadGuests(party.id);
+    } catch (err: any) {
+      alert(err?.message || 'Error al eliminar invitado');
+    }
   };
 
   const handleSaveParty = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!displayName.trim()) {
-      setPartyError('El nombre del grupo o familia es obligatorio.');
+      setError('El nombre del grupo o familia es obligatorio.');
       return;
     }
 
+    const payload: PartyUpsertRequest = {
+      displayName: displayName.trim(),
+      languagePreference,
+      internalNotes: internalNotes.trim() || undefined,
+      eventIds: selectedEventIds,
+    };
+
     try {
-      setSavingParty(true);
-      setPartyError(null);
-
-      const request: PartyUpsertRequest = {
-        displayName: displayName.trim(),
-        languagePreference,
-        internalNotes: internalNotes.trim() || undefined,
-      };
-
+      setSaving(true);
+      setError(null);
       let saved: PartyResponse;
-      if (party?.id) {
-        saved = await partiesApi.update(party.id, request);
+      if (isEditing && party) {
+        saved = await partiesApi.update(party.id, payload);
       } else {
-        saved = await partiesApi.create(request);
+        saved = await partiesApi.create(payload);
       }
-
       onSaved(saved);
+      onClose();
     } catch (err: any) {
-      setPartyError(err?.message || 'Error al guardar el grupo.');
+      console.error('Error saving party:', err);
+      setError(err?.message || 'Error al guardar el grupo');
     } finally {
-      setSavingParty(false);
-    }
-  };
-
-  const handleSaveGuest = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!party?.id) {
-      setGuestError('Primero debes guardar el grupo antes de añadir invitados.');
-      return;
-    }
-
-    if (!isPlusOne && !guestFirstName.trim()) {
-      setGuestError('Debes indicar al menos el nombre o marcarlo como acompañante (+1).');
-      return;
-    }
-
-    try {
-      setSavingGuest(true);
-      setGuestError(null);
-
-      const payload: GuestRequest = {
-        firstName: guestFirstName.trim() || undefined,
-        lastName: guestLastName.trim() || undefined,
-        guestType,
-        isPlusOne,
-        dietaryRestrictions: dietaryRestrictions.trim() || undefined,
-        email: guestEmail.trim() || undefined,
-        phone: guestPhone.trim() || undefined,
-      };
-
-      if (editingGuestId) {
-        await guestsApi.update(editingGuestId, payload);
-      } else {
-        await guestsApi.createInParty(party.id, payload);
-      }
-
-      await loadPartyGuests(party.id);
-      resetGuestForm();
-    } catch (err: any) {
-      setGuestError(err?.message || 'Error al guardar el invitado.');
-    } finally {
-      setSavingGuest(false);
-    }
-  };
-
-  const handleConfirmDeleteGuest = async () => {
-    if (!guestToDelete) return;
-
-    try {
-      setIsDeletingGuest(true);
-      await guestsApi.delete(guestToDelete.id);
-      if (party?.id) {
-        await loadPartyGuests(party.id);
-      }
-      setGuestToDelete(null);
-    } catch (err: any) {
-      alert(err?.message || 'Error al eliminar el invitado.');
-    } finally {
-      setIsDeletingGuest(false);
+      setSaving(false);
     }
   };
 
@@ -190,16 +195,18 @@ export const PartyModal: React.FC<PartyModalProps> = ({ party, onClose, onSaved 
         {/* Header */}
         <div className={styles.modalHeader}>
           <div className={styles.modalTitleWrapper}>
-            <div className={styles.modalIcon}>{isEditing ? '✏️' : '👥'}</div>
+            <div className={styles.modalIcon}>
+              {isEditing ? '👥' : '✨'}
+            </div>
             <div>
               <h2 className={styles.modalTitle}>
-                {isEditing ? `Editar: ${party.displayName}` : 'Nuevo Grupo / Familia'}
+                {isEditing ? `Editar: ${party.displayName}` : 'Nuevo Grupo de Invitación'}
               </h2>
-              <p className={styles.modalSubtitle}>
+              <span className={styles.modalSubtitle}>
                 {isEditing
-                  ? 'Gestiona la información y los integrantes del grupo'
-                  : 'Registra un grupo para enviar invitaciones personalizadas'}
-              </p>
+                  ? 'Gestiona la información del grupo, eventos y acompañantes'
+                  : 'Crea una invitación familiar o individual con enlace RSVP personalizado'}
+              </span>
             </div>
           </div>
           <button type="button" className={styles.closeButton} onClick={onClose}>
@@ -207,118 +214,161 @@ export const PartyModal: React.FC<PartyModalProps> = ({ party, onClose, onSaved 
           </button>
         </div>
 
-        {/* Tabs (Only if editing existing party) */}
-        {isEditing && (
-          <div className={styles.tabsContainer}>
-            <button
-              type="button"
-              className={`${styles.tabButton} ${activeTab === 'info' ? styles.tabButtonActive : ''}`}
-              onClick={() => setActiveTab('info')}
-            >
-              <span>📋</span> Datos del Grupo
-            </button>
+        {/* Navigation Tabs */}
+        <div className={styles.tabsContainer}>
+          <button
+            type="button"
+            className={`${styles.tabButton} ${activeTab === 'info' ? styles.tabButtonActive : ''}`}
+            onClick={() => setActiveTab('info')}
+          >
+            Información General
+          </button>
+          <button
+            type="button"
+            className={`${styles.tabButton} ${activeTab === 'events' ? styles.tabButtonActive : ''}`}
+            onClick={() => setActiveTab('events')}
+          >
+            Eventos Asignados
+            <span className={styles.tabBadge}>{selectedEventIds.length}</span>
+          </button>
+          {isEditing && (
             <button
               type="button"
               className={`${styles.tabButton} ${activeTab === 'guests' ? styles.tabButtonActive : ''}`}
               onClick={() => setActiveTab('guests')}
             >
-              <span>👥</span> Invitados / Acompañantes
+              Invitados del Grupo
               <span className={styles.tabBadge}>{guests.length}</span>
             </button>
-          </div>
-        )}
+          )}
+        </div>
 
-        {/* Modal Body */}
+        {/* Body */}
         <div className={styles.modalBody}>
+          {error && <div className={styles.errorAlert}>⚠️ {error}</div>}
+
+          {/* TAB 1: INFO GENERAL */}
           {activeTab === 'info' && (
             <form id="partyForm" onSubmit={handleSaveParty}>
-              {partyError && <div className={styles.errorAlert}>⚠️ {partyError}</div>}
-
               <div className={styles.formGroup}>
                 <label className={styles.label}>
-                  Nombre del Grupo / Familia *
-                  <span className={styles.labelHint}>(Ej: Familia García Pérez, Mario & Laura)</span>
+                  Nombre del Grupo o Familia *
+                  <span className={styles.labelHint}>(Ej. Familia Morales, Juan y Acompañante)</span>
                 </label>
                 <input
                   type="text"
                   className={styles.input}
-                  placeholder="Ej: Familia Morales Ruiz"
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
+                  placeholder="Ej. Familia García Gómez"
                   required
                 />
               </div>
 
               <div className={styles.formRow}>
                 <div className={styles.formGroup}>
-                  <label className={styles.label}>Idioma de la Invitación</label>
+                  <label className={styles.label}>Idioma de Invitación</label>
                   <select
                     className={styles.select}
                     value={languagePreference}
                     onChange={(e) => setLanguagePreference(e.target.value)}
                   >
-                    <option value="es">🇪🇸 Español (es)</option>
-                    <option value="en">🇬🇧 English (en)</option>
+                    <option value="es">Español (es)</option>
+                    <option value="en">English (en)</option>
                   </select>
-                </div>
-
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>
-                    Estado Actual
-                    <span className={styles.labelHint}>
-                      {party?.status || 'PENDIENTE'}
-                    </span>
-                  </label>
-                  <input
-                    type="text"
-                    className={styles.input}
-                    value={party ? party.status : 'PENDING (Automático)'}
-                    disabled
-                  />
                 </div>
               </div>
 
               <div className={styles.formGroup}>
-                <label className={styles.label}>
-                  Notas Internas
-                  <span className={styles.labelHint}>(Solo visible para administradores)</span>
-                </label>
+                <label className={styles.label}>Notas Internas (Solo Organizadores)</label>
                 <textarea
                   className={styles.textarea}
-                  placeholder="Ej: Amigos de la universidad, asignar en mesa principal..."
                   value={internalNotes}
                   onChange={(e) => setInternalNotes(e.target.value)}
+                  placeholder="Ej. Amigos de la universidad. Requieren traslado desde el hotel."
                 />
               </div>
             </form>
           )}
 
-          {activeTab === 'guests' && isEditing && (
+          {/* TAB 2: EVENTOS ASIGNADOS */}
+          {activeTab === 'events' && (
+            <div>
+              <div className={styles.sectionHeading}>Eventos a los que está invitado el grupo</div>
+              <p className={styles.modalSubtitle} style={{ marginTop: '0.25rem', marginBottom: '1rem' }}>
+                Marca los eventos del día de la boda que estarán disponibles en su formulario de RSVP:
+              </p>
+
+              {allEvents.length === 0 ? (
+                <div className={styles.emptyGuests}>No hay eventos creados todavía en la boda.</div>
+              ) : (
+                <div className={styles.eventsChecklist}>
+                  {allEvents.map((event) => {
+                    const isChecked = selectedEventIds.includes(event.id);
+                    return (
+                      <div
+                        key={event.id}
+                        className={`${styles.eventCheckItem} ${isChecked ? styles.eventCheckItemActive : ''}`}
+                        onClick={() => handleToggleEvent(event.id)}
+                      >
+                        <input
+                          type="checkbox"
+                          className={styles.checkbox}
+                          checked={isChecked}
+                          onChange={() => {}} // handled by parent onClick
+                        />
+                        <div className={styles.eventCheckItemLeft}>
+                          <div>
+                            <div className={styles.eventCheckName}>
+                              {event.eventType === 'CEREMONY' && '💍 '}
+                              {event.eventType === 'RECEPTION' && '🥂 '}
+                              {event.eventType === 'PARTY' && '🎉 '}
+                              {event.eventType === 'OTHER' && '✨ '}
+                              {event.name}
+                            </div>
+                            <div className={styles.eventCheckMeta}>
+                              {event.venueName ? `📍 ${event.venueName}` : 'Sin ubicación definida'}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* TAB 3: INVITADOS INDIVIDUALES (Only when editing party) */}
+          {activeTab === 'guests' && (
             <div>
               <div className={styles.guestsHeader}>
-                <h3 className={styles.sectionHeading}>Integrantes del Grupo</h3>
-                {!showGuestForm && (
+                <div>
+                  <div className={styles.sectionHeading}>Integrantes del Grupo</div>
+                  <span className={styles.modalSubtitle}>
+                    Personas individuales que confirman asistencia y eligen menú
+                  </span>
+                </div>
+                {!isAddingGuest && (
                   <button
                     type="button"
                     className={styles.addGuestSmallButton}
                     onClick={() => {
                       resetGuestForm();
-                      setShowGuestForm(true);
+                      setIsAddingGuest(true);
                     }}
                   >
-                    <span>➕</span> Añadir Integrante
+                    + Añadir Invitado
                   </button>
                 )}
               </div>
 
-              {/* Guest Form Inline */}
-              {showGuestForm && (
+              {/* Guest Form (Add / Edit) */}
+              {isAddingGuest && (
                 <form className={styles.guestInlineForm} onSubmit={handleSaveGuest}>
                   <div className={styles.formSubtitle}>
-                    {editingGuestId ? '✏️ Modificar Invitado' : '➕ Nuevo Integrante / +1'}
+                    {editingGuestId ? '✏️ Editar Integrante' : '➕ Nuevo Integrante'}
                   </div>
-
-                  {guestError && <div className={styles.errorAlert}>⚠️ {guestError}</div>}
 
                   <div className={styles.formRow}>
                     <div className={styles.formGroup}>
@@ -326,9 +376,9 @@ export const PartyModal: React.FC<PartyModalProps> = ({ party, onClose, onSaved 
                       <input
                         type="text"
                         className={styles.input}
-                        placeholder={isPlusOne ? 'Acompañante (+1)' : 'Nombre'}
                         value={guestFirstName}
                         onChange={(e) => setGuestFirstName(e.target.value)}
+                        placeholder="Ej. Carlos"
                       />
                     </div>
                     <div className={styles.formGroup}>
@@ -336,9 +386,9 @@ export const PartyModal: React.FC<PartyModalProps> = ({ party, onClose, onSaved 
                       <input
                         type="text"
                         className={styles.input}
-                        placeholder="Apellidos"
                         value={guestLastName}
                         onChange={(e) => setGuestLastName(e.target.value)}
+                        placeholder="Ej. Gómez"
                       />
                     </div>
                   </div>
@@ -352,34 +402,21 @@ export const PartyModal: React.FC<PartyModalProps> = ({ party, onClose, onSaved 
                         onChange={(e) => setGuestType(e.target.value as GuestType)}
                       >
                         <option value="ADULT">Adulto</option>
-                        <option value="CHILD">Niño (Menú infantil)</option>
-                        <option value="INFANT">Bebé (Trona / Cochecito)</option>
+                        <option value="CHILD">Niño</option>
+                        <option value="INFANT">Bebé</option>
                       </select>
                     </div>
-
                     <div className={styles.formGroup}>
-                      <label className={styles.label}>¿Es Acompañante (+1)?</label>
                       <label className={styles.checkboxContainer}>
                         <input
                           type="checkbox"
                           className={styles.checkbox}
-                          checked={isPlusOne}
-                          onChange={(e) => setIsPlusOne(e.target.checked)}
+                          checked={guestIsPlusOne}
+                          onChange={(e) => setGuestIsPlusOne(e.target.checked)}
                         />
-                        <span>El invitado indicará su nombre en el RSVP</span>
+                        <span>¿Es un Acompañante (+1)?</span>
                       </label>
                     </div>
-                  </div>
-
-                  <div className={styles.formGroup}>
-                    <label className={styles.label}>Restricciones Dietéticas / Alergias</label>
-                    <input
-                      type="text"
-                      className={styles.input}
-                      placeholder="Ej: Celíaco, Alergia al marisco, Vegetariano..."
-                      value={dietaryRestrictions}
-                      onChange={(e) => setDietaryRestrictions(e.target.value)}
-                    />
                   </div>
 
                   <div className={styles.formRow}>
@@ -388,9 +425,9 @@ export const PartyModal: React.FC<PartyModalProps> = ({ party, onClose, onSaved 
                       <input
                         type="email"
                         className={styles.input}
-                        placeholder="correo@ejemplo.com"
                         value={guestEmail}
                         onChange={(e) => setGuestEmail(e.target.value)}
+                        placeholder="carlos@ejemplo.com"
                       />
                     </div>
                     <div className={styles.formGroup}>
@@ -398,27 +435,30 @@ export const PartyModal: React.FC<PartyModalProps> = ({ party, onClose, onSaved 
                       <input
                         type="tel"
                         className={styles.input}
-                        placeholder="+34 600 000 000"
                         value={guestPhone}
                         onChange={(e) => setGuestPhone(e.target.value)}
+                        placeholder="+34 600 000 000"
                       />
                     </div>
                   </div>
 
+                  <div className={styles.formGroup}>
+                    <label className={styles.label}>Restricciones Dietéticas / Alergias</label>
+                    <input
+                      type="text"
+                      className={styles.input}
+                      value={guestDiet}
+                      onChange={(e) => setGuestDiet(e.target.value)}
+                      placeholder="Ej. Celíaco, alérgico a los frutos secos, vegetariano..."
+                    />
+                  </div>
+
                   <div className={styles.inlineActions}>
-                    <button
-                      type="button"
-                      className={styles.cancelButton}
-                      onClick={resetGuestForm}
-                    >
+                    <button type="button" className={styles.cancelButton} onClick={resetGuestForm}>
                       Cancelar
                     </button>
-                    <button
-                      type="submit"
-                      className={styles.saveButton}
-                      disabled={savingGuest}
-                    >
-                      {savingGuest ? 'Guardando...' : editingGuestId ? 'Actualizar' : 'Añadir Integrante'}
+                    <button type="submit" className={styles.saveButton}>
+                      {editingGuestId ? 'Guardar Cambios' : 'Añadir Integrante'}
                     </button>
                   </div>
                 </form>
@@ -426,13 +466,10 @@ export const PartyModal: React.FC<PartyModalProps> = ({ party, onClose, onSaved 
 
               {/* Guest List */}
               {loadingGuests ? (
-                <div className={styles.emptyGuests}>Cargando invitados del grupo...</div>
+                <div className={styles.emptyGuests}>Cargando invitados...</div>
               ) : guests.length === 0 ? (
                 <div className={styles.emptyGuests}>
-                  <p>Este grupo no tiene ningún invitado asociado todavía.</p>
-                  <p style={{ fontSize: '0.85rem', marginTop: '0.5rem' }}>
-                    Haz clic en <strong>"➕ Añadir Integrante"</strong> para registrar a las personas o acompañantes.
-                  </p>
+                  No hay personas añadidas a este grupo todavía. Haz clic en <strong>+ Añadir Invitado</strong>.
                 </div>
               ) : (
                 <div className={styles.guestList}>
@@ -440,38 +477,38 @@ export const PartyModal: React.FC<PartyModalProps> = ({ party, onClose, onSaved 
                     <div key={g.id} className={styles.guestItem}>
                       <div className={styles.guestItemLeft}>
                         <div className={styles.guestAvatar}>
-                          {g.guestType === 'CHILD' ? '🧒' : g.guestType === 'INFANT' ? '👶' : '👤'}
+                          {g.isPlusOne ? '➕' : g.guestType === 'CHILD' ? '🧒' : '👤'}
                         </div>
                         <div>
                           <div className={styles.guestName}>
-                            {g.firstName || g.lastName
-                              ? `${g.firstName || ''} ${g.lastName || ''}`.trim()
-                              : 'Acompañante'}
-                            {g.isPlusOne && <span className={styles.plusOneBadge}>+1</span>}
-                            <span className={styles.guestTypeTag}>({g.guestType.toLowerCase()})</span>
+                            {g.firstName || g.lastName ? `${g.firstName || ''} ${g.lastName || ''}`.trim() : 'Invitado sin nombre'}
+                            {g.isPlusOne && <span className={styles.plusOneBadge}>+1 Acompañante</span>}
                           </div>
                           {g.dietaryRestrictions && (
                             <div className={styles.guestDiet}>
-                              <span>🥗</span> {g.dietaryRestrictions}
+                              🥗 <em>{g.dietaryRestrictions}</em>
                             </div>
                           )}
+                          <div className={styles.guestTypeTag}>
+                            {g.guestType === 'ADULT' ? 'Adulto' : g.guestType === 'CHILD' ? 'Niño' : 'Bebé'}
+                            {g.phone && ` • 📞 ${g.phone}`}
+                          </div>
                         </div>
                       </div>
-
                       <div className={styles.guestActions}>
                         <button
                           type="button"
                           className={styles.iconActionButton}
-                          title="Editar invitado"
-                          onClick={() => handleOpenEditGuest(g)}
+                          onClick={() => handleStartEditGuest(g)}
+                          title="Editar"
                         >
                           ✏️
                         </button>
                         <button
                           type="button"
                           className={`${styles.iconActionButton} ${styles.iconActionButtonDanger}`}
-                          title="Eliminar invitado"
-                          onClick={() => setGuestToDelete(g)}
+                          onClick={() => handleDeleteGuest(g.id)}
+                          title="Eliminar"
                         >
                           🗑️
                         </button>
@@ -484,36 +521,21 @@ export const PartyModal: React.FC<PartyModalProps> = ({ party, onClose, onSaved 
           )}
         </div>
 
-        {/* Modal Footer */}
+        {/* Footer */}
         <div className={styles.modalFooter}>
           <button type="button" className={styles.cancelButton} onClick={onClose}>
             Cerrar
           </button>
-          {activeTab === 'info' && (
-            <button
-              type="submit"
-              form="partyForm"
-              className={styles.saveButton}
-              disabled={savingParty}
-            >
-              {savingParty ? 'Guardando...' : isEditing ? 'Actualizar Grupo' : 'Crear Grupo'}
-            </button>
-          )}
+          <button
+            type="button"
+            className={styles.saveButton}
+            onClick={handleSaveParty}
+            disabled={saving}
+          >
+            {saving ? 'Guardando...' : isEditing ? 'Guardar Cambios' : 'Crear Grupo'}
+          </button>
         </div>
       </div>
-
-      {/* Modal de Confirmación para Eliminar Integrante */}
-      <ConfirmModal
-        isOpen={!!guestToDelete}
-        title="¿Eliminar invitado?"
-        message={`¿Estás seguro de eliminar a ${guestToDelete?.firstName || 'este invitado'} del grupo?`}
-        confirmText="Eliminar Invitado"
-        cancelText="Cancelar"
-        variant="danger"
-        loading={isDeletingGuest}
-        onConfirm={handleConfirmDeleteGuest}
-        onCancel={() => setGuestToDelete(null)}
-      />
     </div>
   );
 };

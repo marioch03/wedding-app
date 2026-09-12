@@ -1,5 +1,6 @@
 package com.wedding_app.backend.modules.party;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -8,9 +9,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.wedding_app.backend.common.exception.ResourceNotFoundException;
+import com.wedding_app.backend.modules.event.Event;
+import com.wedding_app.backend.modules.event.EventRepository;
 import com.wedding_app.backend.modules.party.dto.PartyResponse;
 import com.wedding_app.backend.modules.party.dto.PartyUpsertRequest;
 import com.wedding_app.backend.modules.party.model.Party;
+import com.wedding_app.backend.modules.party.model.PartyEvent;
 import com.wedding_app.backend.modules.party.model.PartyStatus;
 
 import lombok.RequiredArgsConstructor;
@@ -22,6 +26,8 @@ public class PartyService {
   private static final int MAX_TOKEN_GENERATION_ATTEMPTS = 5;
 
   private final PartyRepository partyRepository;
+  private final PartyEventRepository partyEventRepository;
+  private final EventRepository eventRepository;
   private final RsvpTokenGenerator rsvpTokenGenerator;
 
   // =========================================================================
@@ -36,6 +42,19 @@ public class PartyService {
     party.setStatus(PartyStatus.PENDING);
 
     Party saved = partyRepository.save(party);
+
+    List<UUID> targetEventIds = request.eventIds();
+    if (targetEventIds == null || targetEventIds.isEmpty()) {
+      // Por defecto asociar todos los eventos existentes de la boda
+      targetEventIds = eventRepository.findAll().stream().map(Event::getId).toList();
+    }
+
+    for (UUID eventId : targetEventIds) {
+      Event event = eventRepository.findById(eventId)
+          .orElseThrow(() -> ResourceNotFoundException.of("Event", eventId));
+      partyEventRepository.save(new PartyEvent(saved, event));
+    }
+
     return toResponse(saved);
   }
 
@@ -43,6 +62,16 @@ public class PartyService {
   public PartyResponse update(UUID partyId, PartyUpsertRequest request) {
     Party party = getEntityById(partyId);
     applyRequest(party, request);
+
+    if (request.eventIds() != null) {
+      partyEventRepository.deleteByPartyId(partyId);
+      for (UUID eventId : request.eventIds()) {
+        Event event = eventRepository.findById(eventId)
+            .orElseThrow(() -> ResourceNotFoundException.of("Event", eventId));
+        partyEventRepository.save(new PartyEvent(party, event));
+      }
+    }
+
     return toResponse(party);
   }
 
@@ -117,6 +146,10 @@ public class PartyService {
   }
 
   private PartyResponse toResponse(Party party) {
+    List<UUID> eventIds = partyEventRepository.findByPartyIdWithEvent(party.getId()).stream()
+        .map(pe -> pe.getEvent().getId())
+        .toList();
+
     return new PartyResponse(
         party.getId(),
         party.getDisplayName(),
@@ -124,6 +157,7 @@ public class PartyService {
         party.getLanguagePreference(),
         party.getInternalNotes(),
         party.getStatus(),
+        eventIds,
         party.getRespondedAt(),
         party.getCreatedAt(),
         party.getUpdatedAt());

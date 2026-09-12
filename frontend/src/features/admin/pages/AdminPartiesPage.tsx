@@ -286,7 +286,6 @@ export const AdminPartiesPage: React.FC = () => {
                 <tr>
                   <th className={styles.th}>Grupo / Familia</th>
                   <th className={styles.th}>Estado RSVP</th>
-                  <th className={styles.th}>Idioma</th>
                   <th className={styles.th}>Enlace de Invitación</th>
                   <th className={styles.th} style={{ textAlign: 'right' }}>
                     Acciones
@@ -311,11 +310,6 @@ export const AdminPartiesPage: React.FC = () => {
 
                       {/* Status */}
                       <td className={styles.td}>{renderStatusBadge(p.status)}</td>
-
-                      {/* Language */}
-                      <td className={styles.td}>
-                        <span className={styles.langBadge}>{p.languagePreference.toUpperCase()}</span>
-                      </td>
 
                       {/* Token / Link Actions */}
                       <td className={styles.td}>
