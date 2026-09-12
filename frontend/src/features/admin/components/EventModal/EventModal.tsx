@@ -125,11 +125,12 @@ export const EventModal: React.FC<EventModalProps> = ({
 
             <div className={styles.formRow}>
               <div className={styles.formGroup}>
-                <label className={styles.label}>
+                <label htmlFor="eventName" className={styles.label}>
                   Nombre del Evento *
                   <span className={styles.labelHint}>(Ej: Banquete Nupcial)</span>
                 </label>
                 <input
+                  id="eventName"
                   type="text"
                   className={styles.input}
                   placeholder="Ej: Ceremonia Religiosa"
@@ -140,8 +141,9 @@ export const EventModal: React.FC<EventModalProps> = ({
               </div>
 
               <div className={styles.formGroup}>
-                <label className={styles.label}>Tipo de Evento</label>
+                <label htmlFor="eventType" className={styles.label}>Tipo de Evento</label>
                 <select
+                  id="eventType"
                   className={styles.select}
                   value={eventType}
                   onChange={(e) => setEventType(e.target.value as EventType)}
@@ -156,8 +158,9 @@ export const EventModal: React.FC<EventModalProps> = ({
 
             <div className={styles.formRow}>
               <div className={styles.formGroup}>
-                <label className={styles.label}>Fecha y Hora de Inicio *</label>
+                <label htmlFor="startDatetime" className={styles.label}>Fecha y Hora de Inicio *</label>
                 <input
+                  id="startDatetime"
                   type="datetime-local"
                   className={styles.input}
                   value={startDatetime}

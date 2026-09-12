@@ -18,3 +18,11 @@ export class AppApiError extends Error {
     this.fieldErrors = fieldErrors;
   }
 }
+
+export class ApiError extends AppApiError {
+  constructor(message: string, status: number = 500, fieldErrors?: Record<string, string>) {
+    super(message, status, fieldErrors);
+    this.name = 'ApiError';
+  }
+}
+

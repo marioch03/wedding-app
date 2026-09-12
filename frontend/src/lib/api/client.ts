@@ -1,12 +1,12 @@
 import axios from 'axios';
 import type { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import type { ApiErrorResponse } from '../../types';
-import { AppApiError } from '../../types';
+import { ApiError } from '../../types';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
 
 // Manejador común para normalizar errores de API en ambas instancias
-const handleResponseError = (error: AxiosError<ApiErrorResponse>) => {
+export const handleResponseError = (error: AxiosError<ApiErrorResponse>) => {
   if (error.response) {
     const data = error.response.data;
     const message =
@@ -14,18 +14,18 @@ const handleResponseError = (error: AxiosError<ApiErrorResponse>) => {
       data?.error ||
       `Error en la petición (Código ${error.response.status})`;
 
-    throw new AppApiError(
+    throw new ApiError(
       message,
       error.response.status,
       data?.fieldErrors
     );
   } else if (error.request) {
-    throw new AppApiError(
+    throw new ApiError(
       'No se pudo conectar con el servidor. Comprueba la conexión o que el backend esté levantado.',
       0
     );
   } else {
-    throw new AppApiError(error.message || 'Error desconocido al realizar la petición', 500);
+    throw new ApiError(error.message || 'Error desconocido al realizar la petición', 500);
   }
 };
 
