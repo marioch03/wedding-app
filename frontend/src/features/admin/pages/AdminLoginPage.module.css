@@ -1,0 +1,109 @@
+.pageContainer {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 4.5rem 1.5rem 3.5rem;
+  background-color: #2e1d1a;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.background {
+  position: fixed;
+  inset: 0;
+  background-image: url('https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1600&q=80');
+  background-size: cover;
+  background-position: center 30%;
+  filter: blur(12px) brightness(0.8);
+  transform: scale(1.06);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(46, 29, 26, 0.78) 0%,
+    rgba(226, 125, 96, 0.45) 50%,
+    rgba(46, 29, 26, 0.88) 100%
+  );
+  z-index: 1;
+  pointer-events: none;
+}
+
+.contentWrapper {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 480px;
+  width: 100%;
+  margin: auto 0;
+}
+
+.headerInfo {
+  text-align: center;
+  margin-bottom: 2rem;
+  flex-shrink: 0;
+}
+
+.tag {
+  display: inline-block;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--color-primary-dark);
+  margin-bottom: 0.75rem;
+  padding: 0.35rem 1rem;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-light);
+  border: 1px solid var(--color-primary-border);
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 5vw, 2.7rem);
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  font-size: 0.98rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* Contenedor estable con altura mínima para evitar saltos de layout durante transiciones de Clerk */
+.clerkContainer {
+  width: 100%;
+  min-height: 460px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.backHomeLink {
+  margin-top: 2rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  transition: color var(--transition-fast), transform var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.backHomeLink:hover {
+  color: #ffffff;
+  transform: translateX(-3px);
+}

@@ -1,0 +1,243 @@
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useUser } from '@clerk/clerk-react';
+import { rsvpApi, weddingApi } from '../../../lib/api';
+import type { RsvpStatsResponse, WeddingPublicResponse } from '../../../types';
+import styles from './AdminDashboardPage.module.css';
+
+export const AdminDashboardPage: React.FC = () => {
+  const { user } = useUser();
+  const [stats, setStats] = useState<RsvpStatsResponse | null>(null);
+  const [wedding, setWedding] = useState<WeddingPublicResponse | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const [statsData, weddingData] = await Promise.all([
+          rsvpApi.getStatsAdmin(),
+          weddingApi.getPublic().catch(() => null),
+        ]);
+        setStats(statsData);
+        setWedding(weddingData);
+      } catch (err) {
+        console.error('Error cargando datos del Dashboard:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const adminName = user?.firstName || user?.fullName || 'Administrador';
+
+  // Cálculos de porcentajes para la barra de progreso
+  const totalGuests = stats?.totalGuests || 0;
+  const confirmedGuests = stats?.confirmedGuests || 0;
+  const pendingGuests = stats?.pendingGuests || 0;
+  const declinedGuests = stats?.declinedGuests || 0;
+
+  const confirmedPct = totalGuests > 0 ? (confirmedGuests / totalGuests) * 100 : 0;
+  const pendingPct = totalGuests > 0 ? (pendingGuests / totalGuests) * 100 : 0;
+  const declinedPct = totalGuests > 0 ? (declinedGuests / totalGuests) * 100 : 0;
+
+  const formattedWeddingDate = wedding?.weddingDate
+    ? new Date(`${wedding.weddingDate}T00:00:00`).toLocaleDateString('es-ES', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+      })
+    : null;
+
+  return (
+    <div className={styles.container}>
+      {/* Banner de Saludo y Resumen del Evento */}
+      <div className={styles.welcomeBanner}>
+        <div>
+          <h1 className={styles.title}>¡Hola, {adminName}! 👋</h1>
+          <p className={styles.bannerSubtitle}>
+            Panel general de seguimiento de confirmaciones y organización de tu boda.
+          </p>
+        </div>
+
+        {wedding && (
+          <div className={styles.weddingBadge}>
+            <span className={styles.weddingBadgeIcon}>💍</span>
+            <div>
+              <div className={styles.weddingBadgeNames}>
+                {wedding.partner1Name} & {wedding.partner2Name}
+              </div>
+              <div className={styles.weddingBadgeDate}>{formattedWeddingDate}</div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* KPI Cards Strip (4 Métricas Compactas y Vivas) */}
+      <div className={styles.kpiGrid}>
+        <div className={styles.kpiCard}>
+          <div className={styles.kpiTop}>
+            <span className={styles.kpiLabel}>Confirmados</span>
+            <div className={`${styles.kpiIconWrapper} ${styles.iconConfirmed}`}>✓</div>
+          </div>
+          <div className={styles.kpiValue}>
+            {isLoading ? '...' : confirmedGuests}
+          </div>
+          <div className={styles.kpiFoot}>
+            <span>{stats?.confirmedParties || 0} grupos confirmados</span>
+          </div>
+        </div>
+
+        <div className={styles.kpiCard}>
+          <div className={styles.kpiTop}>
+            <span className={styles.kpiLabel}>Pendientes</span>
+            <div className={`${styles.kpiIconWrapper} ${styles.iconPending}`}>⏳</div>
+          </div>
+          <div className={styles.kpiValue}>
+            {isLoading ? '...' : pendingGuests}
+          </div>
+          <div className={styles.kpiFoot}>
+            <span>{stats?.pendingParties || 0} grupos por responder</span>
+          </div>
+        </div>
+
+        <div className={styles.kpiCard}>
+          <div className={styles.kpiTop}>
+            <span className={styles.kpiLabel}>Declinados</span>
+            <div className={`${styles.kpiIconWrapper} ${styles.iconDeclined}`}>✕</div>
+          </div>
+          <div className={styles.kpiValue}>
+            {isLoading ? '...' : declinedGuests}
+          </div>
+          <div className={styles.kpiFoot}>
+            <span>{stats?.declinedParties || 0} grupos no asisten</span>
+          </div>
+        </div>
+
+        <div className={styles.kpiCard}>
+          <div className={styles.kpiTop}>
+            <span className={styles.kpiLabel}>Respuesta</span>
+            <div className={`${styles.kpiIconWrapper} ${styles.iconRate}`}>%</div>
+          </div>
+          <div className={styles.kpiValue}>
+            {isLoading ? '...' : `${stats?.responseRatePercentage.toFixed(0) || 0}%`}
+          </div>
+          <div className={styles.kpiFoot}>
+            <span>{totalGuests} invitados totales en lista</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Panel Dividido 2 Columnas */}
+      <div className={styles.contentSplit}>
+        {/* Columna Izquierda: Balance y Progreso Visual de Asistencia */}
+        <div className={styles.breakdownCard}>
+          <h2 className={styles.cardTitle}>
+            <span>Balance de Invitados</span>
+            <span style={{ fontSize: '0.9rem', color: 'var(--color-primary-dark)', fontWeight: 600 }}>
+              {confirmedPct.toFixed(0)}% Asistencia
+            </span>
+          </h2>
+
+          {/* Barra de Progreso Multisegmento */}
+          <div className={styles.multiProgressBar}>
+            <div
+              className={styles.progressSegmentConfirmed}
+              style={{ width: `${confirmedPct}%` }}
+              title={`Confirmados: ${confirmedPct.toFixed(1)}%`}
+            />
+            <div
+              className={styles.progressSegmentPending}
+              style={{ width: `${pendingPct}%` }}
+              title={`Pendientes: ${pendingPct.toFixed(1)}%`}
+            />
+            <div
+              className={styles.progressSegmentDeclined}
+              style={{ width: `${declinedPct}%` }}
+              title={`Declinados: ${declinedPct.toFixed(1)}%`}
+            />
+          </div>
+
+          {/* Lista de Leyendas con Desglose */}
+          <div className={styles.legendList}>
+            <div className={styles.legendItem}>
+              <div className={styles.legendLeft}>
+                <div className={`${styles.legendDot} ${styles.dotConfirmed}`} />
+                <span className={styles.legendName}>Confirmados</span>
+              </div>
+              <span className={styles.legendCount}>
+                {confirmedGuests} ({confirmedPct.toFixed(1)}%)
+              </span>
+            </div>
+
+            <div className={styles.legendItem}>
+              <div className={styles.legendLeft}>
+                <div className={`${styles.legendDot} ${styles.dotPending}`} />
+                <span className={styles.legendName}>Pendientes</span>
+              </div>
+              <span className={styles.legendCount}>
+                {pendingGuests} ({pendingPct.toFixed(1)}%)
+              </span>
+            </div>
+
+            <div className={styles.legendItem}>
+              <div className={styles.legendLeft}>
+                <div className={`${styles.legendDot} ${styles.dotDeclined}`} />
+                <span className={styles.legendName}>Declinados</span>
+              </div>
+              <span className={styles.legendCount}>
+                {declinedGuests} ({declinedPct.toFixed(1)}%)
+              </span>
+            </div>
+          </div>
+
+          <Link to="/admin/rsvp" className={styles.actionButton}>
+            <span>📊</span> Ver Control Detallado de RSVP & Dietas
+          </Link>
+        </div>
+
+        {/* Columna Derecha: Módulos de Gestión Rápida Comprimidos */}
+        <div className={styles.quickActionsCard}>
+          <h2 className={styles.cardTitle}>Gestión del Evento</h2>
+
+          <div className={styles.actionList}>
+            <Link to="/admin/parties" className={styles.actionRow}>
+              <div className={styles.actionRowIcon}>💌</div>
+              <div className={styles.actionRowContent}>
+                <div className={styles.actionRowTitle}>Invitados & Grupos</div>
+                <div className={styles.actionRowDesc}>
+                  Crear grupos, gestionar acompañantes (+1) y copiar enlaces mágicos.
+                </div>
+              </div>
+              <span className={styles.actionRowArrow}>→</span>
+            </Link>
+
+            <Link to="/admin/events" className={styles.actionRow}>
+              <div className={styles.actionRowIcon}>📅</div>
+              <div className={styles.actionRowContent}>
+                <div className={styles.actionRowTitle}>Eventos & Menús</div>
+                <div className={styles.actionRowDesc}>
+                  Configurar horarios (Ceremonia, Banquete) y opciones de platos.
+                </div>
+              </div>
+              <span className={styles.actionRowArrow}>→</span>
+            </Link>
+
+            <Link to="/admin/wedding" className={styles.actionRow}>
+              <div className={styles.actionRowIcon}>💍</div>
+              <div className={styles.actionRowContent}>
+                <div className={styles.actionRowTitle}>Contenido de la Web</div>
+                <div className={styles.actionRowDesc}>
+                  Editar historia, foto de portada, fecha y datos visibles para invitados.
+                </div>
+              </div>
+              <span className={styles.actionRowArrow}>→</span>
+            </Link>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};

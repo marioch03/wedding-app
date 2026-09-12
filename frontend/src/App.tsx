@@ -1,8 +1,13 @@
 import { ClerkProvider, useAuth } from "@clerk/clerk-react";
 import React, { useEffect } from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useNavigate } from "react-router-dom";
 import { WeddingLandingPage } from "./features/wedding/pages/WeddingLandingPage";
 import { RsvpPage } from "./features/rsvp/pages/RsvpPage";
+import { AdminLoginPage } from "./features/admin/pages/AdminLoginPage";
+import { AdminProtectedRoute } from "./features/admin/components/AdminProtectedRoute/AdminProtectedRoute";
+import { AdminLayout } from "./features/admin/components/AdminLayout/AdminLayout";
+import { AdminDashboardPage } from "./features/admin/pages/AdminDashboardPage";
+import { AdminPartiesPage } from "./features/admin/pages/AdminPartiesPage";
 import { NotFoundPage } from "./common/pages/NotFoundPage";
 import { setAuthTokenGetter } from "./lib/api/client";
 
@@ -21,6 +26,47 @@ const ClerkAuthSync: React.FC<{ children: React.ReactNode }> = ({
   return <>{children}</>;
 };
 
+// Componente interno con enrutador integrado
+const AppRoutes: React.FC = () => {
+  const navigate = useNavigate();
+
+  return (
+    <ClerkProvider
+      publishableKey={CLERK_PUBLISHABLE_KEY || ""}
+      routerPush={(to) => navigate(to)}
+      routerReplace={(to) => navigate(to, { replace: true })}
+    >
+      <ClerkAuthSync>
+        <Routes>
+          {/* Rutas Públicas */}
+          <Route path="/" element={<WeddingLandingPage />} />
+          <Route path="/rsvp" element={<RsvpPage />} />
+          <Route path="/rsvp/:token" element={<RsvpPage />} />
+
+          {/* Login de Administración */}
+          <Route path="/admin/login" element={<AdminLoginPage />} />
+
+          {/* Rutas Protegidas de Administración */}
+          <Route
+            path="/admin"
+            element={
+              <AdminProtectedRoute>
+                <AdminLayout />
+              </AdminProtectedRoute>
+            }
+          >
+            <Route index element={<AdminDashboardPage />} />
+            <Route path="parties" element={<AdminPartiesPage />} />
+          </Route>
+
+          {/* 404 Not Found */}
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </ClerkAuthSync>
+    </ClerkProvider>
+  );
+};
+
 export const App: React.FC = () => {
   if (!CLERK_PUBLISHABLE_KEY) {
     console.warn(
@@ -29,23 +75,9 @@ export const App: React.FC = () => {
   }
 
   return (
-    <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY || ""}>
-      <ClerkAuthSync>
-        <BrowserRouter>
-          <Routes>
-            {/* Ruta Publica: Landing de la Boda */}
-            <Route path="/" element={<WeddingLandingPage />} />
-
-            {/* Rutas Publicas: Flujo de Confirmacion RSVP */}
-            <Route path="/rsvp" element={<RsvpPage />} />
-            <Route path="/rsvp/:token" element={<RsvpPage />} />
-
-            {/* 404 Not Found */}
-            <Route path="*" element={<NotFoundPage />} />
-          </Routes>
-        </BrowserRouter>
-      </ClerkAuthSync>
-    </ClerkProvider>
+    <BrowserRouter>
+      <AppRoutes />
+    </BrowserRouter>
   );
 };
 

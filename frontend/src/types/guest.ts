@@ -49,10 +49,10 @@ export interface GuestDetailResponse {
 }
 
 export interface GuestRequest {
-  partyId: string;
+  partyId?: string;
   firstName?: string;
   lastName?: string;
-  guestType: GuestType;
+  guestType?: GuestType;
   isPlusOne?: boolean;
   email?: string;
   phone?: string;

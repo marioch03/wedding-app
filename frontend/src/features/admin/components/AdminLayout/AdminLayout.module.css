@@ -1,0 +1,204 @@
+.layoutContainer {
+  height: 100vh;
+  display: flex;
+  background: 
+    radial-gradient(circle at 10% 10%, rgba(254, 245, 237, 0.95) 0%, rgba(250, 247, 242, 0.7) 45%),
+    radial-gradient(circle at 90% 85%, rgba(253, 238, 226, 0.7) 0%, rgba(250, 247, 242, 0.9) 55%),
+    #faf7f2;
+  color: var(--color-text-body);
+  overflow: hidden;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 270px;
+  height: 100vh;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-right: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  overflow-y: auto;
+  transition: transform var(--transition-normal);
+  box-shadow: 2px 0 20px rgba(44, 26, 22, 0.02);
+}
+
+.sidebarHeader {
+  padding: 2rem 1.5rem 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+  background: linear-gradient(180deg, rgba(253, 246, 238, 0.6) 0%, transparent 100%);
+}
+
+.logoTitle {
+  font-family: var(--font-serif);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--color-text-heading);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+.logoTag {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--color-primary-dark);
+  margin-top: 0.3rem;
+}
+
+.nav {
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  flex: 1;
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.85rem 1.15rem;
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text-body);
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.navLink:hover {
+  background: rgba(223, 106, 79, 0.08);
+  color: var(--color-primary-dark);
+  transform: translateX(3px);
+}
+
+.navLinkActive {
+  background: var(--color-primary-gradient) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 16px var(--color-primary-glow);
+}
+
+.navIcon {
+  font-size: 1.2rem;
+}
+
+.sidebarFooter {
+  padding: 1.5rem;
+  border-top: 1px solid var(--color-border);
+  background: linear-gradient(0deg, rgba(253, 246, 238, 0.4) 0%, transparent 100%);
+}
+
+.publicSiteButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--color-border);
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--color-text-heading);
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+}
+
+.publicSiteButton:hover {
+  border-color: var(--color-primary);
+  background: #ffffff;
+  color: var(--color-primary-dark);
+  box-shadow: 0 4px 14px rgba(223, 106, 79, 0.12);
+  transform: translateY(-1px);
+}
+
+/* Main Content Area */
+.mainWrapper {
+  flex: 1;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow-y: auto;
+}
+
+.topHeader {
+  min-height: 84px;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--color-border);
+  padding: 1.2rem 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  flex-shrink: 0;
+  box-shadow: 0 4px 20px rgba(44, 26, 22, 0.03);
+}
+
+.headerTitleWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.headerTitle {
+  font-family: var(--font-serif);
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: var(--color-text-heading);
+  line-height: 1.2;
+}
+
+.headerSubtitle {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.contentArea {
+  flex: 1;
+  padding: 2.5rem;
+}
+
+@media (max-width: 860px) {
+  .layoutContainer {
+    height: auto;
+    min-height: 100vh;
+    flex-direction: column;
+    overflow: visible;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    border-right: none;
+    border-bottom: 1.5px solid var(--color-border);
+  }
+
+  .mainWrapper {
+    height: auto;
+    overflow: visible;
+  }
+
+  .contentArea {
+    padding: 1.5rem 1rem;
+  }
+}

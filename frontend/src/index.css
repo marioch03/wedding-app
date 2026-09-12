@@ -4,45 +4,50 @@
 
 :root {
   /* --- Paleta de Colores Base & Fondos --- */
-  --color-bg: #fffbf7;
-  --color-bg-secondary: #fef8f2;
-  --color-bg-subtle: #fff4ec;
-  --color-bg-card: #ffffff;
+  --color-bg: #faf7f2;
+  --color-bg-secondary: #f4ede4;
+  --color-bg-subtle: #fbf5ee;
+  --color-bg-card: rgba(255, 255, 255, 0.9);
   --color-bg-elevated: #ffffff;
+  --color-bg-glass: rgba(255, 255, 255, 0.78);
 
-  /* --- Colores Principales de Marca (Vivos y Cálidos) --- */
-  --color-primary: #e27d60;
-  --color-primary-dark: #c34a36;
-  --color-primary-light: #fbeae4;
-  --color-primary-border: #f9cdb8;
-  --color-primary-gradient: linear-gradient(135deg, #e27d60 0%, #c34a36 100%);
-  --color-primary-glow: rgba(195, 74, 54, 0.35);
+  /* --- Colores Principales de Marca (Terracota Cálido Romántico) --- */
+  --color-primary: #df6a4f;
+  --color-primary-dark: #b84a32;
+  --color-primary-light: #fceed8;
+  --color-primary-border: #f3cfc2;
+  --color-primary-gradient: linear-gradient(135deg, #e3765c 0%, #be4930 100%);
+  --color-primary-glow: rgba(223, 106, 79, 0.28);
 
-  /* --- Colores de Acento Secundarios --- */
+  /* --- Colores de Acento Champagne & Oro --- */
+  --color-accent-gold: #cba258;
+  --color-accent-gold-dark: #a98037;
+  --color-accent-gold-light: #fdf6ec;
+  --color-accent-gold-border: #f1ddb6;
+  --color-accent-gold-gradient: linear-gradient(135deg, #d8b168 0%, #b88b39 100%);
   --color-accent-amber: #e5a93c;
   --color-accent-amber-light: #fff4e5;
-  --color-accent-sage: #5d7a68;
+  --color-accent-sage: #5b7967;
   --color-accent-sage-light: #eaf2ec;
-  --color-accent-gold: #c89d5f;
-  --color-accent-gold-light: #fef6eb;
 
   /* --- Textos y Contrastes --- */
-  --color-text-heading: #2e1d1a;
-  --color-text-body: #55413c;
-  --color-text-muted: #8b716b;
+  --color-text-heading: #2c1a16;
+  --color-text-body: #5c4741;
+  --color-text-muted: #8e756e;
   --color-text-on-primary: #ffffff;
 
   /* --- Bordes y Separadores --- */
-  --color-border: #f3ddd2;
-  --color-border-subtle: rgba(226, 125, 96, 0.15);
-  --color-border-strong: #e8c6b6;
+  --color-border: #ebdcd2;
+  --color-border-subtle: rgba(223, 106, 79, 0.12);
+  --color-border-strong: #dfc3b5;
+  --color-border-glass: rgba(255, 255, 255, 0.6);
 
   /* --- Estados y Validación --- */
   --color-success: #2e7d32;
   --color-success-bg: #e8f5e9;
-  --color-warning: #ed6c02;
-  --color-warning-bg: #fff3e0;
-  --color-error: #d32f2f;
+  --color-warning: #d97706;
+  --color-warning-bg: #fffbeb;
+  --color-error: #c62828;
   --color-error-bg: #ffebee;
   --color-info: #0288d1;
   --color-info-bg: #e1f5fe;
@@ -52,12 +57,13 @@
   --font-serif: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
   --font-mono: ui-monospace, Consolas, monospace;
 
-  /* --- Sombras de Elevación --- */
-  --shadow-sm: 0 2px 6px rgba(46, 29, 26, 0.04);
-  --shadow-md: 0 8px 24px rgba(223, 106, 87, 0.08);
-  --shadow-lg: 0 16px 36px rgba(223, 106, 87, 0.14);
+  /* --- Sombras de Elevación & Glassmorphism --- */
+  --shadow-sm: 0 2px 8px rgba(44, 26, 22, 0.04);
+  --shadow-md: 0 8px 24px rgba(184, 74, 50, 0.08);
+  --shadow-lg: 0 16px 36px rgba(184, 74, 50, 0.12);
+  --shadow-glass: 0 8px 32px rgba(44, 26, 22, 0.06);
   --shadow-primary: 0 8px 25px var(--color-primary-glow);
-  --shadow-primary-hover: 0 12px 30px rgba(195, 74, 54, 0.45);
+  --shadow-primary-hover: 0 12px 30px rgba(184, 74, 50, 0.4);
 
   /* --- Radios de Bordes --- */
   --radius-sm: 8px;
