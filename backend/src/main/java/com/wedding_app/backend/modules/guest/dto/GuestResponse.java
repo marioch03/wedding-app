@@ -3,7 +3,7 @@ package com.wedding_app.backend.modules.guest.dto;
 import java.time.Instant;
 import java.util.UUID;
 
-import com.wedding_app.backend.modules.guest.GuestType;
+import com.wedding_app.backend.modules.guest.entity.GuestType;
 
 public record GuestResponse(
     UUID id,

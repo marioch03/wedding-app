@@ -1,4 +1,4 @@
-package com.wedding_app.backend.modules.wedding;
+package com.wedding_app.backend.modules.wedding.service;
 
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +11,8 @@ import com.wedding_app.backend.common.exception.ResourceNotFoundException;
 import com.wedding_app.backend.modules.wedding.dto.WeddingPublicResponse;
 import com.wedding_app.backend.modules.wedding.dto.WeddingRequest;
 import com.wedding_app.backend.modules.wedding.dto.WeddingResponse;
+import com.wedding_app.backend.modules.wedding.entity.Wedding;
+import com.wedding_app.backend.modules.wedding.repository.WeddingRepository;
 
 import lombok.RequiredArgsConstructor;
 

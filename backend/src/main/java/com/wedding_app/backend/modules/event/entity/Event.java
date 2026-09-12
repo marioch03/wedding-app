@@ -1,4 +1,4 @@
-package com.wedding_app.backend.modules.event;
+package com.wedding_app.backend.modules.event.entity;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.wedding_app.backend.common.audit.BaseEntity;
-import com.wedding_app.backend.modules.menu.MenuOption;
-import com.wedding_app.backend.modules.wedding.Wedding;
+import com.wedding_app.backend.modules.menu.entity.MenuOption;
+import com.wedding_app.backend.modules.wedding.entity.Wedding;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

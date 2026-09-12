@@ -1,4 +1,4 @@
-package com.wedding_app.backend.modules.wedding;
+package com.wedding_app.backend.modules.wedding.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -31,6 +31,7 @@ import com.wedding_app.backend.common.exception.GlobalExceptionHandler;
 import com.wedding_app.backend.modules.wedding.dto.WeddingPublicResponse;
 import com.wedding_app.backend.modules.wedding.dto.WeddingRequest;
 import com.wedding_app.backend.modules.wedding.dto.WeddingResponse;
+import com.wedding_app.backend.modules.wedding.service.WeddingService;
 
 @ExtendWith(MockitoExtension.class)
 class WeddingControllersTest {

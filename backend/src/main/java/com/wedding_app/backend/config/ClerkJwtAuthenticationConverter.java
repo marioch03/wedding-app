@@ -11,7 +11,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
 
-import com.wedding_app.backend.modules.admin.AdminUserRepository;
+import com.wedding_app.backend.modules.admin.repository.AdminUserRepository;
 
 import lombok.RequiredArgsConstructor;
 

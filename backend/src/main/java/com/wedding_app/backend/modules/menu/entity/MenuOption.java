@@ -1,8 +1,8 @@
-package com.wedding_app.backend.modules.menu;
+package com.wedding_app.backend.modules.menu.entity;
 
 import java.util.UUID;
 
-import com.wedding_app.backend.modules.event.Event;
+import com.wedding_app.backend.modules.event.entity.Event;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

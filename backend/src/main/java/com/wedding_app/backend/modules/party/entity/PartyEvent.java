@@ -1,8 +1,8 @@
-package com.wedding_app.backend.modules.party.model;
+package com.wedding_app.backend.modules.party.entity;
 
 import java.time.Instant;
 
-import com.wedding_app.backend.modules.event.Event;
+import com.wedding_app.backend.modules.event.entity.Event;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;

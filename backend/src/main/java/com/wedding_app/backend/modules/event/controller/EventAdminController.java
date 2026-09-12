@@ -1,4 +1,4 @@
-package com.wedding_app.backend.modules.event;
+package com.wedding_app.backend.modules.event.controller;
 
 import java.util.List;
 import java.util.UUID;
@@ -19,6 +19,7 @@ import com.wedding_app.backend.modules.event.dto.EventRequest;
 import com.wedding_app.backend.modules.event.dto.EventResponse;
 import com.wedding_app.backend.modules.event.dto.MenuOptionRequest;
 import com.wedding_app.backend.modules.event.dto.MenuOptionResponse;
+import com.wedding_app.backend.modules.event.service.EventService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

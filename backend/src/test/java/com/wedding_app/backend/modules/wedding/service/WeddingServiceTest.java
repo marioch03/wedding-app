@@ -1,4 +1,4 @@
-package com.wedding_app.backend.modules.wedding;
+package com.wedding_app.backend.modules.wedding.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -23,6 +23,8 @@ import com.wedding_app.backend.common.exception.ResourceNotFoundException;
 import com.wedding_app.backend.modules.wedding.dto.WeddingPublicResponse;
 import com.wedding_app.backend.modules.wedding.dto.WeddingRequest;
 import com.wedding_app.backend.modules.wedding.dto.WeddingResponse;
+import com.wedding_app.backend.modules.wedding.entity.Wedding;
+import com.wedding_app.backend.modules.wedding.repository.WeddingRepository;
 
 @ExtendWith(MockitoExtension.class)
 class WeddingServiceTest {

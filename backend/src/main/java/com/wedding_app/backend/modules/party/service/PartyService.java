@@ -1,4 +1,4 @@
-package com.wedding_app.backend.modules.party;
+package com.wedding_app.backend.modules.party.service;
 
 import java.util.List;
 import java.util.UUID;
@@ -9,13 +9,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.wedding_app.backend.common.exception.ResourceNotFoundException;
-import com.wedding_app.backend.modules.event.Event;
-import com.wedding_app.backend.modules.event.EventRepository;
+import com.wedding_app.backend.modules.event.entity.Event;
+import com.wedding_app.backend.modules.event.repository.EventRepository;
 import com.wedding_app.backend.modules.party.dto.PartyResponse;
 import com.wedding_app.backend.modules.party.dto.PartyUpsertRequest;
-import com.wedding_app.backend.modules.party.model.Party;
-import com.wedding_app.backend.modules.party.model.PartyEvent;
-import com.wedding_app.backend.modules.party.model.PartyStatus;
+import com.wedding_app.backend.modules.party.entity.Party;
+import com.wedding_app.backend.modules.party.entity.PartyEvent;
+import com.wedding_app.backend.modules.party.entity.PartyStatus;
+import com.wedding_app.backend.modules.party.repository.PartyEventRepository;
+import com.wedding_app.backend.modules.party.repository.PartyRepository;
 
 import lombok.RequiredArgsConstructor;
 

@@ -1,4 +1,4 @@
-package com.wedding_app.backend.modules.menu;
+package com.wedding_app.backend.modules.menu.controller;
 
 import java.net.URI;
 import java.util.List;
@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.wedding_app.backend.modules.menu.dto.CateringReportResponse;
 import com.wedding_app.backend.modules.menu.dto.MenuRequest;
 import com.wedding_app.backend.modules.menu.dto.MenuResponse;
+import com.wedding_app.backend.modules.menu.service.MenuService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

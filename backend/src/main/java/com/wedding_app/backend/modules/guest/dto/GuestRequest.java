@@ -1,6 +1,6 @@
 package com.wedding_app.backend.modules.guest.dto;
 
-import com.wedding_app.backend.modules.guest.GuestType;
+import com.wedding_app.backend.modules.guest.entity.GuestType;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;

@@ -1,4 +1,4 @@
-package com.wedding_app.backend.modules.guest;
+package com.wedding_app.backend.modules.guest.controller;
 
 import java.net.URI;
 import java.util.List;
@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.wedding_app.backend.modules.guest.dto.GuestDetailResponse;
 import com.wedding_app.backend.modules.guest.dto.GuestRequest;
 import com.wedding_app.backend.modules.guest.dto.GuestResponse;
+import com.wedding_app.backend.modules.guest.entity.GuestType;
+import com.wedding_app.backend.modules.guest.service.GuestService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

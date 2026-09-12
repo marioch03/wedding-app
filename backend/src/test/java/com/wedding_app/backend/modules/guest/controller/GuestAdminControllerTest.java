@@ -1,4 +1,4 @@
-package com.wedding_app.backend.modules.guest;
+package com.wedding_app.backend.modules.guest.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -33,6 +33,8 @@ import com.wedding_app.backend.common.exception.GlobalExceptionHandler;
 import com.wedding_app.backend.modules.guest.dto.GuestDetailResponse;
 import com.wedding_app.backend.modules.guest.dto.GuestRequest;
 import com.wedding_app.backend.modules.guest.dto.GuestResponse;
+import com.wedding_app.backend.modules.guest.entity.GuestType;
+import com.wedding_app.backend.modules.guest.service.GuestService;
 
 @ExtendWith(MockitoExtension.class)
 class GuestAdminControllerTest {

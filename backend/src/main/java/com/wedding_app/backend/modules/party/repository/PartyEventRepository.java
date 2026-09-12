@@ -1,4 +1,4 @@
-package com.wedding_app.backend.modules.party;
+package com.wedding_app.backend.modules.party.repository;
 
 import java.util.List;
 import java.util.UUID;
@@ -8,8 +8,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.wedding_app.backend.modules.party.model.PartyEvent;
-import com.wedding_app.backend.modules.party.model.PartyEventId;
+import com.wedding_app.backend.modules.party.entity.PartyEvent;
+import com.wedding_app.backend.modules.party.entity.PartyEventId;
 
 public interface PartyEventRepository extends JpaRepository<PartyEvent, PartyEventId> {
 

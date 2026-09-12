@@ -1,4 +1,4 @@
-package com.wedding_app.backend.modules.wedding;
+package com.wedding_app.backend.modules.wedding.controller;
 
 import java.util.UUID;
 
@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wedding_app.backend.modules.wedding.dto.WeddingPublicResponse;
+import com.wedding_app.backend.modules.wedding.service.WeddingService;
 
 import lombok.RequiredArgsConstructor;
 

@@ -4,7 +4,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
-import com.wedding_app.backend.modules.party.model.PartyStatus;
+import com.wedding_app.backend.modules.party.entity.PartyStatus;
 
 public record PartyResponse(
     UUID id,

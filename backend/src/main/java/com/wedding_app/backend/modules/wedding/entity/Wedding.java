@@ -1,4 +1,4 @@
-package com.wedding_app.backend.modules.wedding;
+package com.wedding_app.backend.modules.wedding.entity;
 
 import java.time.LocalDate;
 import java.util.HashMap;

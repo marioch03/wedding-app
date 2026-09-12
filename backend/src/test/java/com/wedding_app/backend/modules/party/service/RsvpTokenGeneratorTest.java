@@ -1,4 +1,4 @@
-package com.wedding_app.backend.modules.party;
+package com.wedding_app.backend.modules.party.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

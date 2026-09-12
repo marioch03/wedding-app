@@ -1,4 +1,4 @@
-package com.wedding_app.backend.modules.guest;
+package com.wedding_app.backend.modules.guest.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -17,15 +17,22 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
 import com.wedding_app.backend.common.exception.ResourceNotFoundException;
-import com.wedding_app.backend.modules.event.Event;
+import com.wedding_app.backend.modules.event.entity.Event;
 import com.wedding_app.backend.modules.guest.dto.GuestDetailResponse;
 import com.wedding_app.backend.modules.guest.dto.GuestRequest;
 import com.wedding_app.backend.modules.guest.dto.GuestResponse;
-import com.wedding_app.backend.modules.menu.MenuOption;
-import com.wedding_app.backend.modules.party.PartyService;
-import com.wedding_app.backend.modules.party.model.Party;
+import com.wedding_app.backend.modules.guest.entity.Guest;
+import com.wedding_app.backend.modules.guest.entity.GuestEvent;
+import com.wedding_app.backend.modules.guest.entity.GuestType;
+import com.wedding_app.backend.modules.guest.repository.GuestEventRepository;
+import com.wedding_app.backend.modules.guest.repository.GuestRepository;
+import com.wedding_app.backend.modules.menu.entity.MenuOption;
+import com.wedding_app.backend.modules.party.entity.Party;
+import com.wedding_app.backend.modules.party.service.PartyService;
 
 @ExtendWith(MockitoExtension.class)
 class GuestServiceTest {
@@ -194,6 +201,7 @@ class GuestServiceTest {
   }
 
   @Test
+  @SuppressWarnings("unchecked")
   void findAll_success() {
     Guest guest = new Guest();
     guest.setId(guestId);
@@ -204,7 +212,7 @@ class GuestServiceTest {
     org.springframework.data.domain.Page<Guest> page = new org.springframework.data.domain.PageImpl<>(
         List.of(guest), org.springframework.data.domain.PageRequest.of(0, 20), 1);
 
-    when(guestRepository.findAll(any(org.springframework.data.jpa.domain.Specification.class), any(org.springframework.data.domain.Pageable.class)))
+    when(guestRepository.findAll(any(Specification.class), any(Pageable.class)))
         .thenReturn(page);
 
     org.springframework.data.domain.Page<GuestResponse> result = guestService.findAll(

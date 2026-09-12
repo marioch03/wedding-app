@@ -1,4 +1,4 @@
-package com.wedding_app.backend.modules.menu;
+package com.wedding_app.backend.modules.menu.dto;
 
 import java.util.UUID;
 

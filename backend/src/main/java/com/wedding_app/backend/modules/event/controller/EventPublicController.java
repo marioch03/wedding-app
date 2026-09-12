@@ -1,4 +1,4 @@
-package com.wedding_app.backend.modules.event;
+package com.wedding_app.backend.modules.event.controller;
 
 import java.util.List;
 
@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wedding_app.backend.modules.event.dto.EventResponse;
+import com.wedding_app.backend.modules.event.service.EventService;
 
 import lombok.RequiredArgsConstructor;
 

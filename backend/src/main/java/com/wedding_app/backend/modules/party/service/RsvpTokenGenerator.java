@@ -1,4 +1,4 @@
-package com.wedding_app.backend.modules.party;
+package com.wedding_app.backend.modules.party.service;
 
 import java.security.SecureRandom;
 import org.springframework.stereotype.Component;

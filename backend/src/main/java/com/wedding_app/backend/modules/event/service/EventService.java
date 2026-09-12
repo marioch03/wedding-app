@@ -1,4 +1,4 @@
-package com.wedding_app.backend.modules.event;
+package com.wedding_app.backend.modules.event.service;
 
 import java.util.List;
 import java.util.UUID;
@@ -11,11 +11,14 @@ import com.wedding_app.backend.modules.event.dto.EventRequest;
 import com.wedding_app.backend.modules.event.dto.EventResponse;
 import com.wedding_app.backend.modules.event.dto.MenuOptionRequest;
 import com.wedding_app.backend.modules.event.dto.MenuOptionResponse;
-import com.wedding_app.backend.modules.menu.DietType;
-import com.wedding_app.backend.modules.menu.MenuOption;
-import com.wedding_app.backend.modules.menu.MenuOptionRepository;
-import com.wedding_app.backend.modules.wedding.Wedding;
-import com.wedding_app.backend.modules.wedding.WeddingRepository;
+import com.wedding_app.backend.modules.event.entity.Event;
+import com.wedding_app.backend.modules.event.entity.EventType;
+import com.wedding_app.backend.modules.event.repository.EventRepository;
+import com.wedding_app.backend.modules.menu.entity.DietType;
+import com.wedding_app.backend.modules.menu.entity.MenuOption;
+import com.wedding_app.backend.modules.menu.repository.MenuOptionRepository;
+import com.wedding_app.backend.modules.wedding.entity.Wedding;
+import com.wedding_app.backend.modules.wedding.repository.WeddingRepository;
 
 import lombok.RequiredArgsConstructor;
 

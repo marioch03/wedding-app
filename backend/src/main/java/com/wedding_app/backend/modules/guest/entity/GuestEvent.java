@@ -1,10 +1,10 @@
-package com.wedding_app.backend.modules.guest;
+package com.wedding_app.backend.modules.guest.entity;
 
 import java.time.Instant;
 import java.util.UUID;
 
-import com.wedding_app.backend.modules.event.Event;
-import com.wedding_app.backend.modules.menu.MenuOption;
+import com.wedding_app.backend.modules.event.entity.Event;
+import com.wedding_app.backend.modules.menu.entity.MenuOption;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

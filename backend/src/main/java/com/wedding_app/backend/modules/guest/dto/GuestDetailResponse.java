@@ -4,7 +4,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
-import com.wedding_app.backend.modules.guest.GuestType;
+import com.wedding_app.backend.modules.guest.entity.GuestType;
 
 public record GuestDetailResponse(
     UUID id,

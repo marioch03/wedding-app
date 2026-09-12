@@ -1,4 +1,4 @@
-package com.wedding_app.backend.modules.menu;
+package com.wedding_app.backend.modules.menu.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -29,6 +29,8 @@ import com.wedding_app.backend.modules.menu.dto.CateringReportResponse;
 import com.wedding_app.backend.modules.menu.dto.MenuRequest;
 import com.wedding_app.backend.modules.menu.dto.MenuResponse;
 import com.wedding_app.backend.modules.menu.dto.PublicMenuEventDto;
+import com.wedding_app.backend.modules.menu.entity.DietType;
+import com.wedding_app.backend.modules.menu.service.MenuService;
 
 @ExtendWith(MockitoExtension.class)
 class MenuControllersTest {

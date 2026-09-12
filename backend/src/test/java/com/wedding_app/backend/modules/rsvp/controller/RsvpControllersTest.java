@@ -1,4 +1,4 @@
-package com.wedding_app.backend.modules.rsvp;
+package com.wedding_app.backend.modules.rsvp.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -27,6 +27,7 @@ import com.wedding_app.backend.common.exception.ResourceNotFoundException;
 import com.wedding_app.backend.modules.rsvp.dto.RsvpInfoResponse;
 import com.wedding_app.backend.modules.rsvp.dto.RsvpStatsResponse;
 import com.wedding_app.backend.modules.rsvp.dto.RsvpSubmitRequest;
+import com.wedding_app.backend.modules.rsvp.service.RsvpService;
 
 @ExtendWith(MockitoExtension.class)
 class RsvpControllersTest {

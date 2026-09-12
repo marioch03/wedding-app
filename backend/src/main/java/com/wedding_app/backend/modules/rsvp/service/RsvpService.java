@@ -1,4 +1,4 @@
-package com.wedding_app.backend.modules.rsvp;
+package com.wedding_app.backend.modules.rsvp.service;
 
 import java.time.Instant;
 import java.util.List;
@@ -11,21 +11,22 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.wedding_app.backend.common.exception.InvalidRsvpTokenException;
 import com.wedding_app.backend.common.exception.ResourceNotFoundException;
-import com.wedding_app.backend.modules.event.EventRepository;
+import com.wedding_app.backend.modules.event.entity.Event;
+import com.wedding_app.backend.modules.event.repository.EventRepository;
 import com.wedding_app.backend.modules.event.dto.EventDto;
-import com.wedding_app.backend.modules.guest.Guest;
-import com.wedding_app.backend.modules.guest.GuestEvent;
-import com.wedding_app.backend.modules.guest.GuestEventRepository;
-import com.wedding_app.backend.modules.guest.GuestRepository;
+import com.wedding_app.backend.modules.guest.entity.Guest;
+import com.wedding_app.backend.modules.guest.entity.GuestEvent;
+import com.wedding_app.backend.modules.guest.repository.GuestEventRepository;
+import com.wedding_app.backend.modules.guest.repository.GuestRepository;
 import com.wedding_app.backend.modules.guest.dto.GuestDto;
-import com.wedding_app.backend.modules.menu.MenuOption;
-import com.wedding_app.backend.modules.menu.MenuOptionDto;
-import com.wedding_app.backend.modules.menu.MenuOptionRepository;
-import com.wedding_app.backend.modules.party.PartyEventRepository;
-import com.wedding_app.backend.modules.party.PartyRepository;
-import com.wedding_app.backend.modules.party.model.Party;
-import com.wedding_app.backend.modules.party.model.PartyEvent;
-import com.wedding_app.backend.modules.party.model.PartyStatus;
+import com.wedding_app.backend.modules.menu.entity.MenuOption;
+import com.wedding_app.backend.modules.menu.dto.MenuOptionDto;
+import com.wedding_app.backend.modules.menu.repository.MenuOptionRepository;
+import com.wedding_app.backend.modules.party.repository.PartyEventRepository;
+import com.wedding_app.backend.modules.party.repository.PartyRepository;
+import com.wedding_app.backend.modules.party.entity.Party;
+import com.wedding_app.backend.modules.party.entity.PartyEvent;
+import com.wedding_app.backend.modules.party.entity.PartyStatus;
 import com.wedding_app.backend.modules.rsvp.dto.EventRsvpDto;
 import com.wedding_app.backend.modules.rsvp.dto.GuestRsvpDto;
 import com.wedding_app.backend.modules.rsvp.dto.RsvpInfoResponse;
@@ -128,7 +129,7 @@ public class RsvpService {
     Set<UUID> allowedEventIds;
     if (partyEvents.isEmpty()) {
       allowedEventIds = eventRepository.findAll().stream()
-          .map(com.wedding_app.backend.modules.event.Event::getId)
+          .map(Event::getId)
           .collect(Collectors.toSet());
     } else {
       allowedEventIds = partyEvents.stream()

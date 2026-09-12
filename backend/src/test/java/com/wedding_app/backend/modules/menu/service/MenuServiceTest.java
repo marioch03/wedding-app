@@ -1,4 +1,4 @@
-package com.wedding_app.backend.modules.menu;
+package com.wedding_app.backend.modules.menu.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -18,16 +18,19 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.wedding_app.backend.common.exception.ResourceNotFoundException;
-import com.wedding_app.backend.modules.event.Event;
-import com.wedding_app.backend.modules.event.EventRepository;
-import com.wedding_app.backend.modules.guest.Guest;
-import com.wedding_app.backend.modules.guest.GuestEvent;
-import com.wedding_app.backend.modules.guest.GuestEventRepository;
+import com.wedding_app.backend.modules.event.entity.Event;
+import com.wedding_app.backend.modules.event.repository.EventRepository;
+import com.wedding_app.backend.modules.guest.entity.Guest;
+import com.wedding_app.backend.modules.guest.entity.GuestEvent;
+import com.wedding_app.backend.modules.guest.repository.GuestEventRepository;
 import com.wedding_app.backend.modules.menu.dto.CateringReportResponse;
 import com.wedding_app.backend.modules.menu.dto.MenuRequest;
 import com.wedding_app.backend.modules.menu.dto.MenuResponse;
 import com.wedding_app.backend.modules.menu.dto.PublicMenuEventDto;
-import com.wedding_app.backend.modules.party.model.Party;
+import com.wedding_app.backend.modules.menu.entity.DietType;
+import com.wedding_app.backend.modules.menu.entity.MenuOption;
+import com.wedding_app.backend.modules.menu.repository.MenuOptionRepository;
+import com.wedding_app.backend.modules.party.entity.Party;
 
 @ExtendWith(MockitoExtension.class)
 class MenuServiceTest {

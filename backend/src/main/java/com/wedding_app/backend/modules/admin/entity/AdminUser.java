@@ -1,4 +1,4 @@
-package com.wedding_app.backend.modules.admin;
+package com.wedding_app.backend.modules.admin.entity;
 
 import java.time.Instant;
 

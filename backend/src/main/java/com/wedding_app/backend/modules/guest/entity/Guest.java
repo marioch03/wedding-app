@@ -1,7 +1,7 @@
-package com.wedding_app.backend.modules.guest;
+package com.wedding_app.backend.modules.guest.entity;
 
 import com.wedding_app.backend.common.audit.BaseEntity;
-import com.wedding_app.backend.modules.party.model.Party;
+import com.wedding_app.backend.modules.party.entity.Party;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

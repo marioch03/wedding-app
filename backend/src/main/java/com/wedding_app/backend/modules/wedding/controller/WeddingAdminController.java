@@ -1,4 +1,4 @@
-package com.wedding_app.backend.modules.wedding;
+package com.wedding_app.backend.modules.wedding.controller;
 
 import java.net.URI;
 import java.util.List;
@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.wedding_app.backend.modules.wedding.dto.WeddingRequest;
 import com.wedding_app.backend.modules.wedding.dto.WeddingResponse;
+import com.wedding_app.backend.modules.wedding.service.WeddingService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

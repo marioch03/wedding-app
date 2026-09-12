@@ -2,7 +2,7 @@ package com.wedding_app.backend.modules.menu.dto;
 
 import java.util.UUID;
 
-import com.wedding_app.backend.modules.menu.DietType;
+import com.wedding_app.backend.modules.menu.entity.DietType;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

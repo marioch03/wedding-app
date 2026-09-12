@@ -1,4 +1,4 @@
-package com.wedding_app.backend.modules.menu;
+package com.wedding_app.backend.modules.menu.controller;
 
 import java.util.List;
 import java.util.UUID;
@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wedding_app.backend.modules.menu.dto.PublicMenuEventDto;
+import com.wedding_app.backend.modules.menu.service.MenuService;
 
 import lombok.RequiredArgsConstructor;
 

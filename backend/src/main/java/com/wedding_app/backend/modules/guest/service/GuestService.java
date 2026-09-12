@@ -1,4 +1,4 @@
-package com.wedding_app.backend.modules.guest;
+package com.wedding_app.backend.modules.guest.service;
 
 import java.util.List;
 import java.util.UUID;
@@ -13,8 +13,14 @@ import com.wedding_app.backend.modules.guest.dto.GuestDetailResponse;
 import com.wedding_app.backend.modules.guest.dto.GuestEventSummaryDto;
 import com.wedding_app.backend.modules.guest.dto.GuestRequest;
 import com.wedding_app.backend.modules.guest.dto.GuestResponse;
-import com.wedding_app.backend.modules.party.PartyService;
-import com.wedding_app.backend.modules.party.model.Party;
+import com.wedding_app.backend.modules.guest.entity.Guest;
+import com.wedding_app.backend.modules.guest.entity.GuestEvent;
+import com.wedding_app.backend.modules.guest.entity.GuestType;
+import com.wedding_app.backend.modules.guest.repository.GuestEventRepository;
+import com.wedding_app.backend.modules.guest.repository.GuestRepository;
+import com.wedding_app.backend.modules.guest.repository.GuestSpecifications;
+import com.wedding_app.backend.modules.party.entity.Party;
+import com.wedding_app.backend.modules.party.service.PartyService;
 
 import lombok.RequiredArgsConstructor;
 

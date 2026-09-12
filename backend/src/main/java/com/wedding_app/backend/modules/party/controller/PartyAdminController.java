@@ -1,4 +1,4 @@
-package com.wedding_app.backend.modules.party;
+package com.wedding_app.backend.modules.party.controller;
 
 import java.net.URI;
 import java.util.UUID;
@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.wedding_app.backend.modules.party.dto.PartyResponse;
 import com.wedding_app.backend.modules.party.dto.PartyUpsertRequest;
+import com.wedding_app.backend.modules.party.service.PartyService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

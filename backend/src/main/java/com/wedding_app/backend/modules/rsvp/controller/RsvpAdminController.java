@@ -1,4 +1,4 @@
-package com.wedding_app.backend.modules.rsvp;
+package com.wedding_app.backend.modules.rsvp.controller;
 
 import java.util.UUID;
 
@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.wedding_app.backend.modules.rsvp.dto.RsvpInfoResponse;
 import com.wedding_app.backend.modules.rsvp.dto.RsvpStatsResponse;
 import com.wedding_app.backend.modules.rsvp.dto.RsvpSubmitRequest;
+import com.wedding_app.backend.modules.rsvp.service.RsvpService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

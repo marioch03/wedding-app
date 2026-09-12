@@ -1,4 +1,4 @@
-package com.wedding_app.backend.modules.menu;
+package com.wedding_app.backend.modules.menu.service;
 
 import java.util.Comparator;
 import java.util.List;
@@ -10,10 +10,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.wedding_app.backend.common.exception.ResourceNotFoundException;
-import com.wedding_app.backend.modules.event.Event;
-import com.wedding_app.backend.modules.event.EventRepository;
-import com.wedding_app.backend.modules.guest.GuestEvent;
-import com.wedding_app.backend.modules.guest.GuestEventRepository;
+import com.wedding_app.backend.modules.event.entity.Event;
+import com.wedding_app.backend.modules.event.repository.EventRepository;
+import com.wedding_app.backend.modules.guest.entity.GuestEvent;
+import com.wedding_app.backend.modules.guest.repository.GuestEventRepository;
+import com.wedding_app.backend.modules.menu.entity.DietType;
+import com.wedding_app.backend.modules.menu.entity.MenuOption;
+import com.wedding_app.backend.modules.menu.repository.MenuOptionRepository;
 import com.wedding_app.backend.modules.menu.dto.AttendeeMenuDto;
 import com.wedding_app.backend.modules.menu.dto.CateringReportResponse;
 import com.wedding_app.backend.modules.menu.dto.MenuCountDto;
