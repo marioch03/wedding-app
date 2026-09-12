@@ -10,6 +10,7 @@ import { AdminDashboardPage } from "./features/admin/pages/AdminDashboardPage";
 import { AdminPartiesPage } from "./features/admin/pages/AdminPartiesPage";
 import { AdminEventsPage } from "./features/admin/pages/AdminEventsPage";
 import { AdminRsvpPage } from "./features/admin/pages/AdminRsvpPage";
+import { AdminWeddingPage } from "./features/admin/pages/AdminWeddingPage";
 import { NotFoundPage } from "./common/pages/NotFoundPage";
 import { setAuthTokenGetter } from "./lib/api/client";
 
@@ -58,6 +59,7 @@ const AppRoutes: React.FC = () => {
             }
           >
             <Route index element={<AdminDashboardPage />} />
+            <Route path="wedding" element={<AdminWeddingPage />} />
             <Route path="parties" element={<AdminPartiesPage />} />
             <Route path="events" element={<AdminEventsPage />} />
             <Route path="rsvp" element={<AdminRsvpPage />} />
