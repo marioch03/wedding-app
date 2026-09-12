@@ -1,7 +1,12 @@
-import { apiClient } from './client';
+import { apiClient, publicApiClient } from './client';
 import type { EventResponse, EventRequest, MenuOptionResponse, MenuOptionRequest } from '../../types';
 
 export const eventsApi = {
+  getPublic: async (): Promise<EventResponse[]> => {
+    const response = await publicApiClient.get<EventResponse[]>('/api/v1/public/events');
+    return response.data;
+  },
+
   list: async (): Promise<EventResponse[]> => {
     const response = await apiClient.get<EventResponse[]>('/api/v1/admin/events');
     return response.data;

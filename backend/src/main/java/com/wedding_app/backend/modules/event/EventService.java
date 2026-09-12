@@ -39,6 +39,14 @@ public class EventService {
   }
 
   @Transactional(readOnly = true)
+  public List<EventResponse> findPublicEvents() {
+    return eventRepository.findAllWithMenuOptionsOrderByDisplayOrder().stream()
+        .filter(event -> Boolean.TRUE.equals(event.getIsPublic()))
+        .map(this::toResponse)
+        .toList();
+  }
+
+  @Transactional(readOnly = true)
   public EventResponse findById(UUID id) {
     return toResponse(getEventOrThrow(id));
   }

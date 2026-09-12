@@ -3,6 +3,7 @@ import { weddingApi } from '../../../lib/api';
 import type { WeddingPublicResponse } from '../../../types';
 import { HeroSection } from '../components/HeroSection/HeroSection';
 import { StorySection } from '../components/StorySection/StorySection';
+import { TimelineSection } from '../../events';
 import { GallerySection } from '../components/GallerySection/GallerySection';
 import { InfoSection } from '../components/InfoSection/InfoSection';
 import { FooterSection } from '../components/FooterSection/FooterSection';
@@ -72,6 +73,8 @@ export const WeddingLandingPage: React.FC = () => {
           storyText={wedding.content?.storyText}
           storyImageUrl={wedding.content?.storyImageUrl}
         />
+
+        <TimelineSection />
 
         <GallerySection
           galleryImages={wedding.content?.galleryImages}

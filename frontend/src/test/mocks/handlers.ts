@@ -145,6 +145,16 @@ export const handlers = [
     return HttpResponse.json(mockWeddingPublic);
   }),
 
+  // --- Public Events ---
+  http.get('*/api/v1/public/events', () => {
+    const publicEvents = mockEvents.filter((e) => e.isPublic !== false);
+    return HttpResponse.json(publicEvents);
+  }),
+  http.get('*/api/public/events', () => {
+    const publicEvents = mockEvents.filter((e) => e.isPublic !== false);
+    return HttpResponse.json(publicEvents);
+  }),
+
   // --- Admin Wedding ---
   http.get('*/api/v1/admin/weddings/current', () => {
     return HttpResponse.json(mockWeddingAdmin);

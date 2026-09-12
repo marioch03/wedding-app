@@ -1,0 +1,308 @@
+.section {
+  padding: 6rem 1.5rem 7rem;
+  max-width: 1050px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 4.5rem;
+}
+
+.tag {
+  display: inline-block;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-accent-gold-dark);
+  margin-bottom: 0.85rem;
+  padding: 0.35rem 1.15rem;
+  border-radius: var(--radius-full);
+  background: var(--color-accent-gold-light);
+  border: 1px solid var(--color-accent-gold-border);
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-size: clamp(2.3rem, 4.5vw, 3.2rem);
+  font-weight: 600;
+  color: var(--color-text-heading);
+  margin-bottom: 1rem;
+  line-height: 1.15;
+}
+
+.subtitle {
+  font-size: 1.05rem;
+  color: var(--color-text-muted);
+  max-width: 580px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* --- Timeline Layout --- */
+.timeline {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+/* Línea vertical conectora */
+.timeline::before {
+  content: '';
+  position: absolute;
+  top: 1.5rem;
+  bottom: 2rem;
+  left: 28px;
+  width: 2px;
+  background: linear-gradient(
+    to bottom,
+    var(--color-primary-light) 0%,
+    var(--color-accent-gold) 25%,
+    var(--color-primary) 75%,
+    var(--color-accent-gold-light) 100%
+  );
+}
+
+.timelineItem {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 1.75rem;
+}
+
+/* Nodo Circular con Icono */
+.nodeWrapper {
+  position: relative;
+  z-index: 2;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid var(--color-accent-gold);
+  box-shadow: 0 4px 14px rgba(203, 162, 88, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.45rem;
+  flex-shrink: 0;
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+.timelineItem:hover .nodeWrapper {
+  transform: scale(1.12);
+  box-shadow: 0 6px 20px rgba(223, 106, 79, 0.35);
+  border-color: var(--color-primary);
+}
+
+/* Tarjeta del Evento */
+.eventCard {
+  flex: 1;
+  background: var(--color-bg-card);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem 2rem;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal), border-color var(--transition-normal);
+}
+
+.eventCard:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-border-strong);
+}
+
+.eventTopRow {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.6rem;
+}
+
+.timeBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--color-primary-dark);
+  background: var(--color-primary-light);
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-full);
+}
+
+.typeBadge {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+}
+
+.eventName {
+  font-family: var(--font-serif);
+  font-size: 1.65rem;
+  font-weight: 600;
+  color: var(--color-text-heading);
+  margin-bottom: 0.5rem;
+}
+
+.venueRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.96rem;
+  color: var(--color-text-body);
+  margin-bottom: 0.75rem;
+}
+
+.venueName {
+  font-weight: 700;
+  color: var(--color-text-heading);
+}
+
+.venueAddress {
+  color: var(--color-text-muted);
+}
+
+.description {
+  font-size: 0.96rem;
+  color: var(--color-text-body);
+  line-height: 1.6;
+  margin-bottom: 1.15rem;
+}
+
+.mapsButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--color-primary-dark);
+  background: transparent;
+  padding: 0.4rem 0.85rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-primary-border);
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.mapsButton:hover {
+  background: var(--color-primary-light);
+  border-color: var(--color-primary);
+  transform: translateY(-1px);
+}
+
+/* --- Estados Vacío / Error --- */
+.emptyState {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  background: var(--color-bg-subtle);
+  border-radius: var(--radius-lg);
+  border: 1px dashed var(--color-border);
+  color: var(--color-text-muted);
+}
+
+.emptyIcon {
+  font-size: 2.2rem;
+  margin-bottom: 0.6rem;
+}
+
+/* --- Skeleton Styles --- */
+.skeletonTimeline {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.skeletonItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.75rem;
+}
+
+.skeletonNode {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #eae2d8;
+  flex-shrink: 0;
+}
+
+.skeletonCard {
+  flex: 1;
+  background: #ffffff;
+  border-radius: var(--radius-lg);
+  padding: 1.75rem 2rem;
+  border: 1px solid #ebdcd2;
+}
+
+.skeletonShimmer {
+  background: linear-gradient(90deg, #f0e9e1 25%, #faf6f0 50%, #f0e9e1 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-sm);
+}
+
+.skeletonBadge {
+  width: 130px;
+  height: 24px;
+  margin-bottom: 1rem;
+}
+
+.skeletonTitle {
+  width: 55%;
+  height: 30px;
+  margin-bottom: 0.8rem;
+}
+
+.skeletonMeta {
+  width: 40%;
+  height: 20px;
+  margin-bottom: 0.8rem;
+}
+
+.skeletonText {
+  width: 80%;
+  height: 18px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@media (max-width: 650px) {
+  .timeline::before {
+    left: 20px;
+  }
+
+  .nodeWrapper {
+    width: 42px;
+    height: 42px;
+    font-size: 1.15rem;
+  }
+
+  .skeletonNode {
+    width: 42px;
+    height: 42px;
+  }
+
+  .timelineItem {
+    gap: 1rem;
+  }
+
+  .eventCard {
+    padding: 1.25rem 1.4rem;
+  }
+}
