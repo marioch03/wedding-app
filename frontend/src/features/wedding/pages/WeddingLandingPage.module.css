@@ -1,0 +1,67 @@
+.pageWrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, var(--color-bg) 0%, var(--color-bg-secondary) 50%, var(--color-bg-subtle) 100%);
+  color: var(--color-text-body);
+}
+
+.mainContent {
+  flex: 1;
+}
+
+.errorContainer {
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.errorCard {
+  max-width: 520px;
+  width: 100%;
+  padding: 3rem 2.25rem;
+  text-align: center;
+  background: var(--color-bg-card);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.errorTitle {
+  font-family: var(--font-serif);
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--color-text-heading);
+  margin-bottom: 0.85rem;
+}
+
+.errorMessage {
+  font-size: 1rem;
+  color: var(--color-text-body);
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.retryButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.85rem 2.2rem;
+  border-radius: var(--radius-full);
+  border: none;
+  background: var(--color-primary-gradient);
+  color: var(--color-text-on-primary);
+  font-weight: 600;
+  font-size: 0.98rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-primary);
+  transition: transform var(--transition-normal), box-shadow var(--transition-fast), filter var(--transition-fast);
+}
+
+.retryButton:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.05);
+  box-shadow: var(--shadow-primary-hover);
+}

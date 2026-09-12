@@ -1,0 +1,255 @@
+.section {
+  padding: 6rem 1.5rem 6.5rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.tag {
+  display: inline-block;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--color-primary-dark);
+  margin-bottom: 0.85rem;
+  padding: 0.35rem 1rem;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-light);
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-size: clamp(2.3rem, 4.5vw, 3.2rem);
+  font-weight: 600;
+  color: var(--color-text-heading);
+  margin-bottom: 0.75rem;
+}
+
+.subtitle {
+  font-size: 1.05rem;
+  color: var(--color-text-body);
+  max-width: 580px;
+  margin: 0 auto;
+}
+
+/* Collage / Galería Íntima de 3 Momentos */
+.momentsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  align-items: center;
+}
+
+.momentCard {
+  position: relative;
+  background: #ffffff;
+  padding: 1rem 1rem 3rem;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 16px 36px rgba(46, 29, 26, 0.1);
+  border: 1.5px solid var(--color-border);
+  cursor: pointer;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border-color var(--transition-fast);
+}
+
+/* Tarjeta central ligeramente destacada */
+.momentCard:nth-child(1) {
+  transform: rotate(-2deg);
+}
+
+.momentCard:nth-child(2) {
+  transform: translateY(-12px);
+  box-shadow: 0 22px 48px rgba(223, 106, 87, 0.16);
+  border-color: var(--color-primary-border);
+}
+
+.momentCard:nth-child(3) {
+  transform: rotate(2deg);
+}
+
+.momentCard:hover {
+  transform: translateY(-16px) scale(1.03) rotate(0deg) !important;
+  box-shadow: 0 28px 60px rgba(223, 106, 87, 0.22);
+  border-color: var(--color-primary);
+  z-index: 10;
+}
+
+.imageWrapper {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-subtle);
+}
+
+.photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.momentCard:hover .photo {
+  transform: scale(1.06);
+}
+
+.caption {
+  position: absolute;
+  bottom: 0.9rem;
+  left: 1rem;
+  right: 1rem;
+  text-align: center;
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  font-style: italic;
+  color: var(--color-text-heading);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Lightbox Modal */
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(30, 20, 18, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 2rem;
+  animation: fadeIn 0.25s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modalContent {
+  position: relative;
+  max-width: 850px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.modalImage {
+  max-width: 100%;
+  max-height: 75vh;
+  object-fit: contain;
+  border-radius: var(--radius-md);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+}
+
+.closeButton {
+  position: absolute;
+  top: -45px;
+  right: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #ffffff;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: background var(--transition-fast), transform var(--transition-fast);
+}
+
+.closeButton:hover {
+  background: rgba(255, 255, 255, 0.4);
+  transform: scale(1.1);
+}
+
+.navButton {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #ffffff;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  cursor: pointer;
+  transition: background var(--transition-fast), transform var(--transition-fast);
+}
+
+.navButton:hover {
+  background: rgba(255, 255, 255, 0.4);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.prevButton {
+  left: -60px;
+}
+
+.nextButton {
+  right: -60px;
+}
+
+.modalCaption {
+  margin-top: 1rem;
+  color: #ffffff;
+  font-size: 1.05rem;
+  font-weight: 500;
+  text-align: center;
+  font-family: var(--font-serif);
+  font-style: italic;
+}
+
+@media (max-width: 900px) {
+  .momentsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .momentCard:nth-child(2) {
+    transform: rotate(1deg);
+  }
+
+  .momentCard:nth-child(3) {
+    grid-column: span 2;
+    max-width: 380px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .prevButton {
+    left: 10px;
+  }
+
+  .nextButton {
+    right: 10px;
+  }
+}
+
+@media (max-width: 600px) {
+  .momentsGrid {
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+  }
+
+  .momentCard:nth-child(1),
+  .momentCard:nth-child(2),
+  .momentCard:nth-child(3) {
+    transform: none !important;
+    max-width: 100%;
+  }
+}
