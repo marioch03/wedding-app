@@ -22,6 +22,7 @@ public interface GuestEventRepository extends JpaRepository<GuestEvent, UUID> {
       JOIN FETCH ge.event e
       LEFT JOIN FETCH ge.menuOption mo
       WHERE ge.attending = true
+        AND EXISTS (SELECT 1 FROM MenuOption mo2 WHERE mo2.event = e)
       ORDER BY e.displayOrder ASC, mo.displayOrder ASC, g.lastName ASC
       """)
   List<GuestEvent> findAllConfirmedAttendeesWithDetails();
@@ -33,6 +34,7 @@ public interface GuestEventRepository extends JpaRepository<GuestEvent, UUID> {
       JOIN FETCH ge.event e
       LEFT JOIN FETCH ge.menuOption mo
       WHERE ge.attending = true AND ge.event.id = :eventId
+        AND EXISTS (SELECT 1 FROM MenuOption mo2 WHERE mo2.event = e)
       ORDER BY mo.displayOrder ASC, g.lastName ASC
       """)
   List<GuestEvent> findConfirmedAttendeesByEventWithDetails(@Param("eventId") UUID eventId);

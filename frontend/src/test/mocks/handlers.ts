@@ -12,6 +12,8 @@ import type {
   PartyUpsertRequest,
   GuestResponse,
   GuestRequest,
+  RsvpStatsResponse,
+  CateringReportResponse,
 } from '../../types';
 
 export const mockWeddingPublic: WeddingPublicResponse = {
@@ -42,35 +44,6 @@ export const mockWeddingAdmin: WeddingResponse = {
   updatedAt: '2026-01-02T12:00:00Z',
 };
 
-export const mockEvents: EventResponse[] = [
-  {
-    id: 'ev-1',
-    weddingId: 'wed-1111-2222',
-    name: 'Ceremonia Religiosa',
-    eventType: 'CEREMONY',
-    description: 'Ceremonia en la capilla de los jardines.',
-    startDatetime: '2026-10-18T17:00:00Z',
-    endDatetime: '2026-10-18T18:00:00Z',
-    venueName: 'Capilla Los Pinos',
-    address: 'Camino Viejo de la Sierra, Km 4, Madrid',
-    displayOrder: 1,
-    isPublic: true,
-  },
-  {
-    id: 'ev-2',
-    weddingId: 'wed-1111-2222',
-    name: 'Cóctel y Banquete',
-    eventType: 'RECEPTION',
-    description: 'Aperitivo en los jardines y cena en el salón principal.',
-    startDatetime: '2026-10-18T18:30:00Z',
-    endDatetime: '2026-10-18T23:00:00Z',
-    venueName: 'Finca Bellavista',
-    address: 'Camino Real 12, Madrid',
-    displayOrder: 2,
-    isPublic: true,
-  },
-];
-
 export const mockMenuOptionsEv2: MenuOptionResponse[] = [
   {
     id: 'menu-1',
@@ -95,6 +68,37 @@ export const mockMenuOptionsEv2: MenuOptionResponse[] = [
     description: 'Pasta casera y pechuga crujiente',
     dietType: 'CHILD',
     displayOrder: 3,
+  },
+];
+
+export const mockEvents: EventResponse[] = [
+  {
+    id: 'ev-1',
+    weddingId: 'wed-1111-2222',
+    name: 'Ceremonia Religiosa',
+    eventType: 'CEREMONY',
+    description: 'Ceremonia en la capilla de los jardines.',
+    startDatetime: '2026-10-18T17:00:00Z',
+    endDatetime: '2026-10-18T18:00:00Z',
+    venueName: 'Capilla Los Pinos',
+    address: 'Camino Viejo de la Sierra, Km 4, Madrid',
+    displayOrder: 1,
+    isPublic: true,
+    menuOptions: [],
+  },
+  {
+    id: 'ev-2',
+    weddingId: 'wed-1111-2222',
+    name: 'Cóctel y Banquete',
+    eventType: 'RECEPTION',
+    description: 'Aperitivo en los jardines y cena en el salón principal.',
+    startDatetime: '2026-10-18T18:30:00Z',
+    endDatetime: '2026-10-18T23:00:00Z',
+    venueName: 'Finca Bellavista',
+    address: 'Camino Real 12, Madrid',
+    displayOrder: 2,
+    isPublic: true,
+    menuOptions: mockMenuOptionsEv2,
   },
 ];
 
@@ -163,6 +167,65 @@ export const mockParties: PartyResponse[] = [
     updatedAt: '2026-01-11T10:00:00Z',
   },
 ];
+
+export const mockRsvpStats: RsvpStatsResponse = {
+  totalParties: 2,
+  confirmedParties: 1,
+  declinedParties: 0,
+  partialParties: 0,
+  pendingParties: 1,
+  totalGuests: 2,
+  confirmedGuests: 2,
+  declinedGuests: 0,
+  pendingGuests: 0,
+  responseRatePercentage: 50,
+};
+
+export const mockCateringReport: CateringReportResponse = {
+  totalConfirmedAttendees: 2,
+  attendeesWithDietaryAlertsCount: 1,
+  menuCounts: [
+    { menuOptionId: 'menu-1', menuOptionName: 'Solomillo Ibérico', dietType: 'STANDARD', count: 1 },
+    { menuOptionId: 'menu-2', menuOptionName: 'Risotto de Setas', dietType: 'VEGAN', count: 1 },
+  ],
+  attendeesWithDietaryAlerts: [
+    {
+      guestId: 'guest-2',
+      guestName: 'Laura Vega',
+      partyDisplayName: 'Familia Gómez Martínez',
+      eventId: 'ev-2',
+      eventName: 'Cóctel y Banquete',
+      menuOptionName: 'Risotto de Setas',
+      dietType: 'VEGAN',
+      dietaryRestrictions: 'Celíaca / Sin Gluten',
+      specialNotes: 'Alérgica severa a frutos secos',
+    },
+  ],
+  allSelections: [
+    {
+      guestId: 'guest-1',
+      guestName: 'Marcos Gómez',
+      partyDisplayName: 'Familia Gómez Martínez',
+      eventId: 'ev-2',
+      eventName: 'Cóctel y Banquete',
+      menuOptionName: 'Solomillo Ibérico',
+      dietType: 'STANDARD',
+      dietaryRestrictions: '',
+      specialNotes: '',
+    },
+    {
+      guestId: 'guest-2',
+      guestName: 'Laura Vega',
+      partyDisplayName: 'Familia Gómez Martínez',
+      eventId: 'ev-2',
+      eventName: 'Cóctel y Banquete',
+      menuOptionName: 'Risotto de Setas',
+      dietType: 'VEGAN',
+      dietaryRestrictions: 'Celíaca / Sin Gluten',
+      specialNotes: 'Alérgica severa a frutos secos',
+    },
+  ],
+};
 
 export const handlers = [
   // --- Public Wedding ---
@@ -544,5 +607,107 @@ export const handlers = [
 
   http.delete('*/api/v1/admin/guests/:id', () => {
     return new HttpResponse(null, { status: 204 });
+  }),
+
+  // --- Admin RSVP & Catering ---
+  http.get('*/api/v1/admin/rsvp/stats', () => {
+    return HttpResponse.json(mockRsvpStats);
+  }),
+  http.get('*/api/admin/rsvp/stats', () => {
+    return HttpResponse.json(mockRsvpStats);
+  }),
+
+  http.get('*/api/v1/admin/guests', () => {
+    return HttpResponse.json({
+      content: [
+        {
+          id: 'guest-1',
+          partyId: 'party-1',
+          firstName: 'Marcos',
+          lastName: 'Gómez',
+          guestType: 'ADULT',
+          isPlusOne: false,
+          dietaryRestrictions: '',
+          createdAt: '2026-01-10T10:00:00Z',
+          updatedAt: '2026-01-10T10:00:00Z',
+        },
+        {
+          id: 'guest-2',
+          partyId: 'party-1',
+          firstName: 'Laura',
+          lastName: 'Vega',
+          guestType: 'ADULT',
+          isPlusOne: false,
+          dietaryRestrictions: 'Celíaca / Sin Gluten',
+          createdAt: '2026-01-10T10:00:00Z',
+          updatedAt: '2026-01-10T10:00:00Z',
+        },
+      ],
+      page: {
+        size: 50,
+        number: 0,
+        totalElements: 2,
+        totalPages: 1,
+      },
+    });
+  }),
+
+  http.get('*/api/v1/admin/guests/:id', ({ params }) => {
+    const { id } = params;
+    if (id === 'guest-2') {
+      return HttpResponse.json({
+        id: 'guest-2',
+        partyId: 'party-1',
+        partyDisplayName: 'Familia Gómez Martínez',
+        firstName: 'Laura',
+        lastName: 'Vega',
+        guestType: 'ADULT',
+        isPlusOne: false,
+        email: 'laura@example.com',
+        phone: '+34611223344',
+        dietaryRestrictions: 'Celíaca / Sin Gluten',
+        eventAttendances: [
+          {
+            eventId: 'ev-2',
+            eventName: 'Cóctel y Banquete',
+            attending: true,
+            menuOptionName: 'Risotto de Setas',
+            specialNotes: 'Alérgica severa a frutos secos',
+          },
+        ],
+        createdAt: '2026-01-10T10:00:00Z',
+        updatedAt: '2026-01-10T10:00:00Z',
+      });
+    }
+    return HttpResponse.json({
+      id: 'guest-1',
+      partyId: 'party-1',
+      partyDisplayName: 'Familia Gómez Martínez',
+      firstName: 'Marcos',
+      lastName: 'Gómez',
+      guestType: 'ADULT',
+      isPlusOne: false,
+      email: 'marcos@example.com',
+      phone: '+34600112233',
+      dietaryRestrictions: '',
+      eventAttendances: [
+        {
+          eventId: 'ev-2',
+          eventName: 'Cóctel y Banquete',
+          attending: true,
+          menuOptionName: 'Solomillo Ibérico',
+          specialNotes: '',
+        },
+      ],
+      createdAt: '2026-01-10T10:00:00Z',
+      updatedAt: '2026-01-10T10:00:00Z',
+    });
+  }),
+
+  http.get('*/api/v1/admin/menus/catering-report', () => {
+    return HttpResponse.json(mockCateringReport);
+  }),
+  http.get('*/api/admin/menus/catering-report', () => {
+    return HttpResponse.json(mockCateringReport);
   }),
 ];

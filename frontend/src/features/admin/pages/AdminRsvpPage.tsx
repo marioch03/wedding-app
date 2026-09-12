@@ -8,6 +8,8 @@ import type {
   CateringReportResponse,
 } from '../../../types';
 import { rsvpApi, partiesApi, guestsApi, eventsApi, menusApi } from '../../../lib/api';
+import { exportCateringToExcel, exportCateringToCsv } from '../../../lib/export/cateringExport';
+import { exportRsvpGuestsToExcel, exportRsvpGuestsToCsv } from '../../../lib/export/rsvpExport';
 import { ManualRsvpModal } from '../components/ManualRsvpModal/ManualRsvpModal';
 import styles from './AdminRsvpPage.module.css';
 
@@ -136,37 +138,37 @@ export const AdminRsvpPage: React.FC = () => {
     });
   }, [guestDetails, parties, statusFilter, dietOnly, searchTerm]);
 
-  // Handle Export to CSV
-  const handleExportCsv = () => {
+  // Only events that have menu options configured are relevant for catering & menus
+  const eventsWithMenu = useMemo(() => {
+    return events.filter((ev) => ev.menuOptions && ev.menuOptions.length > 0);
+  }, [events]);
+
+  // Handle Catering Exports (Excel .xlsx & CSV)
+  const handleExportCateringExcel = () => {
     if (!cateringReport) return;
+    const currentEvent = eventsWithMenu.find((ev) => ev.id === selectedEventId);
+    const eventName = selectedEventId === 'ALL' ? 'Todos los eventos con menú' : currentEvent?.name || 'Evento';
+    exportCateringToExcel(cateringReport, eventName);
+  };
 
-    const headers = [
-      'Invitado',
-      'Grupo / Familia',
-      'Evento',
-      'Menú Asignado',
-      'Restricciones Dietéticas / Alergias',
-      'Observaciones para Cocina',
-    ];
+  const handleExportCateringCsv = () => {
+    if (!cateringReport) return;
+    const currentEvent = eventsWithMenu.find((ev) => ev.id === selectedEventId);
+    const eventName = selectedEventId === 'ALL' ? 'Todos los eventos con menú' : currentEvent?.name || 'Evento';
+    exportCateringToCsv(cateringReport, eventName);
+  };
 
-    const rows = cateringReport.allSelections.map((s) => [
-      `"${s.guestName.replace(/"/g, '""')}"`,
-      `"${s.partyDisplayName.replace(/"/g, '""')}"`,
-      `"${s.eventName.replace(/"/g, '""')}"`,
-      `"${s.menuOptionName.replace(/"/g, '""')}"`,
-      `"${(s.dietaryRestrictions || '').replace(/"/g, '""')}"`,
-      `"${(s.specialNotes || '').replace(/"/g, '""')}"`,
-    ]);
+  // Handle Guests Attendance Exports (Excel .xlsx & CSV)
+  const handleExportGuestsExcel = () => {
+    if (filteredGuests.length === 0) return;
+    const filterTitle = statusFilter !== 'ALL' ? statusFilter : dietOnly ? 'Dietas_Especiales' : 'General';
+    exportRsvpGuestsToExcel(filteredGuests, parties, filterTitle);
+  };
 
-    const csvContent = '\uFEFF' + [headers.join(';'), ...rows.map((r) => r.join(';'))].join('\r\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.setAttribute('href', url);
-    link.setAttribute('download', `reporte-catering-${new Date().toISOString().slice(0, 10)}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const handleExportGuestsCsv = () => {
+    if (filteredGuests.length === 0) return;
+    const filterTitle = statusFilter !== 'ALL' ? statusFilter : dietOnly ? 'Dietas_Especiales' : 'General';
+    exportRsvpGuestsToCsv(filteredGuests, parties, filterTitle);
   };
 
   const handlePrint = () => {
@@ -322,6 +324,27 @@ export const AdminRsvpPage: React.FC = () => {
                 />
                 <span>🥗 Solo con Alergias/Dietas</span>
               </label>
+
+              <div className={styles.attendanceExportButtons}>
+                <button
+                  type="button"
+                  className={styles.exportSmallBtn}
+                  onClick={handleExportGuestsExcel}
+                  disabled={filteredGuests.length === 0}
+                  title="Descargar listado de invitados en Excel (.xlsx)"
+                >
+                  <span>📗</span> Excel
+                </button>
+                <button
+                  type="button"
+                  className={styles.exportSmallBtn}
+                  onClick={handleExportGuestsCsv}
+                  disabled={filteredGuests.length === 0}
+                  title="Descargar listado de invitados en CSV"
+                >
+                  <span>📄</span> CSV
+                </button>
+              </div>
             </div>
           </div>
 
@@ -393,7 +416,9 @@ export const AdminRsvpPage: React.FC = () => {
                                   <span>{ea.eventName}:</span>
                                   <strong>
                                     {ea.attending === true
-                                      ? `✓ Asiste (${ea.menuOptionName || 'Menú asignado'})`
+                                      ? ea.menuOptionName
+                                        ? `✓ Asiste (${ea.menuOptionName})`
+                                        : '✓ Asiste'
                                       : ea.attending === false
                                       ? '✕ No Asiste'
                                       : '⏳ Pendiente'}
@@ -459,20 +484,42 @@ export const AdminRsvpPage: React.FC = () => {
                 value={selectedEventId}
                 onChange={(e) => setSelectedEventId(e.target.value)}
               >
-                <option value="ALL">🌟 Todos los eventos combinados</option>
-                {events.map((ev) => (
+                <option value="ALL">
+                  🌟 {eventsWithMenu.length > 1 ? 'Todos los eventos con menú' : 'Todos los eventos'}
+                </option>
+                {eventsWithMenu.map((ev) => (
                   <option key={ev.id} value={ev.id}>
-                    {ev.name}
+                    {ev.name} ({ev.menuOptions?.length} opciones de menú)
                   </option>
                 ))}
               </select>
             </div>
 
             <div className={styles.exportButtons}>
-              <button type="button" className={styles.exportCsvBtn} onClick={handleExportCsv}>
-                <span>📥</span> Exportar CSV (Excel)
+              <button
+                type="button"
+                className={styles.exportExcelBtn}
+                onClick={handleExportCateringExcel}
+                disabled={!cateringReport || loadingCatering}
+                title="Descargar libro Excel (.xlsx) con resumen ejecutivo, lista nominal y alertas de cocina"
+              >
+                <span>📗</span> Exportar Excel (.xlsx)
               </button>
-              <button type="button" className={styles.printBtn} onClick={handlePrint}>
+              <button
+                type="button"
+                className={styles.exportCsvBtn}
+                onClick={handleExportCateringCsv}
+                disabled={!cateringReport || loadingCatering}
+                title="Descargar archivo CSV compatible con Excel (UTF-8)"
+              >
+                <span>📄</span> Exportar CSV
+              </button>
+              <button
+                type="button"
+                className={styles.printBtn}
+                onClick={handlePrint}
+                title="Imprimir reporte o guardar como PDF"
+              >
                 <span>🖨️</span> Imprimir / PDF
               </button>
             </div>
