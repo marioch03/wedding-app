@@ -329,6 +329,35 @@
   color: var(--color-text-muted);
 }
 
+.codeBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: var(--radius-sm);
+  border: 1.5px dashed var(--color-primary-border, #e27d60);
+  background: var(--color-surface-soft, #fdfbf7);
+  font-family: var(--font-mono, monospace);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--color-text-heading);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.codeBadge:hover {
+  background: var(--color-primary-light);
+  border-color: var(--color-primary);
+  color: var(--color-primary-dark);
+}
+
+.codeBadgeCopied {
+  background: #eaf5ea !important;
+  border-color: #2e7d32 !important;
+  color: #246828 !important;
+}
+
 /* RSVP Token Link Box */
 .tokenBox {
   display: flex;

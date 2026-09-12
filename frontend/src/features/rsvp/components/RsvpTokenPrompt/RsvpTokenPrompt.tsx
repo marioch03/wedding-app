@@ -6,9 +6,27 @@ export const RsvpTokenPrompt: React.FC = () => {
   const [tokenInput, setTokenInput] = useState('');
   const navigate = useNavigate();
 
+  const extractToken = (raw: string): string => {
+    let cleaned = raw.trim();
+    const rsvpIndex = cleaned.toLowerCase().indexOf('/rsvp/');
+    if (rsvpIndex !== -1) {
+      cleaned = cleaned.substring(rsvpIndex + 6);
+      cleaned = cleaned.split('?')[0].replace(/\/+$/, '');
+    }
+    return cleaned.toUpperCase();
+  };
+
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    const pasted = e.clipboardData.getData('text');
+    if (pasted && (pasted.includes('/rsvp/') || pasted.includes('http'))) {
+      e.preventDefault();
+      setTokenInput(extractToken(pasted));
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const cleanToken = tokenInput.trim();
+    const cleanToken = extractToken(tokenInput);
     if (cleanToken) {
       navigate(`/rsvp/${cleanToken}`);
     }
@@ -23,7 +41,7 @@ export const RsvpTokenPrompt: React.FC = () => {
         <span className={styles.tag}>Confirmación de Asistencia</span>
         <h1 className={styles.title}>Tu Invitación</h1>
         <p className={styles.description}>
-          Introduce el código personal que aparece en tu tarjeta de invitación para acceder a tus eventos y selección de menús.
+          Introduce el código personal de 6 caracteres que aparece en tu tarjeta de invitación para acceder a tus eventos y selección de menús.
         </p>
 
         <form onSubmit={handleSubmit} className={styles.form}>
@@ -35,16 +53,21 @@ export const RsvpTokenPrompt: React.FC = () => {
               id="rsvp-code"
               type="text"
               className={styles.input}
-              placeholder="Ej: ABC123XYZ"
+              placeholder="Ej: K7M4XP"
               value={tokenInput}
-              onChange={(e) => setTokenInput(e.target.value)}
+              maxLength={120}
+              onChange={(e) => setTokenInput(extractToken(e.target.value))}
+              onPaste={handlePaste}
               required
               autoFocus
             />
+            <span className={styles.hintText}>
+              💡 También puedes pegar el enlace completo si lo recibiste por mensaje.
+            </span>
           </div>
 
           <button type="submit" className={styles.submitButton}>
-            Acceder al Formulario
+            Acceder al Formulario →
           </button>
         </form>
 

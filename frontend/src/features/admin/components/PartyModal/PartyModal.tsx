@@ -309,8 +309,22 @@ export const PartyModal: React.FC<PartyModalProps> = ({ party, onClose, onSaved 
               {party && (
                 <div className={styles.invitationBox}>
                   <div className={styles.invitationHeader}>
-                    <span>💌 Enlace de Invitación & Código QR</span>
-                    <span className={styles.labelHint}>Token: {party.rsvpToken}</span>
+                    <span>💌 Código para Tarjeta Física: <strong>{party.rsvpToken}</strong></span>
+                    <button
+                      type="button"
+                      className={styles.invitationQrBtn}
+                      style={{ padding: '0.25rem 0.6rem', fontSize: '0.78rem' }}
+                      onClick={() => {
+                        if (navigator?.clipboard?.writeText) {
+                          navigator.clipboard.writeText(party.rsvpToken);
+                          setLinkCopied(true);
+                          setTimeout(() => setLinkCopied(false), 2000);
+                        }
+                      }}
+                      title="Copiar código corto de 6 caracteres"
+                    >
+                      {linkCopied ? '✓ Código Copiado' : '🏷️ Copiar Código'}
+                    </button>
                   </div>
                   <div className={styles.invitationLinkRow}>
                     <input
@@ -325,7 +339,7 @@ export const PartyModal: React.FC<PartyModalProps> = ({ party, onClose, onSaved 
                       className={styles.invitationCopyBtn}
                       onClick={handleCopyLink}
                     >
-                      {linkCopied ? '✓ Copiado' : '📋 Copiar'}
+                      {linkCopied ? '✓ Copiado' : '📋 Copiar Enlace'}
                     </button>
                     <button
                       type="button"

@@ -144,7 +144,7 @@ export const mockParties: PartyResponse[] = [
   {
     id: 'party-1',
     displayName: 'Familia Gómez Martínez',
-    rsvpToken: 'token-gomez-123',
+    rsvpToken: 'GOM824',
     languagePreference: 'es',
     internalNotes: 'Mesa presidencial',
     status: 'CONFIRMED',
@@ -155,7 +155,7 @@ export const mockParties: PartyResponse[] = [
   {
     id: 'party-2',
     displayName: 'Carlos & Laura',
-    rsvpToken: 'token-carlos-laura-456',
+    rsvpToken: 'CAR456',
     languagePreference: 'es',
     status: 'PENDING',
     eventIds: ['ev-1'],
@@ -446,7 +446,7 @@ export const handlers = [
     const newParty: PartyResponse = {
       id: `party-${Date.now()}`,
       displayName: body.displayName,
-      rsvpToken: `token-${Date.now()}`,
+      rsvpToken: 'NEW789',
       languagePreference: body.languagePreference || 'es',
       internalNotes: body.internalNotes,
       status: 'PENDING',
@@ -477,7 +477,7 @@ export const handlers = [
     const party = mockParties.find((p) => p.id === id) || mockParties[0];
     return HttpResponse.json({
       ...party,
-      rsvpToken: `new-token-${Date.now()}`,
+      rsvpToken: 'REG888',
     });
   }),
 

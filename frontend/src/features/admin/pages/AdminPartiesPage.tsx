@@ -28,6 +28,7 @@ export const AdminPartiesPage: React.FC = () => {
 
   // Feedback states
   const [copiedPartyId, setCopiedPartyId] = useState<string | null>(null);
+  const [copiedCodeId, setCopiedCodeId] = useState<string | null>(null);
 
   // Pagination State
   const [page, setPage] = useState(0);
@@ -87,6 +88,14 @@ export const AdminPartiesPage: React.FC = () => {
     setCopiedPartyId(party.id);
     setTimeout(() => {
       setCopiedPartyId(null);
+    }, 2000);
+  };
+
+  const handleCopyCode = (party: PartyResponse) => {
+    navigator.clipboard.writeText(party.rsvpToken);
+    setCopiedCodeId(party.id);
+    setTimeout(() => {
+      setCopiedCodeId(null);
     }, 2000);
   };
 
@@ -318,9 +327,19 @@ export const AdminPartiesPage: React.FC = () => {
                         <div className={styles.tokenBox}>
                           <button
                             type="button"
+                            className={`${styles.codeBadge} ${copiedCodeId === p.id ? styles.codeBadgeCopied : ''}`}
+                            onClick={() => handleCopyCode(p)}
+                            title="Código para tarjeta física (haz clic para copiar)"
+                          >
+                            <span>{copiedCodeId === p.id ? '✓' : '🏷️'}</span>
+                            {copiedCodeId === p.id ? '¡Copiado!' : p.rsvpToken}
+                          </button>
+
+                          <button
+                            type="button"
                             className={`${styles.tokenLinkButton} ${isCopied ? styles.tokenCopied : ''}`}
                             onClick={() => handleCopyLink(p)}
-                            title="Copiar enlace RSVP"
+                            title="Copiar enlace directo RSVP"
                           >
                             <span>{isCopied ? '✓' : '📋'}</span>
                             {isCopied ? '¡Copiado!' : 'Copiar Enlace'}

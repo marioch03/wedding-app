@@ -49,6 +49,22 @@ describe('Feature: RSVP Multi-paso e Integración (RsvpPage)', () => {
         expect(screen.getByText('Familia Gómez Martínez')).toBeInTheDocument();
       });
     });
+
+    it('convierte la entrada a mayúsculas y extrae el token si se pega una URL completa', async () => {
+      const user = userEvent.setup();
+      renderRsvpFlow('/rsvp');
+
+      const input = screen.getByLabelText(/Código de Invitación/i) as HTMLInputElement;
+
+      // Al escribir en minúsculas se transforma a mayúsculas
+      await user.type(input, 'gom');
+      expect(input.value).toBe('GOM');
+
+      // Al pegar una URL completa con el token extrae solo el código en mayúsculas
+      await user.clear(input);
+      await user.type(input, 'https://tuboda.com/rsvp/k7m4xp');
+      expect(input.value).toBe('K7M4XP');
+    });
   });
 
   describe('Carga y Renderizado de Datos de Invitación', () => {

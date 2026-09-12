@@ -113,11 +113,10 @@ public class PartyService {
   }
 
   public Party getEntityByRsvpToken(String rsvpToken) {
-    // Nota: cuando implementemos el modulo rsvp/, es probable que esta
-    // excepcion se sustituya por una especifica (p.ej. InvalidRsvpTokenException)
-    // para controlar exactamente que se le devuelve a un cliente publico
-    // no autenticado (evitar filtrar si el token "no existe" vs "es invalido").
-    return partyRepository.findByRsvpToken(rsvpToken)
+    if (rsvpToken == null || rsvpToken.isBlank()) {
+      throw ResourceNotFoundException.of("Party con rsvpToken", rsvpToken);
+    }
+    return partyRepository.findByRsvpTokenIgnoreCase(rsvpToken.trim())
         .orElseThrow(() -> ResourceNotFoundException.of("Party con rsvpToken", rsvpToken));
   }
 
@@ -141,7 +140,7 @@ public class PartyService {
       }
       token = rsvpTokenGenerator.generate();
       attempts++;
-    } while (partyRepository.existsByRsvpToken(token));
+    } while (partyRepository.existsByRsvpTokenIgnoreCase(token));
     return token;
   }
 

@@ -241,7 +241,10 @@ public class RsvpService {
   // ---------------------------------------------------------------------------
 
   private Party findPartyByToken(String token) {
-    return partyRepository.findByRsvpToken(token)
+    if (token == null || token.isBlank()) {
+      throw new InvalidRsvpTokenException();
+    }
+    return partyRepository.findByRsvpTokenIgnoreCase(token.trim())
         .orElseThrow(InvalidRsvpTokenException::new);
   }
 

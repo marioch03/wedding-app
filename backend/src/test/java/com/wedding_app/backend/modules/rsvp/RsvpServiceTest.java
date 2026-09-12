@@ -110,7 +110,7 @@ class RsvpServiceTest {
     partyEvent.setParty(party);
     partyEvent.setEvent(event);
 
-    when(partyRepository.findByRsvpToken(token)).thenReturn(Optional.of(party));
+    when(partyRepository.findByRsvpTokenIgnoreCase(token)).thenReturn(Optional.of(party));
     when(guestRepository.findByPartyId(partyId)).thenReturn(List.of(guest));
     when(partyEventRepository.findByPartyIdWithEvent(partyId)).thenReturn(List.of(partyEvent));
     when(menuOptionRepository.findByEventIdOrderByDisplayOrderAsc(eventId)).thenReturn(List.of(menuOption));
@@ -127,7 +127,7 @@ class RsvpServiceTest {
 
   @Test
   void getRsvpInfoByToken_throwsNotFound_whenTokenInvalid() {
-    when(partyRepository.findByRsvpToken("bad-token")).thenReturn(Optional.empty());
+    when(partyRepository.findByRsvpTokenIgnoreCase("bad-token")).thenReturn(Optional.empty());
 
     assertThatThrownBy(() -> rsvpService.getRsvpInfoByToken("bad-token"))
         .isInstanceOf(ResourceNotFoundException.class);
@@ -143,7 +143,7 @@ class RsvpServiceTest {
     GuestRsvpDto guestDto = new GuestRsvpDto(guestId, "Ana", "Test", "Sin sal", List.of(eventDto));
     RsvpSubmitRequest request = new RsvpSubmitRequest(List.of(guestDto));
 
-    when(partyRepository.findByRsvpToken(token)).thenReturn(Optional.of(party));
+    when(partyRepository.findByRsvpTokenIgnoreCase(token)).thenReturn(Optional.of(party));
     when(partyEventRepository.findByPartyIdWithEvent(partyId)).thenReturn(List.of(pe));
     when(guestRepository.findById(guestId)).thenReturn(Optional.of(guest));
     when(menuOptionRepository.findById(menuId)).thenReturn(Optional.of(menuOption));
@@ -168,7 +168,7 @@ class RsvpServiceTest {
     GuestRsvpDto guestDto = new GuestRsvpDto(guestId, "Ana", "Test", null, List.of(eventDto));
     RsvpSubmitRequest request = new RsvpSubmitRequest(List.of(guestDto));
 
-    when(partyRepository.findByRsvpToken(token)).thenReturn(Optional.of(party));
+    when(partyRepository.findByRsvpTokenIgnoreCase(token)).thenReturn(Optional.of(party));
     when(partyEventRepository.findByPartyIdWithEvent(partyId)).thenReturn(List.of(pe));
     when(guestRepository.findById(guestId)).thenReturn(Optional.of(guest));
     when(guestEventRepository.findByGuestIdAndEventId(guestId, eventId)).thenReturn(Optional.empty());
@@ -187,7 +187,7 @@ class RsvpServiceTest {
     GuestRsvpDto guestDto = new GuestRsvpDto(guestId, "Ana", "Test", null, List.of(eventDto));
     RsvpSubmitRequest request = new RsvpSubmitRequest(List.of(guestDto));
 
-    when(partyRepository.findByRsvpToken(token)).thenReturn(Optional.of(party));
+    when(partyRepository.findByRsvpTokenIgnoreCase(token)).thenReturn(Optional.of(party));
     when(partyEventRepository.findByPartyIdWithEvent(partyId)).thenReturn(List.of()); // Sin eventos permitidos
     when(guestRepository.findById(guestId)).thenReturn(Optional.of(guest));
 
@@ -208,7 +208,7 @@ class RsvpServiceTest {
     GuestRsvpDto guestDto = new GuestRsvpDto(strangerGuestId, "Desconocido", "Pérez", null, List.of());
     RsvpSubmitRequest request = new RsvpSubmitRequest(List.of(guestDto));
 
-    when(partyRepository.findByRsvpToken(token)).thenReturn(Optional.of(party));
+    when(partyRepository.findByRsvpTokenIgnoreCase(token)).thenReturn(Optional.of(party));
     when(partyEventRepository.findByPartyIdWithEvent(partyId)).thenReturn(List.of());
     when(guestRepository.findById(strangerGuestId)).thenReturn(Optional.of(stranger));
 

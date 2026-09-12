@@ -62,13 +62,30 @@ describe('Feature: Código QR y Enlace de Invitación (QrCodeModal & AdminPartie
       expect(input.value).toContain(`/rsvp/${mockParties[0].rsvpToken}`);
     });
 
+    it('muestra el código de invitación para tarjeta física y permite copiarlo', async () => {
+      const user = userEvent.setup();
+      renderWithRouter(
+        <QrCodeModal party={mockParties[0]} onClose={vi.fn()} />
+      );
+
+      expect(screen.getByText('CÓDIGO DE INVITACIÓN (TARJETA FÍSICA)')).toBeInTheDocument();
+      expect(screen.getByText(mockParties[0].rsvpToken)).toBeInTheDocument();
+
+      const copyCodeButton = screen.getByRole('button', { name: /Copiar Código/i });
+      await user.click(copyCodeButton);
+
+      expect(screen.getByText('¡Copiado!')).toBeInTheDocument();
+      const clipboardContent = await navigator.clipboard.readText();
+      expect(clipboardContent).toBe(mockParties[0].rsvpToken);
+    });
+
     it('copia el enlace al portapapeles y muestra confirmación "¡Copiado!"', async () => {
       const user = userEvent.setup();
       renderWithRouter(
         <QrCodeModal party={mockParties[0]} onClose={vi.fn()} />
       );
 
-      const copyButton = screen.getByRole('button', { name: /Copiar/i });
+      const copyButton = screen.getByRole('button', { name: /Copiar Enlace/i });
       await user.click(copyButton);
 
       expect(screen.getByText('¡Copiado!')).toBeInTheDocument();
@@ -76,7 +93,7 @@ describe('Feature: Código QR y Enlace de Invitación (QrCodeModal & AdminPartie
       expect(clipboardContent).toContain(`/rsvp/${mockParties[0].rsvpToken}`);
     });
 
-    it('genera el enlace directo a WhatsApp con mensaje personalizado en español', () => {
+    it('genera el enlace directo a WhatsApp con mensaje personalizado en español y código', () => {
       renderWithRouter(
         <QrCodeModal party={mockParties[0]} onClose={vi.fn()} />
       );
@@ -89,6 +106,7 @@ describe('Feature: Código QR y Enlace de Invitación (QrCodeModal & AdminPartie
       expect(href).toContain('https://api.whatsapp.com/send?text=');
       expect(decodeURIComponent(href)).toContain('Familia Gómez Martínez');
       expect(decodeURIComponent(href)).toContain(`/rsvp/${mockParties[0].rsvpToken}`);
+      expect(decodeURIComponent(href)).toContain(mockParties[0].rsvpToken);
     });
 
     it('invoca onClose al hacer clic en el botón de cerrar', async () => {

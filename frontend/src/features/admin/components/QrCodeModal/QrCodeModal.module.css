@@ -147,6 +147,61 @@
   margin-top: 0.25rem;
 }
 
+/* Code Card */
+.codeCard {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, rgba(203, 162, 88, 0.12) 0%, rgba(254, 248, 242, 0.9) 100%);
+  border: 1.5px dashed var(--color-accent-gold, #cba258);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1.25rem;
+}
+
+.codeCardLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.codeCardLabel {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--color-primary-dark);
+}
+
+.codeCardValue {
+  font-family: var(--font-mono, monospace);
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: 0.25em;
+  color: var(--color-text-heading);
+}
+
+.copyCodeButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 0.95rem;
+  border-radius: var(--radius-md);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-text-heading);
+  background: #ffffff;
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.copyCodeButton:hover {
+  background: var(--color-primary-light);
+  border-color: var(--color-primary);
+  color: var(--color-primary-dark);
+}
+
 /* Link Box */
 .linkContainer {
   width: 100%;

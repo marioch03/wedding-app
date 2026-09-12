@@ -1,20 +1,23 @@
 package com.wedding_app.backend.modules.party;
 
 import java.security.SecureRandom;
-import java.util.Base64;
-
 import org.springframework.stereotype.Component;
 
 @Component
 public class RsvpTokenGenerator {
 
-  private static final int TOKEN_BYTE_LENGTH = 32;
+  // Alfabeto de 30 caracteres alfanumericos excluyendo caracteres ambiguos (0/O, 1/I/L)
+  private static final String ALPHABET = "23456789ABCDEFGHJKMNPQRSTUVWXYZ";
+  private static final int TOKEN_LENGTH = 6;
 
   private final SecureRandom secureRandom = new SecureRandom();
 
   public String generate() {
-    byte[] randomBytes = new byte[TOKEN_BYTE_LENGTH];
-    secureRandom.nextBytes(randomBytes);
-    return Base64.getUrlEncoder().withoutPadding().encodeToString(randomBytes);
+    StringBuilder sb = new StringBuilder(TOKEN_LENGTH);
+    for (int i = 0; i < TOKEN_LENGTH; i++) {
+      int index = secureRandom.nextInt(ALPHABET.length());
+      sb.append(ALPHABET.charAt(index));
+    }
+    return sb.toString();
   }
 }

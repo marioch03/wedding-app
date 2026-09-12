@@ -10,6 +10,7 @@ interface QrCodeModalProps {
 
 export const QrCodeModal: React.FC<QrCodeModalProps> = ({ party, onClose }) => {
   const [copied, setCopied] = useState(false);
+  const [copiedCode, setCopiedCode] = useState(false);
 
   const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:5173';
   const rsvpUrl = `${origin}/rsvp/${party.rsvpToken}`;
@@ -21,6 +22,16 @@ export const QrCodeModal: React.FC<QrCodeModalProps> = ({ party, onClose }) => {
     setCopied(true);
     setTimeout(() => {
       setCopied(false);
+    }, 2000);
+  };
+
+  const handleCopyCode = () => {
+    if (navigator?.clipboard?.writeText) {
+      navigator.clipboard.writeText(party.rsvpToken);
+    }
+    setCopiedCode(true);
+    setTimeout(() => {
+      setCopiedCode(false);
     }, 2000);
   };
 
@@ -43,7 +54,7 @@ export const QrCodeModal: React.FC<QrCodeModalProps> = ({ party, onClose }) => {
   };
 
   const whatsappMessage = encodeURIComponent(
-    `¡Hola ${party.displayName}! Os invitamos con mucha ilusión a nuestra boda. Podéis consultar el cronograma, detalles y confirmar vuestra asistencia y menú aquí:\n${rsvpUrl}`
+    `¡Hola ${party.displayName}! Os invitamos con mucha ilusión a nuestra boda. Podéis confirmar vuestra asistencia y menú en este enlace directo:\n${rsvpUrl}\n\n(O entrando en la web con vuestro código de invitación: ${party.rsvpToken})`
   );
   const whatsappUrl = `https://api.whatsapp.com/send?text=${whatsappMessage}`;
 
@@ -88,6 +99,23 @@ export const QrCodeModal: React.FC<QrCodeModalProps> = ({ party, onClose }) => {
             <span className={styles.qrHint}>Escanea con la cámara del móvil para confirmar asistencia</span>
           </div>
 
+          {/* Código de Invitación destacado */}
+          <div className={styles.codeCard}>
+            <div className={styles.codeCardLeft}>
+              <span className={styles.codeCardLabel}>CÓDIGO DE INVITACIÓN (TARJETA FÍSICA)</span>
+              <span className={styles.codeCardValue}>{party.rsvpToken}</span>
+            </div>
+            <button
+              type="button"
+              className={`${styles.copyCodeButton} ${copiedCode ? styles.copyButtonSuccess : ''}`}
+              onClick={handleCopyCode}
+              title="Copiar únicamente el código corto"
+            >
+              <span>{copiedCode ? '✓' : '📋'}</span>
+              {copiedCode ? '¡Copiado!' : 'Copiar Código'}
+            </button>
+          </div>
+
           {/* Link Copiable */}
           <div className={styles.linkContainer}>
             <label htmlFor="rsvp-direct-link" className={styles.linkLabel}>
@@ -107,7 +135,7 @@ export const QrCodeModal: React.FC<QrCodeModalProps> = ({ party, onClose }) => {
                 onClick={handleCopyLink}
               >
                 <span>{copied ? '✓' : '📋'}</span>
-                {copied ? '¡Copiado!' : 'Copiar'}
+                {copied ? '¡Copiado!' : 'Copiar Enlace'}
               </button>
             </div>
           </div>

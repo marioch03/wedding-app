@@ -91,20 +91,28 @@ describe('Flujo de Punta a Punta: Panel de Invitaciones -> Enlace / QR -> Confir
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     });
 
-    // Desmontar vista de admin para simular al invitado abriendo el enlace en su navegador
+    // Desmontar vista de admin para simular al invitado abriendo la web
     unmountAdmin();
 
-    // 3. El invitado accede a su enlace RSVP personalizado
-    const rsvpPath = `/rsvp/${mockParties[0].rsvpToken}`;
-
+    // 3. El invitado entra en /rsvp (al pulsar "Confirmar Asistencia" en la landing page)
     renderWithRouter(
       <Routes>
+        <Route path="/rsvp" element={<RsvpPage />} />
         <Route path="/rsvp/:token" element={<RsvpPage />} />
       </Routes>,
-      { initialEntries: [rsvpPath] }
+      { initialEntries: ['/rsvp'] }
     );
 
-    // Esperar a que la página RSVP cargue los datos del token
+    // El invitado ve la pantalla para introducir su código
+    expect(screen.getByText('Tu Invitación')).toBeInTheDocument();
+    const codeInput = screen.getByLabelText(/Código de Invitación/i);
+
+    // Introduce el código corto incluso en minúsculas (ej: gom824)
+    await user.type(codeInput, mockParties[0].rsvpToken.toLowerCase());
+    const accessBtn = screen.getByRole('button', { name: /Acceder al Formulario/i });
+    await user.click(accessBtn);
+
+    // Esperar a que la página RSVP cargue los datos de la invitación correspondiente
     await waitFor(() => {
       expect(screen.getByText('Familia Gómez Martínez')).toBeInTheDocument();
       expect(screen.getByText('Confirmación de Asistencia')).toBeInTheDocument();

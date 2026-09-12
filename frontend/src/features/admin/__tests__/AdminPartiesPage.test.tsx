@@ -161,6 +161,24 @@ describe('Feature: Panel de Invitaciones y Gestión de QR (AdminPartiesPage)', (
     expect(screen.queryByText('Carlos & Laura')).not.toBeInTheDocument();
   });
 
+  it('permite copiar únicamente el código corto para tarjeta física', async () => {
+    const user = userEvent.setup();
+    renderWithRouter(<AdminPartiesPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Familia Gómez Martínez')).toBeInTheDocument();
+    });
+
+    const codeBadges = screen.getAllByTitle(/Código para tarjeta física/i);
+    expect(codeBadges.length).toBeGreaterThanOrEqual(1);
+
+    await user.click(codeBadges[0]);
+
+    const clipboardText = await navigator.clipboard.readText();
+    expect(clipboardText).toBe(mockParties[0].rsvpToken);
+    expect(screen.getByText('¡Copiado!')).toBeInTheDocument();
+  });
+
   it('abre el modal de edición mostrando el enlace de invitación y acceso a QR', async () => {
     const user = userEvent.setup();
     renderWithRouter(<AdminPartiesPage />);
@@ -174,7 +192,7 @@ describe('Feature: Panel de Invitaciones y Gestión de QR (AdminPartiesPage)', (
 
     // Modal de edición abierto
     expect(screen.getByText(/Editar: Familia Gómez Martínez/i)).toBeInTheDocument();
-    expect(screen.getByText(/Enlace de Invitación & Código QR/i)).toBeInTheDocument();
+    expect(screen.getByText(/Código para Tarjeta Física/i)).toBeInTheDocument();
 
     // El input contiene el enlace con el token
     const linkInput = screen.getByLabelText('Enlace RSVP del grupo');
