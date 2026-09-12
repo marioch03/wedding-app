@@ -1,0 +1,135 @@
+.container {
+  position: relative;
+  z-index: 10;
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3.5rem 1.5rem;
+}
+
+.card {
+  background: #ffffff;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: 4.5rem 3rem;
+  max-width: 600px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 25px 60px rgba(46, 29, 26, 0.22);
+  position: relative;
+  overflow: hidden;
+  animation: scaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, #10b981 0%, var(--color-primary) 100%);
+}
+
+.checkIcon {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+  color: #1b5e20;
+  border: 2px solid #a5d6a7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.6rem;
+  font-weight: 700;
+  margin: 0 auto 1.75rem;
+  box-shadow: 0 10px 25px rgba(46, 125, 50, 0.25);
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-size: clamp(2.4rem, 5.5vw, 3.2rem);
+  font-weight: 700;
+  color: var(--color-text-heading);
+  margin-bottom: 1rem;
+}
+
+.message {
+  font-size: 1.12rem;
+  line-height: 1.8;
+  color: var(--color-text-body);
+  margin-bottom: 2.75rem;
+}
+
+.actions {
+  display: flex;
+  gap: 1.25rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.homeButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.05rem 2.5rem;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-gradient);
+  color: #ffffff !important;
+  font-weight: 700;
+  font-size: 1.05rem;
+  text-decoration: none;
+  box-shadow: 0 8px 25px var(--color-primary-glow);
+  transition: transform var(--transition-normal), box-shadow var(--transition-fast);
+}
+
+.homeButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(195, 74, 54, 0.45);
+}
+
+.editButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.05rem 2.25rem;
+  border-radius: var(--radius-full);
+  background: #ffffff;
+  color: var(--color-text-heading);
+  font-weight: 700;
+  font-size: 1.05rem;
+  border: 1.5px solid var(--color-border);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.editButton:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 600px) {
+  .card {
+    padding: 2.75rem 1.5rem;
+    border-radius: var(--radius-lg);
+  }
+
+  .homeButton,
+  .editButton {
+    width: 100%;
+  }
+}

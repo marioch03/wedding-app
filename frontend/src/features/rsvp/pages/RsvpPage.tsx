@@ -1,0 +1,220 @@
+import React, { useEffect, useState } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import { rsvpApi } from '../../../lib/api';
+import type { RsvpInfoResponse, GuestRsvpDto } from '../../../types';
+import { RsvpTokenPrompt } from '../components/RsvpTokenPrompt/RsvpTokenPrompt';
+import { RsvpGuestCard } from '../components/RsvpGuestCard/RsvpGuestCard';
+import { RsvpSuccess } from '../components/RsvpSuccess/RsvpSuccess';
+import { RsvpSkeleton } from '../components/RsvpSkeleton/RsvpSkeleton';
+import styles from './RsvpPage.module.css';
+
+export const RsvpPage: React.FC = () => {
+  const { token } = useParams<{ token?: string }>();
+
+  const [rsvpInfo, setRsvpInfo] = useState<RsvpInfoResponse | null>(null);
+  const [guestsState, setGuestsState] = useState<GuestRsvpDto[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(Boolean(token));
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!token) {
+      setIsLoading(false);
+      return;
+    }
+
+    const fetchRsvpData = async () => {
+      setIsLoading(true);
+      setErrorMessage(null);
+      try {
+        const data = await rsvpApi.getByToken(token);
+        setRsvpInfo(data);
+
+        // Inicializar el estado de confirmación para cada invitado
+        const initialFormState: GuestRsvpDto[] = data.guests.map((g) => ({
+          guestId: g.id,
+          firstName: g.firstName || '',
+          lastName: g.lastName || '',
+          dietaryRequirements: g.dietaryRestrictions || '',
+          events: data.allowedEvents.map((ev) => ({
+            eventId: ev.id,
+            attending: true, // Asistencia seleccionada por defecto
+            menuOptionId: ev.menuOptions && ev.menuOptions.length > 0 ? ev.menuOptions[0].id : null,
+            specialNotes: '',
+          })),
+        }));
+
+        setGuestsState(initialFormState);
+      } catch (err) {
+        console.error('Error cargando información de RSVP:', err);
+        setErrorMessage(
+          err instanceof Error
+            ? err.message
+            : 'No hemos podido encontrar la invitación con este código. Por favor verifica el enlace.'
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchRsvpData();
+  }, [token]);
+
+  // Si no hay token en la URL, mostrar pantalla de ingreso manual
+  if (!token) {
+    return <RsvpTokenPrompt />;
+  }
+
+  if (isLoading) {
+    return (
+      <div className={styles.pageWrapper}>
+        <div className={styles.pageBackground} />
+        <div className={styles.pageOverlay} />
+        <RsvpSkeleton />
+      </div>
+    );
+  }
+
+  // Error de token inválido
+  if (errorMessage || !rsvpInfo) {
+    return (
+      <div className={styles.pageWrapper}>
+        <div className={styles.pageBackground} />
+        <div className={styles.pageOverlay} />
+        <header className={styles.headerNav}>
+          <Link to="/" className={styles.backLink}>
+            ← Volver a la Web Principal
+          </Link>
+        </header>
+        <div className={styles.errorContainer}>
+          <div className={styles.errorCard}>
+            <h1 className={styles.errorTitle}>Invitación no encontrada</h1>
+            <p className={styles.errorText}>
+              {errorMessage || 'El enlace o código de invitación utilizado no es válido.'}
+            </p>
+            <Link to="/rsvp" className={styles.retryButton}>
+              Introducir otro código
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Si ya se ha enviado la confirmación
+  if (isSubmitted) {
+    return (
+      <div className={styles.pageWrapper}>
+        <div className={styles.pageBackground} />
+        <div className={styles.pageOverlay} />
+        <header className={styles.headerNav}>
+          <Link to="/" className={styles.backLink}>
+            ← Volver a la Web Principal
+          </Link>
+        </header>
+        <RsvpSuccess
+          partyName={rsvpInfo.partyName}
+          onEdit={() => setIsSubmitted(false)}
+        />
+      </div>
+    );
+  }
+
+  const handleGuestUpdate = (index: number, updatedGuest: GuestRsvpDto) => {
+    const updated = [...guestsState];
+    updated[index] = updatedGuest;
+    setGuestsState(updated);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Validación básica: nombre para acompañantes
+    for (let i = 0; i < rsvpInfo.guests.length; i++) {
+      const g = rsvpInfo.guests[i];
+      const gState = guestsState[i];
+      if (g.isPlusOne && (!gState.firstName || !gState.firstName.trim())) {
+        alert('Por favor indica el nombre de tu acompañante.');
+        return;
+      }
+    }
+
+    setIsSubmitting(true);
+    try {
+      await rsvpApi.submit(token, {
+        guests: guestsState,
+      });
+      setIsSubmitted(true);
+    } catch (err) {
+      console.error('Error al enviar RSVP:', err);
+      alert(
+        err instanceof Error
+          ? err.message
+          : 'Ocurrió un error al registrar tu confirmación. Por favor intenta de nuevo.'
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const getStatusBadge = () => {
+    switch (rsvpInfo.status) {
+      case 'CONFIRMED':
+        return <span className={`${styles.statusIndicator} ${styles.statusConfirmed}`}>✓ Confirmado</span>;
+      case 'PARTIAL':
+        return <span className={`${styles.statusIndicator} ${styles.statusPartial}`}>● Confirmación Parcial</span>;
+      case 'DECLINED':
+        return <span className={`${styles.statusIndicator} ${styles.statusDeclined}`}>✕ Asistencia Declinada</span>;
+      default:
+        return <span className={`${styles.statusIndicator} ${styles.statusPending}`}>⏳ Pendiente de Respuesta</span>;
+    }
+  };
+
+  return (
+    <div className={styles.pageWrapper}>
+      {/* Fondo Inmersivo Fotográfico */}
+      <div className={styles.pageBackground} />
+      <div className={styles.pageOverlay} />
+
+      <header className={styles.headerNav}>
+        <Link to="/" className={styles.backLink}>
+          ← Volver a la Web Principal
+        </Link>
+      </header>
+
+      <main className={styles.mainContent}>
+        <div className={styles.partyHeader}>
+          <span className={styles.partyTag}>Confirmación de Asistencia</span>
+          <h1 className={styles.partyTitle}>{rsvpInfo.partyName}</h1>
+          <p className={styles.partySubtitle}>
+            Por favor confirma la asistencia de cada persona y selecciona tus preferencias de menú.
+          </p>
+          <div>{getStatusBadge()}</div>
+        </div>
+
+        <form onSubmit={handleSubmit}>
+          {rsvpInfo.guests.map((guest, index) => (
+            <RsvpGuestCard
+              key={guest.id}
+              guest={guest}
+              allowedEvents={rsvpInfo.allowedEvents}
+              guestState={guestsState[index]}
+              onChange={(updated) => handleGuestUpdate(index, updated)}
+            />
+          ))}
+
+          <div className={styles.formActions}>
+            <button
+              type="submit"
+              className={styles.submitButton}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Guardando confirmación...' : 'Enviar Confirmación (RSVP)'}
+            </button>
+          </div>
+        </form>
+      </main>
+    </div>
+  );
+};

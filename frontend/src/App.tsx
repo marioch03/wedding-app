@@ -1,8 +1,9 @@
 import { ClerkProvider, useAuth } from "@clerk/clerk-react";
 import React, { useEffect } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { NotFoundPage } from "./common/pages/NotFoundPage";
 import { WeddingLandingPage } from "./features/wedding/pages/WeddingLandingPage";
+import { RsvpPage } from "./features/rsvp/pages/RsvpPage";
+import { NotFoundPage } from "./common/pages/NotFoundPage";
 import { setAuthTokenGetter } from "./lib/api/client";
 
 const CLERK_PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
@@ -34,6 +35,10 @@ export const App: React.FC = () => {
           <Routes>
             {/* Ruta Publica: Landing de la Boda */}
             <Route path="/" element={<WeddingLandingPage />} />
+
+            {/* Rutas Publicas: Flujo de Confirmacion RSVP */}
+            <Route path="/rsvp" element={<RsvpPage />} />
+            <Route path="/rsvp/:token" element={<RsvpPage />} />
 
             {/* 404 Not Found */}
             <Route path="*" element={<NotFoundPage />} />
