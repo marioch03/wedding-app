@@ -9,6 +9,7 @@ import { AdminLayout } from "./features/admin/components/AdminLayout/AdminLayout
 import { AdminDashboardPage } from "./features/admin/pages/AdminDashboardPage";
 import { AdminPartiesPage } from "./features/admin/pages/AdminPartiesPage";
 import { AdminEventsPage } from "./features/admin/pages/AdminEventsPage";
+import { AdminRsvpPage } from "./features/admin/pages/AdminRsvpPage";
 import { NotFoundPage } from "./common/pages/NotFoundPage";
 import { setAuthTokenGetter } from "./lib/api/client";
 
@@ -59,6 +60,7 @@ const AppRoutes: React.FC = () => {
             <Route index element={<AdminDashboardPage />} />
             <Route path="parties" element={<AdminPartiesPage />} />
             <Route path="events" element={<AdminEventsPage />} />
+            <Route path="rsvp" element={<AdminRsvpPage />} />
           </Route>
 
           {/* 404 Not Found */}

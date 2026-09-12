@@ -49,19 +49,21 @@ export interface PublicMenuEventDto {
 
 export interface MenuCountDto {
   menuOptionId?: string;
-  menuName: string;
+  menuOptionName: string;
   dietType: DietType;
   count: number;
 }
 
 export interface AttendeeMenuDto {
   guestId: string;
-  guestFullName: string;
+  guestName: string;
+  partyId?: string;
   partyDisplayName: string;
   eventId: string;
   eventName: string;
+  menuOptionId?: string;
   menuOptionName: string;
-  dietType: DietType;
+  dietType?: DietType;
   dietaryRestrictions?: string;
   specialNotes?: string;
 }

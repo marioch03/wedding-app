@@ -17,4 +17,13 @@ export const rsvpApi = {
     const response = await adminApiClient.get<RsvpStatsResponse>('/api/v1/admin/rsvp/stats');
     return response.data;
   },
+
+  getByPartyIdAdmin: async (partyId: string): Promise<RsvpInfoResponse> => {
+    const response = await adminApiClient.get<RsvpInfoResponse>(`/api/v1/admin/rsvp/parties/${partyId}`);
+    return response.data;
+  },
+
+  submitAdmin: async (partyId: string, request: RsvpSubmitRequest): Promise<void> => {
+    await adminApiClient.put(`/api/v1/admin/rsvp/parties/${partyId}`, request);
+  },
 };

@@ -126,4 +126,37 @@ class RsvpControllersTest {
         .andExpect(jsonPath("$.confirmedParties").value(7))
         .andExpect(jsonPath("$.responseRatePercentage").value(90.0));
   }
+
+  @Test
+  void adminGetPartyRsvp_returnsOk() throws Exception {
+    RsvpInfoResponse response = new RsvpInfoResponse(partyId, "Familia García", "CONFIRMED", List.of(), List.of());
+    when(rsvpService.getRsvpInfoByPartyId(partyId)).thenReturn(response);
+
+    adminMockMvc.perform(get("/api/v1/admin/rsvp/parties/{partyId}", partyId))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.partyId").value(partyId.toString()))
+        .andExpect(jsonPath("$.partyName").value("Familia García"));
+  }
+
+  @Test
+  void adminUpdatePartyRsvp_returnsNoContent() throws Exception {
+    doNothing().when(rsvpService).adminSubmitRsvp(eq(partyId), any(RsvpSubmitRequest.class));
+
+    String json = """
+        {
+          "guests": [
+            {
+              "guestId": "%s",
+              "events": []
+            }
+          ]
+        }
+        """.formatted(UUID.randomUUID());
+
+    adminMockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+        .put("/api/v1/admin/rsvp/parties/{partyId}", partyId)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(json))
+        .andExpect(status().isNoContent());
+  }
 }

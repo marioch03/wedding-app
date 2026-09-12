@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.wedding_app.backend.common.exception.InvalidRsvpTokenException;
+import com.wedding_app.backend.common.exception.ResourceNotFoundException;
 import com.wedding_app.backend.modules.event.EventRepository;
 import com.wedding_app.backend.modules.event.dto.EventDto;
 import com.wedding_app.backend.modules.guest.Guest;
@@ -51,7 +52,17 @@ public class RsvpService {
   @Transactional(readOnly = true)
   public RsvpInfoResponse getRsvpInfoByToken(String token) {
     Party party = findPartyByToken(token);
+    return buildRsvpInfoResponse(party);
+  }
 
+  @Transactional(readOnly = true)
+  public RsvpInfoResponse getRsvpInfoByPartyId(UUID partyId) {
+    Party party = partyRepository.findById(partyId)
+        .orElseThrow(() -> ResourceNotFoundException.of("Party", partyId));
+    return buildRsvpInfoResponse(party);
+  }
+
+  private RsvpInfoResponse buildRsvpInfoResponse(Party party) {
     List<GuestDto> guests = guestRepository.findByPartyId(party.getId()).stream()
         .map(g -> new GuestDto(g.getId(), g.getFirstName(), g.getLastName(),
             g.getIsPlusOne(), g.getDietaryRestrictions()))
@@ -93,12 +104,23 @@ public class RsvpService {
   }
 
   // ---------------------------------------------------------------------------
-  // POST /api/v1/public/rsvp/{token}
+  // POST /api/v1/public/rsvp/{token} & PUT /api/v1/admin/rsvp/parties/{partyId}
   // ---------------------------------------------------------------------------
 
   @Transactional
   public void submitRsvp(String token, RsvpSubmitRequest request) {
     Party party = findPartyByToken(token);
+    processRsvpSubmit(party, request);
+  }
+
+  @Transactional
+  public void adminSubmitRsvp(UUID partyId, RsvpSubmitRequest request) {
+    Party party = partyRepository.findById(partyId)
+        .orElseThrow(() -> ResourceNotFoundException.of("Party", partyId));
+    processRsvpSubmit(party, request);
+  }
+
+  private void processRsvpSubmit(Party party, RsvpSubmitRequest request) {
     Instant now = Instant.now();
 
     // Obtener los IDs de los eventos permitidos para este grupo (Party)
