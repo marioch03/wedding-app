@@ -3,6 +3,7 @@ import type { PartyResponse, PartyStatus } from '../../../types';
 import { partiesApi } from '../../../lib/api/parties';
 import { PartyModal } from '../components/PartyModal/PartyModal';
 import { ConfirmModal } from '../../../common/components';
+import { QrCodeModal } from '../components/QrCodeModal/QrCodeModal';
 import styles from './AdminPartiesPage.module.css';
 
 export const AdminPartiesPage: React.FC = () => {
@@ -17,6 +18,7 @@ export const AdminPartiesPage: React.FC = () => {
   // Modal State
   const [selectedParty, setSelectedParty] = useState<PartyResponse | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [partyForQr, setPartyForQr] = useState<PartyResponse | null>(null);
 
   // Confirmation Modals State
   const [partyToDelete, setPartyToDelete] = useState<PartyResponse | null>(null);
@@ -324,6 +326,15 @@ export const AdminPartiesPage: React.FC = () => {
                             {isCopied ? '¡Copiado!' : 'Copiar Enlace'}
                           </button>
 
+                          <button
+                            type="button"
+                            className={styles.iconOnlyButton}
+                            onClick={() => setPartyForQr(p)}
+                            title="Ver código QR y compartir"
+                          >
+                            📱
+                          </button>
+
                           <a
                             href={`/rsvp/${p.rsvpToken}`}
                             target="_blank"
@@ -408,6 +419,14 @@ export const AdminPartiesPage: React.FC = () => {
           party={selectedParty}
           onClose={() => setIsModalOpen(false)}
           onSaved={handleModalSaved}
+        />
+      )}
+
+      {/* Modal para Ver / Descargar Código QR y Compartir */}
+      {partyForQr && (
+        <QrCodeModal
+          party={partyForQr}
+          onClose={() => setPartyForQr(null)}
         />
       )}
 

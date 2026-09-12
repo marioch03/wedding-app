@@ -8,6 +8,10 @@ import type {
   EventRequest,
   MenuOptionResponse,
   MenuOptionRequest,
+  PartyResponse,
+  PartyUpsertRequest,
+  GuestResponse,
+  GuestRequest,
 } from '../../types';
 
 export const mockWeddingPublic: WeddingPublicResponse = {
@@ -135,6 +139,30 @@ export const mockRsvpInfo: RsvpInfoResponse = {
     },
   ],
 };
+
+export const mockParties: PartyResponse[] = [
+  {
+    id: 'party-1',
+    displayName: 'Familia Gómez Martínez',
+    rsvpToken: 'token-gomez-123',
+    languagePreference: 'es',
+    internalNotes: 'Mesa presidencial',
+    status: 'CONFIRMED',
+    eventIds: ['ev-1', 'ev-2'],
+    createdAt: '2026-01-10T10:00:00Z',
+    updatedAt: '2026-01-10T10:00:00Z',
+  },
+  {
+    id: 'party-2',
+    displayName: 'Carlos & Laura',
+    rsvpToken: 'token-carlos-laura-456',
+    languagePreference: 'es',
+    status: 'PENDING',
+    eventIds: ['ev-1'],
+    createdAt: '2026-01-11T10:00:00Z',
+    updatedAt: '2026-01-11T10:00:00Z',
+  },
+];
 
 export const handlers = [
   // --- Public Wedding ---
@@ -375,6 +403,146 @@ export const handlers = [
     return new HttpResponse(null, { status: 204 });
   }),
   http.delete('*/api/admin/events/:eventId/menu-options/:optionId', () => {
+    return new HttpResponse(null, { status: 204 });
+  }),
+
+  // --- Admin Parties ---
+  http.get('*/api/v1/admin/parties', () => {
+    return HttpResponse.json({
+      content: mockParties,
+      page: {
+        size: 50,
+        number: 0,
+        totalElements: mockParties.length,
+        totalPages: 1,
+      },
+    });
+  }),
+  http.get('*/api/admin/parties', () => {
+    return HttpResponse.json({
+      content: mockParties,
+      page: {
+        size: 50,
+        number: 0,
+        totalElements: mockParties.length,
+        totalPages: 1,
+      },
+    });
+  }),
+
+  http.get('*/api/v1/admin/parties/:id', ({ params }) => {
+    const { id } = params;
+    const party = mockParties.find((p) => p.id === id) || mockParties[0];
+    return HttpResponse.json(party);
+  }),
+  http.get('*/api/admin/parties/:id', ({ params }) => {
+    const { id } = params;
+    const party = mockParties.find((p) => p.id === id) || mockParties[0];
+    return HttpResponse.json(party);
+  }),
+
+  http.post('*/api/v1/admin/parties', async ({ request }) => {
+    const body = (await request.json()) as PartyUpsertRequest;
+    const newParty: PartyResponse = {
+      id: `party-${Date.now()}`,
+      displayName: body.displayName,
+      rsvpToken: `token-${Date.now()}`,
+      languagePreference: body.languagePreference || 'es',
+      internalNotes: body.internalNotes,
+      status: 'PENDING',
+      eventIds: body.eventIds || [],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    return HttpResponse.json(newParty, { status: 201 });
+  }),
+
+  http.put('*/api/v1/admin/parties/:id', async ({ request, params }) => {
+    const { id } = params;
+    const body = (await request.json()) as PartyUpsertRequest;
+    const existing = mockParties.find((p) => p.id === id) || mockParties[0];
+    const updated: PartyResponse = {
+      ...existing,
+      displayName: body.displayName,
+      languagePreference: body.languagePreference || existing.languagePreference,
+      internalNotes: body.internalNotes,
+      eventIds: body.eventIds || existing.eventIds,
+      updatedAt: new Date().toISOString(),
+    };
+    return HttpResponse.json(updated);
+  }),
+
+  http.post('*/api/v1/admin/parties/:id/regenerate-token', ({ params }) => {
+    const { id } = params;
+    const party = mockParties.find((p) => p.id === id) || mockParties[0];
+    return HttpResponse.json({
+      ...party,
+      rsvpToken: `new-token-${Date.now()}`,
+    });
+  }),
+
+  http.delete('*/api/v1/admin/parties/:id', () => {
+    return new HttpResponse(null, { status: 204 });
+  }),
+
+  // --- Admin Guests ---
+  http.get('*/api/v1/admin/parties/:partyId/guests', ({ params }) => {
+    const { partyId } = params;
+    const guests: GuestResponse[] = [
+      {
+        id: 'guest-1',
+        partyId: partyId as string,
+        firstName: 'Marcos',
+        lastName: 'Gómez',
+        guestType: 'ADULT',
+        isPlusOne: false,
+        dietaryRestrictions: '',
+        createdAt: '2026-01-10T10:00:00Z',
+        updatedAt: '2026-01-10T10:00:00Z',
+      },
+    ];
+    return HttpResponse.json(guests);
+  }),
+
+  http.post('*/api/v1/admin/parties/:partyId/guests', async ({ request, params }) => {
+    const { partyId } = params;
+    const body = (await request.json()) as GuestRequest;
+    const newGuest: GuestResponse = {
+      id: `guest-${Date.now()}`,
+      partyId: partyId as string,
+      firstName: body.firstName,
+      lastName: body.lastName,
+      guestType: body.guestType || 'ADULT',
+      isPlusOne: body.isPlusOne ?? false,
+      email: body.email,
+      phone: body.phone,
+      dietaryRestrictions: body.dietaryRestrictions,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    return HttpResponse.json(newGuest, { status: 201 });
+  }),
+
+  http.put('*/api/v1/admin/guests/:id', async ({ request, params }) => {
+    const { id } = params;
+    const body = (await request.json()) as GuestRequest;
+    const updatedGuest: GuestResponse = {
+      id: id as string,
+      partyId: body.partyId || 'party-1',
+      firstName: body.firstName,
+      lastName: body.lastName,
+      guestType: body.guestType || 'ADULT',
+      isPlusOne: body.isPlusOne ?? false,
+      email: body.email,
+      phone: body.phone,
+      dietaryRestrictions: body.dietaryRestrictions,
+      createdAt: '2026-01-10T10:00:00Z',
+      updatedAt: new Date().toISOString(),
+    };
+    return HttpResponse.json(updatedGuest);
+  }),
+
+  http.delete('*/api/v1/admin/guests/:id', () => {
     return new HttpResponse(null, { status: 204 });
   }),
 ];

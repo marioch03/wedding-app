@@ -3,6 +3,7 @@ import type { PartyResponse, PartyUpsertRequest, GuestResponse, GuestRequest, Gu
 import { partiesApi } from '../../../../lib/api/parties';
 import { guestsApi } from '../../../../lib/api/guests';
 import { eventsApi } from '../../../../lib/api/events';
+import { QrCodeModal } from '../QrCodeModal/QrCodeModal';
 import styles from './PartyModal.module.css';
 
 interface PartyModalProps {
@@ -42,6 +43,22 @@ export const PartyModal: React.FC<PartyModalProps> = ({ party, onClose, onSaved 
   // General State
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // QR & Link State
+  const [showQrModal, setShowQrModal] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
+
+  const rsvpUrl = party
+    ? `${typeof window !== 'undefined' ? window.location.origin : 'http://localhost:5173'}/rsvp/${party.rsvpToken}`
+    : '';
+
+  const handleCopyLink = () => {
+    if (navigator?.clipboard?.writeText && rsvpUrl) {
+      navigator.clipboard.writeText(rsvpUrl);
+      setLinkCopied(true);
+      setTimeout(() => setLinkCopied(false), 2000);
+    }
+  };
 
   useEffect(() => {
     // Load all events for the checklist
@@ -288,6 +305,38 @@ export const PartyModal: React.FC<PartyModalProps> = ({ party, onClose, onSaved 
                   placeholder="Ej. Amigos de la universidad. Requieren traslado desde el hotel."
                 />
               </div>
+
+              {party && (
+                <div className={styles.invitationBox}>
+                  <div className={styles.invitationHeader}>
+                    <span>💌 Enlace de Invitación & Código QR</span>
+                    <span className={styles.labelHint}>Token: {party.rsvpToken}</span>
+                  </div>
+                  <div className={styles.invitationLinkRow}>
+                    <input
+                      type="text"
+                      readOnly
+                      value={rsvpUrl}
+                      className={styles.invitationInput}
+                      aria-label="Enlace RSVP del grupo"
+                    />
+                    <button
+                      type="button"
+                      className={styles.invitationCopyBtn}
+                      onClick={handleCopyLink}
+                    >
+                      {linkCopied ? '✓ Copiado' : '📋 Copiar'}
+                    </button>
+                    <button
+                      type="button"
+                      className={styles.invitationQrBtn}
+                      onClick={() => setShowQrModal(true)}
+                    >
+                      📱 QR
+                    </button>
+                  </div>
+                </div>
+              )}
             </form>
           )}
 
@@ -536,6 +585,14 @@ export const PartyModal: React.FC<PartyModalProps> = ({ party, onClose, onSaved 
           </button>
         </div>
       </div>
+
+      {/* Modal para Ver / Descargar Código QR y Compartir */}
+      {showQrModal && party && (
+        <QrCodeModal
+          party={party}
+          onClose={() => setShowQrModal(false)}
+        />
+      )}
     </div>
   );
 };
