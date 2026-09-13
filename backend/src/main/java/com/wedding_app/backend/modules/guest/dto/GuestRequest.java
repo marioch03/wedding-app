@@ -23,5 +23,6 @@ public record GuestRequest(
     @Size(max = 30, message = "El teléfono no puede superar los 30 caracteres")
     String phone,
 
+    @Size(max = 500, message = "Las restricciones dietéticas no pueden superar los 500 caracteres")
     String dietaryRestrictions
 ) {}

@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.wedding_app.backend.common.exception.InvalidRsvpTokenException;
 import com.wedding_app.backend.common.exception.ResourceNotFoundException;
+import com.wedding_app.backend.common.util.InputSanitizer;
 import com.wedding_app.backend.modules.event.entity.Event;
 import com.wedding_app.backend.modules.event.repository.EventRepository;
 import com.wedding_app.backend.modules.event.dto.EventDto;
@@ -147,16 +148,16 @@ public class RsvpService {
       // Si es +1, permitir actualizar nombre
       if (Boolean.TRUE.equals(guest.getIsPlusOne())) {
         if (guestDto.firstName() != null && !guestDto.firstName().isBlank()) {
-          guest.setFirstName(guestDto.firstName().trim());
+          guest.setFirstName(InputSanitizer.sanitize(guestDto.firstName()));
         }
         if (guestDto.lastName() != null && !guestDto.lastName().isBlank()) {
-          guest.setLastName(guestDto.lastName().trim());
+          guest.setLastName(InputSanitizer.sanitize(guestDto.lastName()));
         }
       }
 
-      // Dieta / alergias
+      // Dieta / alergias (saneamiento estricto)
       if (guestDto.dietaryRequirements() != null) {
-        guest.setDietaryRestrictions(guestDto.dietaryRequirements().trim());
+        guest.setDietaryRestrictions(InputSanitizer.sanitize(guestDto.dietaryRequirements()));
       }
 
       if (guestDto.events() != null) {
@@ -188,7 +189,7 @@ public class RsvpService {
 
           ge.setAttending(eventDto.attending());
           ge.setMenuOption(menuOption);
-          ge.setSpecialNotes(eventDto.specialNotes() != null ? eventDto.specialNotes().trim() : null);
+          ge.setSpecialNotes(InputSanitizer.sanitize(eventDto.specialNotes()));
           ge.setRespondedAt(now);
 
           guestEventRepository.save(ge);

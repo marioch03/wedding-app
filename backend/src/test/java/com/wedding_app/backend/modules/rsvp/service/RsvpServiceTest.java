@@ -159,6 +159,28 @@ class RsvpServiceTest {
   }
 
   @Test
+  void submitRsvp_sanitizesXssInputs_success() {
+    PartyEvent pe = new PartyEvent();
+    pe.setParty(party);
+    pe.setEvent(event);
+
+    EventRsvpDto eventDto = new EventRsvpDto(eventId, true, menuId, "<script>alert('pwn')</script>Llegaremos temprano");
+    GuestRsvpDto guestDto = new GuestRsvpDto(guestId, "Ana", "Test", "<img src=x onerror=evil()>Vegetariano", List.of(eventDto));
+    RsvpSubmitRequest request = new RsvpSubmitRequest(List.of(guestDto));
+
+    when(partyRepository.findByRsvpTokenIgnoreCase(token)).thenReturn(Optional.of(party));
+    when(partyEventRepository.findByPartyIdWithEvent(partyId)).thenReturn(List.of(pe));
+    when(guestRepository.findById(guestId)).thenReturn(Optional.of(guest));
+    when(menuOptionRepository.findById(menuId)).thenReturn(Optional.of(menuOption));
+    when(guestEventRepository.findByGuestIdAndEventId(guestId, eventId)).thenReturn(Optional.empty());
+    when(eventRepository.getReferenceById(eventId)).thenReturn(event);
+
+    rsvpService.submitRsvp(token, request);
+
+    assertThat(guest.getDietaryRestrictions()).isEqualTo("Vegetariano");
+  }
+
+  @Test
   void submitRsvp_declined_success() {
     PartyEvent pe = new PartyEvent();
     pe.setParty(party);

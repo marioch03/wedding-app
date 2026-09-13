@@ -16,6 +16,7 @@ public record MenuRequest(
     @Size(max = 160, message = "El nombre no puede superar los 160 caracteres")
     String name,
 
+    @Size(max = 1000, message = "La descripción no puede superar los 1000 caracteres")
     String description,
 
     DietType dietType,

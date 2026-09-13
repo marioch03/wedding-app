@@ -17,6 +17,7 @@ public record GuestRsvpDto(
     @Size(max = 100, message = "Los apellidos no pueden superar los 100 caracteres")
     String lastName,
 
+    @Size(max = 500, message = "Las restricciones dietéticas no pueden superar los 500 caracteres")
     String dietaryRequirements,
 
     List<@Valid EventRsvpDto> events
