@@ -29,13 +29,15 @@ Thumbs.db
 *.ipr
 out/
 
-# Eclipse
+# Eclipse / VS Code Java
 .apt_generated
 .classpath
 .factorypath
 .project
 .settings/
 .springBeans
+bin/
+**/bin/
 
 # ==========================================
 # Backend: Java / Spring Boot (Maven & Gradle)

@@ -37,18 +37,35 @@ export const RsvpPage: React.FC = () => {
         const data = await rsvpApi.getByToken(token);
         setRsvpInfo(data);
 
-        // Inicializar el estado de confirmación para cada invitado
+        // Inicializar el estado de confirmación recordando opciones previas si existen (TC-RSVP-006)
         const initialFormState: GuestRsvpDto[] = data.guests.map((g) => ({
           guestId: g.id,
           firstName: g.firstName || '',
           lastName: g.lastName || '',
           dietaryRequirements: g.dietaryRestrictions || '',
-          events: data.allowedEvents.map((ev) => ({
-            eventId: ev.id,
-            attending: true, // Asistencia seleccionada por defecto
-            menuOptionId: ev.menuOptions && ev.menuOptions.length > 0 ? ev.menuOptions[0].id : null,
-            specialNotes: '',
-          })),
+          events: data.allowedEvents.map((ev) => {
+            const existingAttendance = g.eventAttendances?.find(
+              (ea) => ea.eventId === ev.id && ea.respondedAt != null
+            );
+
+            if (existingAttendance) {
+              return {
+                eventId: ev.id,
+                attending: existingAttendance.attending ?? true,
+                menuOptionId:
+                  existingAttendance.menuOptionId ??
+                  (ev.menuOptions && ev.menuOptions.length > 0 ? ev.menuOptions[0].id : null),
+                specialNotes: existingAttendance.specialNotes || '',
+              };
+            }
+
+            return {
+              eventId: ev.id,
+              attending: true, // Asistencia seleccionada por defecto si no ha respondido
+              menuOptionId: ev.menuOptions && ev.menuOptions.length > 0 ? ev.menuOptions[0].id : null,
+              specialNotes: '',
+            };
+          }),
         }));
 
         setGuestsState(initialFormState);

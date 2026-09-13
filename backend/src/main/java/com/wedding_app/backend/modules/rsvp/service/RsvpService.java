@@ -20,6 +20,7 @@ import com.wedding_app.backend.modules.guest.entity.GuestEvent;
 import com.wedding_app.backend.modules.guest.repository.GuestEventRepository;
 import com.wedding_app.backend.modules.guest.repository.GuestRepository;
 import com.wedding_app.backend.modules.guest.dto.GuestDto;
+import com.wedding_app.backend.modules.guest.dto.GuestEventSummaryDto;
 import com.wedding_app.backend.modules.menu.entity.MenuOption;
 import com.wedding_app.backend.modules.menu.dto.MenuOptionDto;
 import com.wedding_app.backend.modules.menu.repository.MenuOptionRepository;
@@ -66,15 +67,28 @@ public class RsvpService {
 
   private RsvpInfoResponse buildRsvpInfoResponse(Party party) {
     List<GuestDto> guests = guestRepository.findByPartyId(party.getId()).stream()
-        .map(g -> new GuestDto(g.getId(), g.getFirstName(), g.getLastName(),
-            g.getIsPlusOne(), g.getDietaryRestrictions()))
+        .map(g -> {
+          List<GuestEventSummaryDto> eventSummaries = guestEventRepository.findByGuestIdWithDetails(g.getId()).stream()
+              .map(ge -> new GuestEventSummaryDto(
+                  ge.getEvent().getId(),
+                  ge.getEvent().getName(),
+                  ge.getAttending(),
+                  ge.getMenuOption() != null ? ge.getMenuOption().getId() : null,
+                  ge.getMenuOption() != null ? ge.getMenuOption().getName() : null,
+                  ge.getSpecialNotes(),
+                  ge.getRespondedAt()))
+              .toList();
+          return new GuestDto(g.getId(), g.getFirstName(), g.getLastName(),
+              g.getIsPlusOne(), g.getDietaryRestrictions(), eventSummaries);
+        })
         .toList();
 
     List<PartyEvent> partyEvents = partyEventRepository.findByPartyIdWithEvent(party.getId());
     List<EventDto> allowedEvents;
 
     if (partyEvents.isEmpty()) {
-      // Fallback de seguridad: si no hay eventos asignados explícitamente, mostrar todos los eventos activos de la boda
+      // Fallback de seguridad: si no hay eventos asignados explícitamente, mostrar
+      // todos los eventos activos de la boda
       allowedEvents = eventRepository.findAll().stream()
           .map(event -> {
             List<MenuOptionDto> menuOptions = menuOptionRepository

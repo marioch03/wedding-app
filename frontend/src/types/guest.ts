@@ -6,6 +6,7 @@ export interface GuestDto {
   lastName?: string;
   isPlusOne: boolean;
   dietaryRestrictions?: string;
+  eventAttendances?: GuestEventSummaryDto[];
 }
 
 export interface GuestEventSummaryDto {

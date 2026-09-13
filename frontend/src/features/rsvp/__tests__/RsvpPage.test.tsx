@@ -4,6 +4,10 @@ import userEvent from '@testing-library/user-event';
 import { renderWithRouter } from '../../../test/test-utils';
 import { RsvpPage } from '../pages/RsvpPage';
 import { Route, Routes } from 'react-router-dom';
+import { http, HttpResponse } from 'msw';
+import { server } from '../../../test/mocks/server';
+import { mockRsvpInfo } from '../../../test/mocks/handlers';
+import type { RsvpInfoResponse } from '../../../types';
 
 const renderRsvpFlow = (initialPath: string) => {
   return renderWithRouter(
@@ -122,6 +126,53 @@ describe('Feature: RSVP Multi-paso e Integración (RsvpPage)', () => {
       expect(
         screen.getByLabelText(/Código de Invitación/i)
       ).toBeInTheDocument();
+    });
+
+    it('pre-rellena las opciones seleccionadas anteriormente si el invitado ya había confirmado (TC-RSVP-006)', async () => {
+      const mockPriorRsvpInfo: RsvpInfoResponse = {
+        ...mockRsvpInfo,
+        status: 'PARTIAL',
+        guests: [
+          {
+            ...mockRsvpInfo.guests[0],
+            eventAttendances: [
+              {
+                eventId: 'ev-1',
+                eventName: 'Ceremonia Religiosa',
+                attending: true,
+                respondedAt: '2026-09-10T12:00:00Z',
+              },
+              {
+                eventId: 'ev-2',
+                eventName: 'Cóctel y Banquete',
+                attending: false,
+                respondedAt: '2026-09-10T12:00:00Z',
+              },
+            ],
+          },
+          mockRsvpInfo.guests[1],
+        ],
+      };
+
+      server.use(
+        http.get('*/api/v1/public/rsvp/PRIOR_TOKEN', () => {
+          return HttpResponse.json(mockPriorRsvpInfo);
+        }),
+        http.get('*/api/public/rsvp/PRIOR_TOKEN', () => {
+          return HttpResponse.json(mockPriorRsvpInfo);
+        })
+      );
+
+      renderRsvpFlow('/rsvp/PRIOR_TOKEN');
+
+      await waitFor(() => {
+        expect(screen.getByText('Familia Gómez Martínez')).toBeInTheDocument();
+      });
+
+      // El segundo evento de Marcos Gómez debe tener "No podré asistir" marcado como activo
+      const noAsistirButtons = screen.getAllByRole('button', { name: /No podré asistir/i });
+      const hasActiveNo = noAsistirButtons.some((btn) => btn.className.includes('toggleActiveNo'));
+      expect(hasActiveNo).toBe(true);
     });
   });
 
