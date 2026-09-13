@@ -160,10 +160,13 @@ describe('Estados de la Interfaz (UX): Spinners, Skeletons y Recuperación de Re
       );
 
       await waitFor(() => {
-        expect(screen.getByText('Invitación no encontrada')).toBeInTheDocument();
+        expect(screen.getByRole('alert')).toBeInTheDocument();
       });
       expect(
         screen.getByText(/No se pudo conectar con el servidor\. Comprueba la conexión o que el backend esté levantado\./i)
+      ).toBeInTheDocument();
+      expect(
+        screen.getByLabelText(/Código de Invitación/i)
       ).toBeInTheDocument();
     });
 

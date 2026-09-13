@@ -50,6 +50,31 @@ describe('Feature: RSVP Multi-paso e Integración (RsvpPage)', () => {
       });
     });
 
+    it('muestra error inline en la misma ventana y no redirige cuando el token es inválido o no existe (TC-RSVP-002)', async () => {
+      const user = userEvent.setup();
+      renderRsvpFlow('/rsvp');
+
+      const input = screen.getByLabelText(/Código de Invitación/i) as HTMLInputElement;
+      await user.type(input, 'INVALID_TOKEN');
+
+      const submitButton = screen.getByRole('button', { name: /Acceder al Formulario/i });
+      await user.click(submitButton);
+
+      // Esperar a que se procese el error sin haber redirigido de ventana
+      await waitFor(() => {
+        expect(screen.getByRole('alert')).toBeInTheDocument();
+      });
+
+      expect(
+        screen.getByText('El código de invitación no es válido o ha expirado.')
+      ).toBeInTheDocument();
+
+      // Debe permanecer en la pantalla con el campo limpio listo para reintentar
+      expect(input.value).toBe('');
+      expect(screen.getByText('Tu Invitación')).toBeInTheDocument();
+      expect(screen.queryByText('Familia Gómez Martínez')).not.toBeInTheDocument();
+    });
+
     it('convierte la entrada a mayúsculas y extrae el token si se pega una URL completa', async () => {
       const user = userEvent.setup();
       renderRsvpFlow('/rsvp');
@@ -85,17 +110,17 @@ describe('Feature: RSVP Multi-paso e Integración (RsvpPage)', () => {
       expect(screen.getAllByText('Cóctel y Banquete').length).toBeGreaterThan(0);
     });
 
-    it('muestra mensaje de error amigable cuando el token es inválido (404)', async () => {
+    it('muestra mensaje de error amigable en la pantalla de código cuando el token es inválido (404)', async () => {
       renderRsvpFlow('/rsvp/INVALID_TOKEN');
 
       await waitFor(() => {
-        expect(screen.getByText('Invitación no encontrada')).toBeInTheDocument();
+        expect(screen.getByRole('alert')).toBeInTheDocument();
       });
       expect(
-        screen.getByText(/No se encontró la invitación con el token proporcionado/i)
+        screen.getByText('El código de invitación no es válido o ha expirado.')
       ).toBeInTheDocument();
       expect(
-        screen.getByRole('link', { name: /Introducir otro código/i })
+        screen.getByLabelText(/Código de Invitación/i)
       ).toBeInTheDocument();
     });
   });

@@ -202,66 +202,6 @@
   transform: none;
 }
 
-/* Error Card */
-.errorContainer {
-  position: relative;
-  z-index: 10;
-  min-height: 70vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
-}
-
-.errorCard {
-  max-width: 520px;
-  width: 100%;
-  padding: 3.5rem 2.25rem;
-  text-align: center;
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1.5px solid rgba(255, 255, 255, 0.9);
-  border-radius: var(--radius-xl);
-  box-shadow: 0 20px 50px rgba(46, 29, 26, 0.15);
-}
-
-.errorTitle {
-  font-family: var(--font-serif);
-  font-size: 2rem;
-  color: var(--color-text-heading);
-  margin-bottom: 0.85rem;
-}
-
-.errorText {
-  font-size: 1.05rem;
-  color: var(--color-text-body);
-  margin-bottom: 2rem;
-  line-height: 1.6;
-}
-
-.retryButton {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem 2.5rem;
-  border-radius: var(--radius-full);
-  background: var(--color-primary-gradient);
-  color: #ffffff;
-  font-weight: 700;
-  font-size: 1rem;
-  border: none;
-  cursor: pointer;
-  box-shadow: var(--shadow-primary);
-  text-decoration: none;
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
-}
-
-.retryButton:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-primary-hover);
-}
-
 @media (max-width: 600px) {
   .headerNav {
     padding: 1rem 1.25rem;

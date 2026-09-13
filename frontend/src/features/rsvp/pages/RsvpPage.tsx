@@ -52,12 +52,14 @@ export const RsvpPage: React.FC = () => {
         }));
 
         setGuestsState(initialFormState);
-      } catch (err) {
+      } catch (err: any) {
         console.error('Error cargando información de RSVP:', err);
         setErrorMessage(
-          err instanceof Error
+          err?.status === 404 || err?.message?.includes('No se encontró')
+            ? 'El código de invitación no es válido o ha expirado.'
+            : err instanceof Error
             ? err.message
-            : 'No hemos podido encontrar la invitación con este código. Por favor verifica el enlace.'
+            : 'El código de invitación no es válido o ha expirado.'
         );
       } finally {
         setIsLoading(false);
@@ -67,11 +69,12 @@ export const RsvpPage: React.FC = () => {
     fetchRsvpData();
   }, [token]);
 
-  // Si no hay token en la URL, mostrar pantalla de ingreso manual
+  // Si no hay token en la URL, mostrar directamente la pantalla de ingreso manual
   if (!token) {
     return <RsvpTokenPrompt />;
   }
 
+  // Mientras se cargan los datos del token
   if (isLoading) {
     return (
       <div className={styles.pageWrapper}>
@@ -82,30 +85,10 @@ export const RsvpPage: React.FC = () => {
     );
   }
 
-  // Error de token inválido
+  // Si el token falló al cargar o no se encontró, mostrar directamente el prompt de invitación
+  // con el aviso de error para reintentar desde esa misma ventana sin redirigir a una página de error.
   if (errorMessage || !rsvpInfo) {
-    return (
-      <div className={styles.pageWrapper}>
-        <div className={styles.pageBackground} />
-        <div className={styles.pageOverlay} />
-        <header className={styles.headerNav}>
-          <Link to="/" className={styles.backLink}>
-            ← Volver a la Web Principal
-          </Link>
-        </header>
-        <div className={styles.errorContainer}>
-          <div className={styles.errorCard}>
-            <h1 className={styles.errorTitle}>Invitación no encontrada</h1>
-            <p className={styles.errorText}>
-              {errorMessage || 'El enlace o código de invitación utilizado no es válido.'}
-            </p>
-            <Link to="/rsvp" className={styles.retryButton}>
-              Introducir otro código
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
+    return <RsvpTokenPrompt initialError={errorMessage} />;
   }
 
   // Si ya se ha enviado la confirmación
