@@ -56,6 +56,7 @@ public class EventService {
 
   @Transactional
   public EventResponse create(EventRequest request) {
+    validateEventDates(request);
     Wedding wedding = weddingRepository.findById(request.weddingId())
         .orElseThrow(() -> new ResourceNotFoundException("Boda no encontrada con id: " + request.weddingId()));
 
@@ -66,11 +67,19 @@ public class EventService {
 
   @Transactional
   public EventResponse update(UUID id, EventRequest request) {
+    validateEventDates(request);
     Event event = getEventOrThrow(id);
     Wedding wedding = weddingRepository.findById(request.weddingId())
         .orElseThrow(() -> new ResourceNotFoundException("Boda no encontrada con id: " + request.weddingId()));
     mapRequestToEvent(request, event, wedding);
     return toResponse(eventRepository.save(event));
+  }
+
+  private void validateEventDates(EventRequest request) {
+    if (request.startDatetime() != null && request.endDatetime() != null
+        && request.endDatetime().isBefore(request.startDatetime())) {
+      throw new IllegalArgumentException("La fecha de fin no puede ser anterior a la fecha de inicio");
+    }
   }
 
   @Transactional

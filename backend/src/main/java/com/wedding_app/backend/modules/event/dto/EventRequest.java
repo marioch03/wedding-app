@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -39,4 +40,9 @@ public record EventRequest(
     Integer displayOrder,
 
     Boolean isPublic) {
+
+  @AssertTrue(message = "La fecha de fin no puede ser anterior a la fecha de inicio")
+  public boolean isEndDateValid() {
+    return endDatetime == null || startDatetime == null || !endDatetime.isBefore(startDatetime);
+  }
 }

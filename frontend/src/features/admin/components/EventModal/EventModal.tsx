@@ -62,6 +62,11 @@ export const EventModal: React.FC<EventModalProps> = ({
       return;
     }
 
+    if (endDatetime && new Date(endDatetime) < new Date(startDatetime)) {
+      setError('La fecha de fin no puede ser anterior a la fecha de inicio.');
+      return;
+    }
+
     try {
       setSaving(true);
       setError(null);
@@ -89,7 +94,12 @@ export const EventModal: React.FC<EventModalProps> = ({
       onSaved(saved);
     } catch (err: any) {
       console.error('Error saving event:', err);
-      setError(err?.message || 'Error al guardar el evento.');
+      if (err?.fieldErrors && Object.keys(err.fieldErrors).length > 0) {
+        const firstFieldMsg = Object.values(err.fieldErrors)[0] as string;
+        setError(firstFieldMsg || err.message || 'Error al guardar el evento.');
+      } else {
+        setError(err?.message || 'Error al guardar el evento.');
+      }
     } finally {
       setSaving(false);
     }
