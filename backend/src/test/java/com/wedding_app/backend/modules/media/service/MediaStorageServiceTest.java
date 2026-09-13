@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -37,8 +36,7 @@ class MediaStorageServiceTest {
         "file",
         "mi-foto.jpg",
         "image/jpeg",
-        "imagen-bytes".getBytes()
-    );
+        "imagen-bytes".getBytes());
 
     MediaUploadResponse response = mediaStorageService.store(file);
 
@@ -54,8 +52,7 @@ class MediaStorageServiceTest {
         "file",
         "vacio.png",
         "image/png",
-        new byte[0]
-    );
+        new byte[0]);
 
     assertThrows(IllegalArgumentException.class, () -> mediaStorageService.store(file));
   }
@@ -66,8 +63,7 @@ class MediaStorageServiceTest {
         "file",
         "test.pdf",
         "application/pdf",
-        "pdf-data".getBytes()
-    );
+        "pdf-data".getBytes());
 
     assertThrows(IllegalArgumentException.class, () -> mediaStorageService.store(file));
   }
@@ -78,14 +74,12 @@ class MediaStorageServiceTest {
         "files",
         "foto1.png",
         "image/png",
-        "data-1".getBytes()
-    );
+        "data-1".getBytes());
     MockMultipartFile file2 = new MockMultipartFile(
         "files",
         "foto2.webp",
         "image/webp",
-        "data-2".getBytes()
-    );
+        "data-2".getBytes());
 
     List<MediaUploadResponse> responses = mediaStorageService.storeMultiple(List.of(file1, file2));
 

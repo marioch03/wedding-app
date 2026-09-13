@@ -244,6 +244,7 @@ class RsvpServiceTest {
     party.setStatus(PartyStatus.CONFIRMED);
     when(partyRepository.findAll()).thenReturn(List.of(party));
     when(guestRepository.findAll()).thenReturn(List.of(guest));
+    when(guestEventRepository.findAll()).thenReturn(List.of());
 
     RsvpStatsResponse stats = rsvpService.getRsvpStats();
 
@@ -252,6 +253,59 @@ class RsvpServiceTest {
     assertThat(stats.confirmedParties()).isEqualTo(1);
     assertThat(stats.totalGuests()).isEqualTo(1);
     assertThat(stats.confirmedGuests()).isEqualTo(1);
+    assertThat(stats.declinedGuests()).isEqualTo(0);
+    assertThat(stats.pendingGuests()).isEqualTo(0);
     assertThat(stats.responseRatePercentage()).isEqualTo(100.0);
+  }
+
+  @Test
+  void getRsvpStats_withPartialParty_calculatesIndividualGuestMetricsCorrectly() {
+    Party partialParty = new Party();
+    partialParty.setId(UUID.randomUUID());
+    partialParty.setStatus(PartyStatus.PARTIAL);
+
+    Guest attendingGuest = new Guest();
+    attendingGuest.setId(UUID.randomUUID());
+    attendingGuest.setParty(partialParty);
+
+    Guest decliningGuest = new Guest();
+    decliningGuest.setId(UUID.randomUUID());
+    decliningGuest.setParty(partialParty);
+
+    Party pendingParty = new Party();
+    pendingParty.setId(UUID.randomUUID());
+    pendingParty.setStatus(PartyStatus.PENDING);
+
+    Guest pendingGuest = new Guest();
+    pendingGuest.setId(UUID.randomUUID());
+    pendingGuest.setParty(pendingParty);
+
+    GuestEvent ge1 = new GuestEvent();
+    ge1.setId(UUID.randomUUID());
+    ge1.setGuest(attendingGuest);
+    ge1.setAttending(true);
+
+    GuestEvent ge2 = new GuestEvent();
+    ge2.setId(UUID.randomUUID());
+    ge2.setGuest(decliningGuest);
+    ge2.setAttending(false);
+
+    when(partyRepository.findAll()).thenReturn(List.of(partialParty, pendingParty));
+    when(guestRepository.findAll()).thenReturn(List.of(attendingGuest, decliningGuest, pendingGuest));
+    when(guestEventRepository.findAll()).thenReturn(List.of(ge1, ge2));
+
+    RsvpStatsResponse stats = rsvpService.getRsvpStats();
+
+    assertThat(stats).isNotNull();
+    assertThat(stats.totalParties()).isEqualTo(2);
+    assertThat(stats.partialParties()).isEqualTo(1);
+    assertThat(stats.pendingParties()).isEqualTo(1);
+    assertThat(stats.totalGuests()).isEqualTo(3);
+    assertThat(stats.confirmedGuests()).isEqualTo(1);
+    assertThat(stats.declinedGuests()).isEqualTo(1);
+    assertThat(stats.pendingGuests()).isEqualTo(1);
+    assertThat(stats.confirmedGuests() + stats.declinedGuests() + stats.pendingGuests())
+        .isEqualTo(stats.totalGuests());
+    assertThat(stats.responseRatePercentage()).isEqualTo(50.0);
   }
 }

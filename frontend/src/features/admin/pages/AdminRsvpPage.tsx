@@ -111,15 +111,38 @@ export const AdminRsvpPage: React.FC = () => {
     }
   };
 
+  // Helper para determinar el estado de asistencia individual de un invitado
+  const getGuestAttendanceStatus = (
+    guest: GuestDetailResponse,
+    partyStatus: string
+  ): 'CONFIRMED' | 'DECLINED' | 'PENDING' => {
+    if (partyStatus === 'PENDING') return 'PENDING';
+    if (partyStatus === 'CONFIRMED') return 'CONFIRMED';
+    if (partyStatus === 'DECLINED') return 'DECLINED';
+
+    // Grupo con estado PARTIAL: evaluar respuestas a eventos del invitado
+    const attendances = guest.eventAttendances || [];
+    const isAttendingAny = attendances.some((ea) => ea.attending === true);
+    if (isAttendingAny) return 'CONFIRMED';
+
+    const hasResponded = attendances.some(
+      (ea) => ea.attending !== undefined && ea.attending !== null
+    );
+    if (hasResponded) return 'DECLINED';
+
+    return 'PENDING';
+  };
+
   // Filtered Guests list
   const filteredGuests = useMemo(() => {
     return guestDetails.filter((g) => {
       // Find parent party status
       const parentParty = parties.find((p) => p.id === g.partyId);
       const partyStatus = parentParty?.status || 'PENDING';
+      const computedStatus = getGuestAttendanceStatus(g, partyStatus);
 
       // Status filter
-      if (statusFilter !== 'ALL' && partyStatus !== statusFilter) {
+      if (statusFilter !== 'ALL' && computedStatus !== statusFilter) {
         return false;
       }
 
@@ -235,7 +258,11 @@ export const AdminRsvpPage: React.FC = () => {
             <span className={styles.kpiLabel}>Tasa de Respuesta</span>
             <span className={styles.kpiValue}>{stats?.responseRatePercentage ?? 0}%</span>
             <span className={styles.kpiSubtext}>
-              {stats?.totalParties ? `${stats.totalParties - (stats.pendingParties ?? 0)} de ${stats.totalParties} grupos` : '0 respuestas'}
+              {stats?.totalParties
+                ? `${stats.totalParties - (stats.pendingParties ?? 0)} de ${stats.totalParties} grupos${
+                    stats.partialParties > 0 ? ` (${stats.partialParties} parciales)` : ''
+                  }`
+                : '0 respuestas'}
             </span>
           </div>
         </div>

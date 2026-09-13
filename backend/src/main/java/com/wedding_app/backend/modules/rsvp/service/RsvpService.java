@@ -231,9 +231,43 @@ public class RsvpService {
 
     List<Guest> allGuests = guestRepository.findAll();
     long totalGuests = allGuests.size();
-    long confirmedGuests = allGuests.stream().filter(g -> g.getParty().getStatus() == PartyStatus.CONFIRMED).count();
-    long declinedGuests = allGuests.stream().filter(g -> g.getParty().getStatus() == PartyStatus.DECLINED).count();
-    long pendingGuests = allGuests.stream().filter(g -> g.getParty().getStatus() == PartyStatus.PENDING).count();
+
+    // Precargar todas las respuestas de eventos para calcular asistencia individual
+    List<GuestEvent> allGuestEvents = guestEventRepository.findAll();
+    java.util.Map<UUID, List<GuestEvent>> eventsByGuestId = allGuestEvents.stream()
+        .filter(ge -> ge.getGuest() != null && ge.getGuest().getId() != null)
+        .collect(Collectors.groupingBy(ge -> ge.getGuest().getId()));
+
+    long confirmedGuests = 0;
+    long declinedGuests = 0;
+    long pendingGuests = 0;
+
+    for (Guest guest : allGuests) {
+      PartyStatus partyStatus = guest.getParty() != null ? guest.getParty().getStatus() : PartyStatus.PENDING;
+
+      if (partyStatus == PartyStatus.CONFIRMED) {
+        confirmedGuests++;
+      } else if (partyStatus == PartyStatus.DECLINED) {
+        declinedGuests++;
+      } else if (partyStatus == PartyStatus.PENDING) {
+        pendingGuests++;
+      } else {
+        // Estado PARTIAL: clasificar al invitado por su asistencia individual en GuestEvent
+        List<GuestEvent> guestEvents = eventsByGuestId.getOrDefault(guest.getId(), List.of());
+        boolean isAttendingAny = guestEvents.stream().anyMatch(ge -> Boolean.TRUE.equals(ge.getAttending()));
+
+        if (isAttendingAny) {
+          confirmedGuests++;
+        } else {
+          boolean hasResponded = guestEvents.stream().anyMatch(ge -> ge.getAttending() != null);
+          if (hasResponded) {
+            declinedGuests++;
+          } else {
+            pendingGuests++;
+          }
+        }
+      }
+    }
 
     double responseRate = totalParties > 0
         ? ((double) (totalParties - pendingParties) / totalParties) * 100.0

@@ -120,7 +120,9 @@ export const AdminDashboardPage: React.FC = () => {
             <span>
               {error && !stats
                 ? 'Información no disponible'
-                : `${stats?.confirmedParties || 0} grupos confirmados`}
+                : `${stats?.confirmedParties || 0} grupos confirmados${
+                    stats?.partialParties ? ` (${stats.partialParties} parciales)` : ''
+                  }`}
             </span>
           </div>
         </div>

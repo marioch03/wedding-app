@@ -124,4 +124,19 @@ describe('AdminRsvpPage - Control RSVP & Exportación Catering', () => {
     await user.click(csvBtn);
     expect(csvGuestsSpy).toHaveBeenCalledOnce();
   });
+
+  it('filtra adecuadamente por píldoras de estado para invitados confirmados', async () => {
+    const user = userEvent.setup();
+    renderWithRouter(<AdminRsvpPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Marcos Gómez')).toBeInTheDocument();
+    });
+
+    const confirmedPill = screen.getByRole('button', { name: /^Confirmados$/i });
+    await user.click(confirmedPill);
+
+    // Marcos Gómez tiene asistencia confirmada
+    expect(screen.getByText('Marcos Gómez')).toBeInTheDocument();
+  });
 });
