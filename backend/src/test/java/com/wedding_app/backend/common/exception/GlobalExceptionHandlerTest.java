@@ -95,7 +95,7 @@ class GlobalExceptionHandlerTest {
 
     ResponseEntity<ErrorResponse> response = exceptionHandler.handleMaxUploadSize(ex, request);
 
-    assertEquals(HttpStatus.PAYLOAD_TOO_LARGE, response.getStatusCode());
+    assertEquals(HttpStatus.valueOf(413), response.getStatusCode());
     assertNotNull(response.getBody());
     assertEquals(413, response.getBody().status());
     assertEquals("El archivo subido supera el límite máximo permitido (10MB)", response.getBody().message());

@@ -15,6 +15,10 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 
+import org.springframework.web.filter.CorsFilter;
+
+import com.wedding_app.backend.common.security.RateLimitFilter;
+
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
@@ -25,12 +29,14 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
 
   private final ClerkJwtAuthenticationConverter jwtAuthenticationConverter;
+  private final RateLimitFilter rateLimitFilter;
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http
         .csrf(AbstractHttpConfigurer::disable)
         .cors(Customizer.withDefaults())
+        .addFilterAfter(rateLimitFilter, CorsFilter.class)
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .headers(headers -> headers
             .contentTypeOptions(Customizer.withDefaults())

@@ -91,7 +91,7 @@ public class GlobalExceptionHandler {
   public ResponseEntity<ErrorResponse> handleMaxUploadSize(MaxUploadSizeExceededException ex,
       HttpServletRequest request) {
     log.warn("Tamaño de archivo excedido en {}: {}", request.getRequestURI(), ex.getMessage());
-    return build(HttpStatus.PAYLOAD_TOO_LARGE, "El archivo subido supera el límite máximo permitido (10MB)", request, null);
+    return build(HttpStatus.valueOf(413), "El archivo subido supera el límite máximo permitido (10MB)", request, null);
   }
 
   @ExceptionHandler(DataIntegrityViolationException.class)
