@@ -1,10 +1,12 @@
 import React from 'react';
+import type { PracticalDetailSection } from '../../../../types';
 import styles from './InfoSection.module.css';
 
 interface InfoSectionProps {
   dressCode?: string;
   accommodations?: string;
   transportInfo?: string;
+  customSections?: PracticalDetailSection[];
   faqs?: Array<{ question: string; answer: string }>;
 }
 
@@ -12,9 +14,11 @@ export const InfoSection: React.FC<InfoSectionProps> = ({
   dressCode,
   accommodations,
   transportInfo,
+  customSections,
   faqs,
 }) => {
-  const hasCards = Boolean(dressCode || accommodations || transportInfo);
+  const hasCustomSections = Boolean(customSections && customSections.length > 0);
+  const hasCards = Boolean(dressCode || accommodations || transportInfo || hasCustomSections);
   const hasFaqs = Boolean(faqs && faqs.length > 0);
 
   if (!hasCards && !hasFaqs) {
@@ -53,6 +57,14 @@ export const InfoSection: React.FC<InfoSectionProps> = ({
               <p className={styles.cardText}>{accommodations}</p>
             </div>
           )}
+
+          {customSections?.map((section, index) => (
+            <div key={section.id || index} className={styles.card}>
+              <div className={styles.cardIcon}>{section.icon || 'ℹ️'}</div>
+              <h3 className={styles.cardTitle}>{section.title}</h3>
+              <p className={styles.cardText} style={{ whiteSpace: 'pre-line' }}>{section.description}</p>
+            </div>
+          ))}
         </div>
       )}
 

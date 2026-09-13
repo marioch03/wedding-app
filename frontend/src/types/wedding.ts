@@ -1,3 +1,10 @@
+export interface PracticalDetailSection {
+  id: string;
+  title: string;
+  description: string;
+  icon?: string;
+}
+
 export interface WeddingContent {
   storyTitle?: string;
   storyText?: string;
@@ -9,6 +16,7 @@ export interface WeddingContent {
   dressCode?: string;
   accommodations?: string;
   transportInfo?: string;
+  customSections?: PracticalDetailSection[];
   customNotes?: string;
   [key: string]: unknown;
 }

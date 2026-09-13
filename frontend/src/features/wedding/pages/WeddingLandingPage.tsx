@@ -81,9 +81,7 @@ export const WeddingLandingPage: React.FC = () => {
         />
 
         <InfoSection
-          dressCode={wedding.content?.dressCode}
-          accommodations={wedding.content?.accommodations}
-          transportInfo={wedding.content?.transportInfo}
+          customSections={wedding.content?.customSections}
           faqs={wedding.content?.faqs}
         />
       </main>

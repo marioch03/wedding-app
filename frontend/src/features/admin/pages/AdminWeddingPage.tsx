@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import type { WeddingResponse, WeddingRequest, WeddingContent } from '../../../types';
+import type { WeddingResponse, WeddingRequest, WeddingContent, PracticalDetailSection } from '../../../types';
 import { weddingApi } from '../../../lib/api';
 import styles from './AdminWeddingPage.module.css';
 
@@ -23,6 +23,8 @@ const SAMPLE_GALLERY_PHOTOS = [
   'https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=900&q=85',
   'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=900&q=85',
 ];
+
+const SUGGESTED_SECTION_ICONS = ['🎁', '👶', '🎵', '📸', '🅿️', '🐾', '💍', '🍽️', '💡', 'ℹ️', '📍', '🍸'];
 
 export const AdminWeddingPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -47,13 +49,7 @@ export const AdminWeddingPage: React.FC = () => {
   const [newPhotoUrl, setNewPhotoUrl] = useState('');
 
   // Practical Details
-  const [dressCode, setDressCode] = useState('');
-  const [accommodations, setAccommodations] = useState('');
-  const [transportInfo, setTransportInfo] = useState('');
-
-  useEffect(() => {
-    loadWeddingData();
-  }, []);
+  const [customSections, setCustomSections] = useState<PracticalDetailSection[]>([]);
 
   const loadWeddingData = async () => {
     try {
@@ -72,16 +68,19 @@ export const AdminWeddingPage: React.FC = () => {
       setStoryText(content.storyText || '');
       setStoryImageUrl(content.storyImageUrl || SAMPLE_STORY_PHOTOS[0]);
       setGalleryImages(content.galleryImages || SAMPLE_GALLERY_PHOTOS);
-      setDressCode(content.dressCode || '');
-      setAccommodations(content.accommodations || '');
-      setTransportInfo(content.transportInfo || '');
-    } catch (err: any) {
+      setCustomSections(content.customSections || []);
+    } catch (err: unknown) {
       console.error('Error loading wedding configuration:', err);
-      setError(err?.message || 'Error al cargar los datos de la boda.');
+      const msg = err instanceof Error ? err.message : 'Error al cargar los datos de la boda.';
+      setError(msg);
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    loadWeddingData();
+  }, []);
 
   // Monogram & Days Calculation
   const monogram = useMemo(() => {
@@ -114,6 +113,45 @@ export const AdminWeddingPage: React.FC = () => {
     setGalleryImages(SAMPLE_GALLERY_PHOTOS);
   };
 
+  // Custom Sections Handlers
+  const handleAddSection = () => {
+    const newSection: PracticalDetailSection = {
+      id: `sec-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+      title: '',
+      description: '',
+      icon: '🎁',
+    };
+    setCustomSections((prev) => [...prev, newSection]);
+  };
+
+  const handleUpdateSection = (
+    index: number,
+    field: keyof PracticalDetailSection,
+    value: string
+  ) => {
+    setCustomSections((prev) => {
+      const next = [...prev];
+      next[index] = { ...next[index], [field]: value };
+      return next;
+    });
+  };
+
+  const handleDeleteSection = (index: number) => {
+    setCustomSections((prev) => prev.filter((_, idx) => idx !== index));
+  };
+
+  const handleMoveSection = (index: number, direction: 'up' | 'down') => {
+    setCustomSections((prev) => {
+      const targetIndex = direction === 'up' ? index - 1 : index + 1;
+      if (targetIndex < 0 || targetIndex >= prev.length) return prev;
+      const next = [...prev];
+      const temp = next[index];
+      next[index] = next[targetIndex];
+      next[targetIndex] = temp;
+      return next;
+    });
+  };
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -127,6 +165,15 @@ export const AdminWeddingPage: React.FC = () => {
       return;
     }
 
+    const validSections = customSections
+      .filter((s) => s.title.trim() || s.description.trim())
+      .map((s) => ({
+        id: s.id,
+        title: s.title.trim(),
+        description: s.description.trim(),
+        icon: s.icon?.trim() || 'ℹ️',
+      }));
+
     const contentPayload: WeddingContent = {
       heroSubtitle: heroSubtitle.trim() || undefined,
       coverImageUrl: coverImageUrl.trim() || undefined,
@@ -134,9 +181,7 @@ export const AdminWeddingPage: React.FC = () => {
       storyText: storyText.trim() || undefined,
       storyImageUrl: storyImageUrl.trim() || undefined,
       galleryImages: galleryImages.length > 0 ? galleryImages : undefined,
-      dressCode: dressCode.trim() || undefined,
-      accommodations: accommodations.trim() || undefined,
-      transportInfo: transportInfo.trim() || undefined,
+      customSections: validSections.length > 0 ? validSections : undefined,
     };
 
     const payload: WeddingRequest = {
@@ -153,9 +198,10 @@ export const AdminWeddingPage: React.FC = () => {
       await weddingApi.updateCurrentAdmin(payload);
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 4000);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error saving wedding settings:', err);
-      setError(err?.message || 'Error al guardar la configuración de la boda.');
+      const msg = err instanceof Error ? err.message : 'Error al guardar la configuración de la boda.';
+      setError(msg);
     } finally {
       setSaving(false);
     }
@@ -494,53 +540,203 @@ export const AdminWeddingPage: React.FC = () => {
             <div>
               <h2 className={styles.sectionTitle}>Detalles Prácticos para Invitados</h2>
               <span className={styles.sectionSubtitle}>
-                Información útil sobre código de vestimenta, alojamiento y traslados
+                Tarjetas informativas útiles (código de vestimenta, transporte, alojamiento, regalos, niños, etc.)
               </span>
             </div>
           </div>
 
           <div className={styles.sectionBody}>
-            <div className={styles.formGroup}>
-              <label className={styles.label}>
-                👔 Código de Vestimenta (Dress Code)
-              </label>
-              <input
-                type="text"
-                className={styles.input}
-                value={dressCode}
-                onChange={(e) => setDressCode(e.target.value)}
-                placeholder="Ej. Formal / Traje oscuro y vestido de cóctel o largo"
-              />
-            </div>
+            {/* Secciones Personalizadas de Información */}
+            <div className={styles.customSectionsContainer}>
+              <div className={styles.customSectionsHeader}>
+                <div>
+                  <h3 className={styles.customSectionsTitle}>
+                    <span>📑</span> Secciones Adicionales Personalizadas
+                  </h3>
+                  <span className={styles.labelHint}>
+                    Añade tarjetas adicionales para regalos, lista de bodas, niños, fotos, peticiones musicales o cualquier otra indicación
+                  </span>
+                </div>
+                <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                  <button
+                    type="button"
+                    className={styles.addSectionBtn}
+                    onClick={handleAddSection}
+                  >
+                    + Añadir Sección
+                  </button>
+                  <button
+                    type="submit"
+                    form="weddingConfigForm"
+                    className={styles.sectionSaveBtn}
+                    disabled={saving || loading}
+                  >
+                    {saving ? 'Guardando...' : '💾 Guardar Secciones'}
+                  </button>
+                </div>
+              </div>
 
-            <div className={styles.formGroup}>
-              <label className={styles.label}>
-                🏨 Alojamiento Recomendado
-              </label>
-              <textarea
-                className={styles.textarea}
-                value={accommodations}
-                onChange={(e) => setAccommodations(e.target.value)}
-                placeholder="Ej. Hotel Gran Vía (10% de descuento con el código BODA2027) o Hotel Boutique Los Álamos..."
-                rows={3}
-              />
-            </div>
+              {customSections.length === 0 ? (
+                <div className={styles.emptyCustomSections}>
+                  <span>No hay secciones personalizadas adicionales añadidas todavía.</span>
+                  <button
+                    type="button"
+                    className={styles.addSectionBtn}
+                    onClick={handleAddSection}
+                  >
+                    + Añadir la primera sección (ej. Lista de Bodas o Niños)
+                  </button>
+                </div>
+              ) : (
+                <div className={styles.customSectionsList}>
+                  {customSections.map((sec, index) => (
+                    <div key={sec.id || index} className={styles.customSectionCard}>
+                      <div className={styles.customSectionTop}>
+                        <div className={styles.sectionBadge}>
+                          <span>Sección {index + 1}</span>
+                          {sec.title ? ` • ${sec.title}` : ''}
+                        </div>
+                        <div className={styles.sectionActions}>
+                          <button
+                            type="button"
+                            className={styles.moveBtn}
+                            onClick={() => handleMoveSection(index, 'up')}
+                            disabled={index === 0}
+                            title="Mover sección arriba"
+                          >
+                            ▲
+                          </button>
+                          <button
+                            type="button"
+                            className={styles.moveBtn}
+                            onClick={() => handleMoveSection(index, 'down')}
+                            disabled={index === customSections.length - 1}
+                            title="Mover sección abajo"
+                          >
+                            ▼
+                          </button>
+                          <button
+                            type="button"
+                            className={styles.deleteSectionBtn}
+                            onClick={() => handleDeleteSection(index)}
+                            title="Eliminar esta sección"
+                          >
+                            🗑️
+                          </button>
+                        </div>
+                      </div>
 
-            <div className={styles.formGroup}>
-              <label className={styles.label}>
-                🚌 Información de Transporte & Autobuses
-              </label>
-              <textarea
-                className={styles.textarea}
-                value={transportInfo}
-                onChange={(e) => setTransportInfo(e.target.value)}
-                placeholder="Ej. Habrá servicio de autobús con salida a las 12:30h desde la Plaza Mayor y regreso a las 22:00h y 02:00h..."
-                rows={3}
-              />
+                      <div className={styles.sectionIconRow}>
+                        <label className={styles.label}>
+                          Icono / Emoji de la Tarjeta
+                          <span className={styles.labelHint}>(Elige uno sugerido o escribe el que prefieras)</span>
+                        </label>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+                          <input
+                            type="text"
+                            className={styles.customIconInput}
+                            value={sec.icon || 'ℹ️'}
+                            onChange={(e) => handleUpdateSection(index, 'icon', e.target.value)}
+                            maxLength={4}
+                            title="Emoji personalizado"
+                          />
+                          <div className={styles.iconChips}>
+                            {SUGGESTED_SECTION_ICONS.map((emoji) => (
+                              <button
+                                key={emoji}
+                                type="button"
+                                className={`${styles.iconChip} ${sec.icon === emoji ? styles.iconChipSelected : ''}`}
+                                onClick={() => handleUpdateSection(index, 'icon', emoji)}
+                                title={`Seleccionar ${emoji}`}
+                              >
+                                {emoji}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>
+                          Título de la Sección *
+                          <span className={styles.labelHint}>(Ej. Lista de Bodas & Regalos, Niños en el Enlace, Canciones...)</span>
+                        </label>
+                        <input
+                          type="text"
+                          className={styles.input}
+                          value={sec.title}
+                          onChange={(e) => handleUpdateSection(index, 'title', e.target.value)}
+                          placeholder="Introduce un título descriptivo"
+                        />
+                      </div>
+
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>
+                          Contenido / Descripción *
+                          <span className={styles.labelHint}>(Información detallada que verán los invitados)</span>
+                        </label>
+                        <textarea
+                          className={styles.textarea}
+                          value={sec.description}
+                          onChange={(e) => handleUpdateSection(index, 'description', e.target.value)}
+                          placeholder="Escribe aquí las indicaciones o detalles para los invitados..."
+                          rows={3}
+                        />
+                      </div>
+                    </div>
+                  ))}
+
+                  <div className={styles.customSectionsFooter}>
+                    <button
+                      type="button"
+                      className={styles.addSectionBtn}
+                      onClick={handleAddSection}
+                    >
+                      + Añadir Otra Sección
+                    </button>
+                    <button
+                      type="submit"
+                      form="weddingConfigForm"
+                      className={styles.sectionSaveBtn}
+                      disabled={saving || loading}
+                    >
+                      {saving ? 'Guardando...' : '💾 Guardar Secciones'}
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
       </form>
+
+      {/* Barra Inferior Fija de Guardado Accesible en Todo Momento */}
+      <div className={styles.stickyFooterBar}>
+        <div className={styles.stickyFooterContent}>
+          <div className={styles.stickyFooterText}>
+            <span className={styles.stickyFooterTitle}>Configuración de la Boda</span>
+            <span className={styles.stickyFooterSubtitle}>
+              {saving
+                ? 'Guardando cambios en el servidor...'
+                : 'Pulsa en Guardar para que las secciones y datos se mantengan y publiquen'}
+            </span>
+          </div>
+
+          <div className={styles.headerActions}>
+            <Link to="/" target="_blank" rel="noreferrer" className={styles.publicLinkButton}>
+              <span>👁️</span> Ver Web Pública
+            </Link>
+            <button
+              type="submit"
+              form="weddingConfigForm"
+              className={styles.saveButton}
+              disabled={saving || loading}
+            >
+              {saving ? 'Guardando...' : '💾 Guardar Configuración'}
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
