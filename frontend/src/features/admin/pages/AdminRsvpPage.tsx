@@ -11,9 +11,12 @@ import { rsvpApi, partiesApi, guestsApi, eventsApi, menusApi } from '../../../li
 import { exportCateringToExcel, exportCateringToCsv } from '../../../lib/export/cateringExport';
 import { exportRsvpGuestsToExcel, exportRsvpGuestsToCsv } from '../../../lib/export/rsvpExport';
 import { ManualRsvpModal } from '../components/ManualRsvpModal/ManualRsvpModal';
+import { usePageTitle } from '../../../common/hooks';
 import styles from './AdminRsvpPage.module.css';
 
 export const AdminRsvpPage: React.FC = () => {
+  usePageTitle('Seguimiento RSVP & Catering | Panel de Administración');
+
   const [activeTab, setActiveTab] = useState<'attendance' | 'catering'>('attendance');
 
   // General Loading & Error State

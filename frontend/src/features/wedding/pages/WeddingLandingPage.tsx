@@ -8,12 +8,18 @@ import { GallerySection } from '../components/GallerySection/GallerySection';
 import { InfoSection } from '../components/InfoSection/InfoSection';
 import { FooterSection } from '../components/FooterSection/FooterSection';
 import { WeddingSkeleton } from '../components/WeddingSkeleton/WeddingSkeleton';
+import { usePageTitle } from '../../../common/hooks';
 import styles from './WeddingLandingPage.module.css';
 
 export const WeddingLandingPage: React.FC = () => {
   const [wedding, setWedding] = useState<WeddingPublicResponse | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+
+  const pageTitle = wedding?.partner1Name && wedding?.partner2Name
+    ? `${wedding.partner1Name} & ${wedding.partner2Name} | Nuestra Boda`
+    : 'Nuestra Boda | Bienvenidos';
+  usePageTitle(pageTitle);
 
   const loadWeddingData = async () => {
     setIsLoading(true);

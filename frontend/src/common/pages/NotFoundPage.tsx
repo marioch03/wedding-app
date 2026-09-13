@@ -1,8 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { usePageTitle } from '../hooks';
 import styles from './NotFoundPage.module.css';
 
 export const NotFoundPage: React.FC = () => {
+  usePageTitle('Página no encontrada | Nuestra Boda');
+
   return (
     <div className={styles.container}>
       <div className={styles.card}>

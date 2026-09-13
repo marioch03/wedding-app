@@ -6,6 +6,7 @@ import { RsvpTokenPrompt } from '../components/RsvpTokenPrompt/RsvpTokenPrompt';
 import { RsvpGuestCard } from '../components/RsvpGuestCard/RsvpGuestCard';
 import { RsvpSuccess } from '../components/RsvpSuccess/RsvpSuccess';
 import { RsvpSkeleton } from '../components/RsvpSkeleton/RsvpSkeleton';
+import { usePageTitle } from '../../../common/hooks';
 import styles from './RsvpPage.module.css';
 
 export const RsvpPage: React.FC = () => {
@@ -17,6 +18,11 @@ export const RsvpPage: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const pageTitle = rsvpInfo
+    ? `Confirmar Asistencia - ${rsvpInfo.partyName} | Nuestra Boda`
+    : 'Confirmación de Asistencia (RSVP) | Nuestra Boda';
+  usePageTitle(pageTitle);
 
   useEffect(() => {
     if (!token) {

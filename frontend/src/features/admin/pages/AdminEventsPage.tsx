@@ -5,9 +5,12 @@ import { weddingApi } from '../../../lib/api/wedding';
 import { EventModal } from '../components/EventModal/EventModal';
 import { MenuOptionModal } from '../components/MenuOptionModal/MenuOptionModal';
 import { ConfirmModal } from '../../../common/components';
+import { usePageTitle } from '../../../common/hooks';
 import styles from './AdminEventsPage.module.css';
 
 export const AdminEventsPage: React.FC = () => {
+  usePageTitle('Eventos & Menús | Panel de Administración');
+
   const [weddingId, setWeddingId] = useState<string>('');
   const [events, setEvents] = useState<EventResponse[]>([]);
   const [eventMenus, setEventMenus] = useState<Record<string, MenuOptionResponse[]>>({});

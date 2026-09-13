@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import type { WeddingResponse, WeddingRequest, WeddingContent, PracticalDetailSection } from '../../../types';
 import { weddingApi } from '../../../lib/api';
+import { usePageTitle } from '../../../common/hooks';
 import styles from './AdminWeddingPage.module.css';
 
 // Fotos de muestra elegantes de Unsplash para sugerencias rápidas
@@ -27,6 +28,8 @@ const SAMPLE_GALLERY_PHOTOS = [
 const SUGGESTED_SECTION_ICONS = ['🎁', '👶', '🎵', '📸', '🅿️', '🐾', '💍', '🍽️', '💡', 'ℹ️', '📍', '🍸'];
 
 export const AdminWeddingPage: React.FC = () => {
+  usePageTitle('Configuración de la Boda | Panel de Administración');
+
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);

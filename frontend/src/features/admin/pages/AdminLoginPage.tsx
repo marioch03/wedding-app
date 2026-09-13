@@ -1,9 +1,12 @@
 import React from 'react';
 import { SignIn } from '@clerk/clerk-react';
 import { Link } from 'react-router-dom';
+import { usePageTitle } from '../../../common/hooks';
 import styles from './AdminLoginPage.module.css';
 
 export const AdminLoginPage: React.FC = () => {
+  usePageTitle('Acceso Administración | Nuestra Boda');
+
   return (
     <div className={styles.pageContainer}>
       <div className={styles.background} />

@@ -4,9 +4,12 @@ import { partiesApi } from '../../../lib/api/parties';
 import { PartyModal } from '../components/PartyModal/PartyModal';
 import { ConfirmModal } from '../../../common/components';
 import { QrCodeModal } from '../components/QrCodeModal/QrCodeModal';
+import { usePageTitle } from '../../../common/hooks';
 import styles from './AdminPartiesPage.module.css';
 
 export const AdminPartiesPage: React.FC = () => {
+  usePageTitle('Gestión de Invitados & Grupos | Panel de Administración');
+
   const [parties, setParties] = useState<PartyResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

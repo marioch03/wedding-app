@@ -3,9 +3,12 @@ import { Link } from 'react-router-dom';
 import { useUser } from '@clerk/clerk-react';
 import { rsvpApi, weddingApi } from '../../../lib/api';
 import type { RsvpStatsResponse, WeddingPublicResponse } from '../../../types';
+import { usePageTitle } from '../../../common/hooks';
 import styles from './AdminDashboardPage.module.css';
 
 export const AdminDashboardPage: React.FC = () => {
+  usePageTitle('Panel de Control | Administración de Boda');
+
   const { user } = useUser();
   const [stats, setStats] = useState<RsvpStatsResponse | null>(null);
   const [wedding, setWedding] = useState<WeddingPublicResponse | null>(null);
