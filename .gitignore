@@ -106,3 +106,7 @@ application-dev.properties
 application-dev.yml
 .vscode/settings.json
 .vscode/launch.json
+
+# Archivos subidos / Media local
+uploads/
+**/uploads/

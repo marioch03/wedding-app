@@ -1,8 +1,16 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import type { WeddingResponse, WeddingRequest, WeddingContent, PracticalDetailSection } from '../../../types';
+import type {
+  WeddingResponse,
+  WeddingRequest,
+  WeddingContent,
+  PracticalDetailSection,
+  GalleryPhotoItem,
+} from '../../../types';
 import { weddingApi } from '../../../lib/api';
+import { mediaApi } from '../../../lib/api/media';
 import { usePageTitle } from '../../../common/hooks';
+import { getMediaUrl } from '../../../common/utils/media';
 import styles from './AdminWeddingPage.module.css';
 
 // Fotos de muestra elegantes de Unsplash para sugerencias rápidas
@@ -10,19 +18,6 @@ const SAMPLE_COVER_PHOTOS = [
   'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1600&q=85',
   'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1600&q=85',
   'https://images.unsplash.com/photo-1469371670807-013ccf25f16a?auto=format&fit=crop&w=1600&q=85',
-];
-
-const SAMPLE_STORY_PHOTOS = [
-  'https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=900&q=85',
-  'https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=900&q=85',
-  'https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=900&q=85',
-];
-
-const SAMPLE_GALLERY_PHOTOS = [
-  'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=900&q=85',
-  'https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&w=900&q=85',
-  'https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=900&q=85',
-  'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=900&q=85',
 ];
 
 const SUGGESTED_SECTION_ICONS = ['🎁', '👶', '🎵', '📸', '🅿️', '🐾', '💍', '🍽️', '💡', 'ℹ️', '📍', '🍸'];
@@ -47,9 +42,25 @@ export const AdminWeddingPage: React.FC = () => {
   const [storyText, setStoryText] = useState('');
   const [storyImageUrl, setStoryImageUrl] = useState('');
 
-  // Gallery
-  const [galleryImages, setGalleryImages] = useState<string[]>([]);
-  const [newPhotoUrl, setNewPhotoUrl] = useState('');
+  // Gallery (Momentos Especiales)
+  const [galleryPhotos, setGalleryPhotos] = useState<GalleryPhotoItem[]>([]);
+
+  // Upload States
+  const [uploadingCover, setUploadingCover] = useState(false);
+  const [uploadingStory, setUploadingStory] = useState(false);
+  const [uploadingGallery, setUploadingGallery] = useState(false);
+  const [uploadGalleryProgress, setUploadGalleryProgress] = useState<string | null>(null);
+  const [mediaError, setMediaError] = useState<string | null>(null);
+
+  // Drag over states
+  const [dragOverCover, setDragOverCover] = useState(false);
+  const [dragOverStory, setDragOverStory] = useState(false);
+  const [dragOverGallery, setDragOverGallery] = useState(false);
+
+  // File input refs
+  const coverInputRef = useRef<HTMLInputElement>(null);
+  const storyInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
 
   // Practical Details
   const [customSections, setCustomSections] = useState<PracticalDetailSection[]>([]);
@@ -69,8 +80,16 @@ export const AdminWeddingPage: React.FC = () => {
       setCoverImageUrl(content.coverImageUrl || SAMPLE_COVER_PHOTOS[0]);
       setStoryTitle(content.storyTitle || 'Cómo empezó todo');
       setStoryText(content.storyText || '');
-      setStoryImageUrl(content.storyImageUrl || SAMPLE_STORY_PHOTOS[0]);
-      setGalleryImages(content.galleryImages || SAMPLE_GALLERY_PHOTOS);
+      setStoryImageUrl(content.storyImageUrl || '');
+
+      const loadedGallery: GalleryPhotoItem[] = (content.galleryImages || []).map((item, idx) => {
+        if (typeof item === 'string') {
+          return { url: item, caption: `Momento especial ${idx + 1}` };
+        }
+        return { url: item.url, caption: item.caption || `Momento especial ${idx + 1}` };
+      });
+      setGalleryPhotos(loadedGallery);
+
       setCustomSections(content.customSections || []);
     } catch (err: unknown) {
       console.error('Error loading wedding configuration:', err);
@@ -101,19 +120,92 @@ export const AdminWeddingPage: React.FC = () => {
     return Math.floor(diff / (1000 * 60 * 60 * 24));
   }, [weddingDate]);
 
+  // Upload Handlers
+  const handleUploadCoverFile = async (file: File) => {
+    if (!file.type.startsWith('image/')) {
+      setMediaError('El archivo seleccionado debe ser una imagen válida (JPG, PNG, WebP o GIF)');
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      setMediaError('La imagen no puede superar los 10MB de tamaño');
+      return;
+    }
+    try {
+      setUploadingCover(true);
+      setMediaError(null);
+      const res = await mediaApi.uploadImage(file);
+      setCoverImageUrl(res.url);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Error al subir la fotografía de portada';
+      setMediaError(msg);
+    } finally {
+      setUploadingCover(false);
+    }
+  };
+
+  const handleUploadStoryFile = async (file: File) => {
+    if (!file.type.startsWith('image/')) {
+      setMediaError('El archivo seleccionado debe ser una imagen válida (JPG, PNG, WebP o GIF)');
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      setMediaError('La imagen no puede superar los 10MB de tamaño');
+      return;
+    }
+    try {
+      setUploadingStory(true);
+      setMediaError(null);
+      const res = await mediaApi.uploadImage(file);
+      setStoryImageUrl(res.url);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Error al subir la fotografía de la historia';
+      setMediaError(msg);
+    } finally {
+      setUploadingStory(false);
+    }
+  };
+
+  const handleUploadGalleryFiles = async (files: FileList | File[]) => {
+    const fileArray = Array.from(files);
+    const validFiles = fileArray.filter(
+      (f) => f.type.startsWith('image/') && f.size <= 10 * 1024 * 1024
+    );
+
+    if (validFiles.length === 0) {
+      setMediaError('Por favor selecciona imágenes válidas de hasta 10MB (JPG, PNG, WebP)');
+      return;
+    }
+
+    try {
+      setUploadingGallery(true);
+      setMediaError(null);
+      setUploadGalleryProgress(`Subiendo ${validFiles.length} foto${validFiles.length > 1 ? 's' : ''}...`);
+      const responses = await mediaApi.uploadMultipleImages(validFiles);
+      const newItems: GalleryPhotoItem[] = responses.map((r, i) => ({
+        url: r.url,
+        caption: `Momento especial ${galleryPhotos.length + i + 1}`,
+      }));
+      setGalleryPhotos((prev) => [...prev, ...newItems]);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Error al subir las fotografías al álbum';
+      setMediaError(msg);
+    } finally {
+      setUploadingGallery(false);
+      setUploadGalleryProgress(null);
+    }
+  };
+
   // Gallery Handlers
-  const handleAddPhoto = () => {
-    if (!newPhotoUrl.trim()) return;
-    setGalleryImages((prev) => [...prev, newPhotoUrl.trim()]);
-    setNewPhotoUrl('');
+  const handleUpdateGalleryCaption = (index: number, caption: string) => {
+    setGalleryPhotos((prev) => {
+      const next = [...prev];
+      next[index] = { ...next[index], caption };
+      return next;
+    });
   };
 
   const handleDeletePhoto = (index: number) => {
-    setGalleryImages((prev) => prev.filter((_, idx) => idx !== index));
-  };
-
-  const handleApplySampleGallery = () => {
-    setGalleryImages(SAMPLE_GALLERY_PHOTOS);
+    setGalleryPhotos((prev) => prev.filter((_, idx) => idx !== index));
   };
 
   // Custom Sections Handlers
@@ -183,7 +275,7 @@ export const AdminWeddingPage: React.FC = () => {
       storyTitle: storyTitle.trim() || undefined,
       storyText: storyText.trim() || undefined,
       storyImageUrl: storyImageUrl.trim() || undefined,
-      galleryImages: galleryImages.length > 0 ? galleryImages : undefined,
+      galleryImages: galleryPhotos.length > 0 ? galleryPhotos : undefined,
       customSections: validSections.length > 0 ? validSections : undefined,
     };
 
@@ -230,10 +322,19 @@ export const AdminWeddingPage: React.FC = () => {
           <button
             type="submit"
             form="weddingConfigForm"
-            className={styles.saveButton}
+            className={`${styles.saveButton} ${saveSuccess ? styles.saveButtonSuccess : ''}`}
             disabled={saving || loading}
           >
-            {saving ? 'Guardando...' : 'Guardar Configuración'}
+            {saving ? (
+              <>
+                <span className={styles.uploadSpinner} style={{ borderTopColor: '#ffffff', width: '14px', height: '14px' }} />
+                Guardando...
+              </>
+            ) : saveSuccess ? (
+              '✓ ¡Guardado con Éxito!'
+            ) : (
+              '💾 Guardar Configuración'
+            )}
           </button>
         </div>
       </div>
@@ -245,6 +346,19 @@ export const AdminWeddingPage: React.FC = () => {
       )}
 
       {error && <div className={styles.errorAlert}>⚠️ {error}</div>}
+      {mediaError && (
+        <div className={styles.uploadErrorBanner}>
+          <span>⚠️ {mediaError}</span>
+          <button
+            type="button"
+            className={styles.uploadErrorClose}
+            onClick={() => setMediaError(null)}
+            aria-label="Cerrar aviso de error"
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       <form id="weddingConfigForm" onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
         {/* SECCIÓN 1: DATOS PRINCIPALES DE LA PAREJA */}
@@ -355,16 +469,69 @@ export const AdminWeddingPage: React.FC = () => {
 
             <div className={styles.formGroup}>
               <label className={styles.label}>
-                URL de Fotografía de Portada
+                Fotografía de Portada
                 <span className={styles.labelHint}>(Imagen horizontal de alta calidad)</span>
               </label>
-              <input
-                type="url"
-                className={styles.input}
-                value={coverImageUrl}
-                onChange={(e) => setCoverImageUrl(e.target.value)}
-                placeholder="https://..."
-              />
+
+              {/* Zona de Subida / Dropzone */}
+              <div
+                className={`${styles.uploadDropzone} ${dragOverCover ? styles.uploadDropzoneActive : ''}`}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setDragOverCover(true);
+                }}
+                onDragLeave={() => setDragOverCover(false)}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  setDragOverCover(false);
+                  if (e.dataTransfer.files?.[0]) {
+                    handleUploadCoverFile(e.dataTransfer.files[0]);
+                  }
+                }}
+                onClick={() => coverInputRef.current?.click()}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') coverInputRef.current?.click();
+                }}
+              >
+                <input
+                  ref={coverInputRef}
+                  type="file"
+                  accept="image/*"
+                  className={styles.hiddenFileInput}
+                  onChange={(e) => {
+                    if (e.target.files?.[0]) {
+                      handleUploadCoverFile(e.target.files[0]);
+                    }
+                  }}
+                />
+                <div className={styles.uploadIcon}>🖼️</div>
+                <div className={styles.uploadTitle}>
+                  {uploadingCover ? 'Subiendo fotografía...' : 'Arrastra una foto aquí o haz clic para subir desde tu equipo'}
+                </div>
+                <div className={styles.uploadSubtitle}>
+                  Formatos recomendados: JPG, PNG, WebP (máx. 10MB)
+                </div>
+
+                {uploadingCover && (
+                  <div className={styles.uploadStatusBadge}>
+                    <span className={styles.uploadSpinner} />
+                    Subiendo imagen...
+                  </div>
+                )}
+              </div>
+
+              {/* Opción alternativa: URL externa directa */}
+              <div style={{ marginTop: '0.6rem' }}>
+                <input
+                  type="url"
+                  className={styles.input}
+                  value={coverImageUrl}
+                  onChange={(e) => setCoverImageUrl(e.target.value)}
+                  placeholder="O introduce una URL web externa (https://...)"
+                />
+              </div>
             </div>
 
             {/* Presets rápidos */}
@@ -373,7 +540,7 @@ export const AdminWeddingPage: React.FC = () => {
               {SAMPLE_COVER_PHOTOS.map((url, idx) => (
                 <img
                   key={idx}
-                  src={url}
+                  src={getMediaUrl(url)}
                   alt={`Preset ${idx + 1}`}
                   className={styles.presetThumb}
                   onClick={() => setCoverImageUrl(url)}
@@ -385,7 +552,7 @@ export const AdminWeddingPage: React.FC = () => {
             {/* Live Preview */}
             {coverImageUrl && (
               <div className={styles.imagePreviewWrapper}>
-                <img src={coverImageUrl} alt="Vista previa de portada" className={styles.imagePreview} />
+                <img src={getMediaUrl(coverImageUrl)} alt="Vista previa de portada" className={styles.imagePreview} />
                 <div className={styles.imageOverlayBadge}>
                   Vista previa de portada • {partner1Name} & {partner2Name}
                 </div>
@@ -410,11 +577,33 @@ export const AdminWeddingPage: React.FC = () => {
             <div className={styles.storyLayoutGrid}>
               {/* Polaroid Frame Preview */}
               <div className={styles.polaroidFrame}>
-                <img
-                  src={storyImageUrl || SAMPLE_STORY_PHOTOS[0]}
-                  alt="Foto de la historia"
-                  className={styles.polaroidPhoto}
-                />
+                {storyImageUrl ? (
+                  <img
+                    src={getMediaUrl(storyImageUrl)}
+                    alt="Foto de la historia"
+                    className={styles.polaroidPhoto}
+                  />
+                ) : (
+                  <div
+                    style={{
+                      height: '220px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      background: 'var(--color-bg-subtle, #faf7f5)',
+                      borderRadius: '4px',
+                      color: 'var(--color-text-muted)',
+                      fontSize: '0.85rem',
+                      textAlign: 'center',
+                      padding: '1rem',
+                      border: '1px dashed var(--color-border)',
+                    }}
+                  >
+                    <span style={{ fontSize: '1.5rem', marginBottom: '0.4rem' }}>📷</span>
+                    <span>Sin foto seleccionada</span>
+                  </div>
+                )}
                 <div className={styles.polaroidCaption}>Nuestra Historia ❦</div>
               </div>
 
@@ -432,29 +621,88 @@ export const AdminWeddingPage: React.FC = () => {
                 </div>
 
                 <div className={styles.formGroup}>
-                  <label className={styles.label}>Fotografía de la Historia (URL)</label>
-                  <input
-                    type="url"
-                    className={styles.input}
-                    value={storyImageUrl}
-                    onChange={(e) => setStoryImageUrl(e.target.value)}
-                    placeholder="https://..."
-                  />
+                  <label className={styles.label}>
+                    Fotografía de la Historia
+                    <span className={styles.labelHint}>(Formato vertical o cuadrado para marco Polaroid)</span>
+                  </label>
 
-                  {/* Presets story */}
-                  <div className={styles.presetPicker} style={{ marginTop: '0.4rem' }}>
-                    <span className={styles.presetLabel}>Sugerencias:</span>
-                    {SAMPLE_STORY_PHOTOS.map((url, idx) => (
-                      <img
-                        key={idx}
-                        src={url}
-                        alt={`Preset ${idx + 1}`}
-                        className={styles.presetThumb}
-                        onClick={() => setStoryImageUrl(url)}
-                        title="Usar esta foto"
-                      />
-                    ))}
+                  {/* Dropzone Polaroid */}
+                  <div
+                    className={`${styles.uploadDropzone} ${dragOverStory ? styles.uploadDropzoneActive : ''}`}
+                    style={{ padding: '1.25rem' }}
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      setDragOverStory(true);
+                    }}
+                    onDragLeave={() => setDragOverStory(false)}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      setDragOverStory(false);
+                      if (e.dataTransfer.files?.[0]) {
+                        handleUploadStoryFile(e.dataTransfer.files[0]);
+                      }
+                    }}
+                    onClick={() => storyInputRef.current?.click()}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') storyInputRef.current?.click();
+                    }}
+                  >
+                    <input
+                      ref={storyInputRef}
+                      type="file"
+                      accept="image/*"
+                      className={styles.hiddenFileInput}
+                      onChange={(e) => {
+                        if (e.target.files?.[0]) {
+                          handleUploadStoryFile(e.target.files[0]);
+                        }
+                      }}
+                    />
+                    <div className={styles.uploadIcon} style={{ fontSize: '1.75rem' }}>📷</div>
+                    <div className={styles.uploadTitle}>
+                      {uploadingStory
+                        ? 'Subiendo fotografía...'
+                        : storyImageUrl
+                        ? 'Cambiar fotografía Polaroid'
+                        : 'Subir fotografía desde tu equipo'}
+                    </div>
+                    <div className={styles.uploadSubtitle}>
+                      Haz clic o arrastra una imagen (JPG, PNG, WebP • máx. 10MB)
+                    </div>
+
+                    {uploadingStory && (
+                      <div className={styles.uploadStatusBadge}>
+                        <span className={styles.uploadSpinner} />
+                        Subiendo foto...
+                      </div>
+                    )}
                   </div>
+
+                  {storyImageUrl && (
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '0.4rem', padding: '0.35rem 0.6rem', background: '#f8fafc', borderRadius: '6px', border: '1px solid var(--color-border)' }}>
+                      <span style={{ fontSize: '0.82rem', color: 'var(--color-text-body)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '300px' }}>
+                        ✓ Imagen asignada: {storyImageUrl.split('/').pop()}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setStoryImageUrl('')}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          color: '#c53030',
+                          fontSize: '0.82rem',
+                          cursor: 'pointer',
+                          fontWeight: 600,
+                          textDecoration: 'underline',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        Quitar foto
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 <div className={styles.formGroup}>
@@ -472,63 +720,115 @@ export const AdminWeddingPage: React.FC = () => {
           </div>
         </div>
 
-        {/* SECCIÓN 4: ÁLBUM INTERACTIVO (GALERÍA) */}
+        {/* SECCIÓN 4: ÁLBUM INTERACTIVO (MOMENTOS ESPECIALES) */}
         <div className={styles.sectionCard}>
           <div className={styles.sectionHeader}>
             <div className={styles.sectionIcon}>📸</div>
             <div>
-              <h2 className={styles.sectionTitle}>Álbum de Fotos & Recuerdos</h2>
+              <h2 className={styles.sectionTitle}>Álbum de Fotos & Recuerdos (Momentos Especiales)</h2>
               <span className={styles.sectionSubtitle}>
-                Galería interactiva con lightbox que podrán explorar los invitados
+                Sube las fotografías desde tu dispositivo y personaliza el título o pie de foto de cada momento
               </span>
             </div>
           </div>
 
           <div className={styles.sectionBody}>
+            {/* Subida Múltiple al Álbum */}
             <div className={styles.formGroup}>
-              <label className={styles.label}>Añadir nueva fotografía al álbum</label>
-              <div className={styles.addPhotoInputRow}>
+              <label className={styles.label}>
+                Fotografías del Álbum
+                <span className={styles.labelHint}>(Selecciona o arrastra una o varias fotos a la vez)</span>
+              </label>
+
+              <div
+                className={`${styles.uploadDropzone} ${dragOverGallery ? styles.uploadDropzoneActive : ''}`}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setDragOverGallery(true);
+                }}
+                onDragLeave={() => setDragOverGallery(false)}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  setDragOverGallery(false);
+                  if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                    handleUploadGalleryFiles(e.dataTransfer.files);
+                  }
+                }}
+                onClick={() => galleryInputRef.current?.click()}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') galleryInputRef.current?.click();
+                }}
+              >
                 <input
-                  type="url"
-                  className={styles.input}
-                  value={newPhotoUrl}
-                  onChange={(e) => setNewPhotoUrl(e.target.value)}
-                  placeholder="Introduce la URL de la foto (https://...)"
+                  ref={galleryInputRef}
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  className={styles.hiddenFileInput}
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files.length > 0) {
+                      handleUploadGalleryFiles(e.target.files);
+                    }
+                  }}
                 />
-                <button
-                  type="button"
-                  className={styles.addPhotoBtn}
-                  onClick={handleAddPhoto}
-                >
-                  + Añadir Foto
-                </button>
+                <div className={styles.uploadIcon}>📸</div>
+                <div className={styles.uploadTitle}>
+                  {uploadingGallery
+                    ? (uploadGalleryProgress || 'Subiendo fotografías...')
+                    : 'Arrastra tus fotos aquí o haz clic para seleccionarlas'}
+                </div>
+                <div className={styles.uploadSubtitle}>
+                  Sube múltiples fotos de golpe (JPG, PNG, WebP • hasta 10MB c/u)
+                </div>
+
+                {uploadingGallery && (
+                  <div className={styles.uploadStatusBadge}>
+                    <span className={styles.uploadSpinner} />
+                    {uploadGalleryProgress || 'Subiendo fotos...'}
+                  </div>
+                )}
               </div>
             </div>
 
-            {galleryImages.length === 0 ? (
+            {galleryPhotos.length === 0 ? (
               <div className={styles.emptyGallery}>
-                <span>No hay fotos en el álbum todavía.</span>
-                <button
-                  type="button"
-                  className={styles.quickSamplesBtn}
-                  onClick={handleApplySampleGallery}
-                >
-                  Cargar Colección de Muestra
-                </button>
+                <span style={{ fontSize: '1.8rem', marginBottom: '0.25rem' }}>📷</span>
+                <span style={{ fontWeight: 600 }}>No hay fotografías en el álbum todavía.</span>
+                <span style={{ fontSize: '0.82rem', color: 'var(--color-text-muted)' }}>
+                  Usa la zona superior para subir tus fotos favoritas desde tu equipo.
+                </span>
               </div>
             ) : (
               <div className={styles.galleryGrid}>
-                {galleryImages.map((url, idx) => (
-                  <div key={idx} className={styles.galleryCard}>
-                    <img src={url} alt={`Foto ${idx + 1}`} className={styles.galleryPhoto} />
-                    <button
-                      type="button"
-                      className={styles.deletePhotoBtn}
-                      onClick={() => handleDeletePhoto(idx)}
-                      title="Eliminar foto"
-                    >
-                      ✕
-                    </button>
+                {galleryPhotos.map((photo, idx) => (
+                  <div key={idx} className={styles.galleryCardWithCaption}>
+                    <div className={styles.galleryCardImageWrapper}>
+                      <img
+                        src={getMediaUrl(photo.url)}
+                        alt={photo.caption || `Foto ${idx + 1}`}
+                        className={styles.galleryPhoto}
+                      />
+                      <button
+                        type="button"
+                        className={styles.deletePhotoBtn}
+                        onClick={() => handleDeletePhoto(idx)}
+                        title="Eliminar foto"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                    <div className={styles.galleryCaptionWrapper}>
+                      <input
+                        type="text"
+                        className={styles.galleryCaptionInput}
+                        value={photo.caption || ''}
+                        onChange={(e) => handleUpdateGalleryCaption(idx, e.target.value)}
+                        placeholder="Pie de foto (ej. Día del compromiso)"
+                        title="Título o pie de foto para este momento"
+                      />
+                    </div>
                   </div>
                 ))}
               </div>
@@ -700,10 +1000,19 @@ export const AdminWeddingPage: React.FC = () => {
                     <button
                       type="submit"
                       form="weddingConfigForm"
-                      className={styles.sectionSaveBtn}
+                      className={`${styles.sectionSaveBtn} ${saveSuccess ? styles.saveButtonSuccess : ''}`}
                       disabled={saving || loading}
                     >
-                      {saving ? 'Guardando...' : '💾 Guardar Secciones'}
+                      {saving ? (
+                        <>
+                          <span className={styles.uploadSpinner} style={{ borderTopColor: '#ffffff', width: '13px', height: '13px' }} />
+                          Guardando...
+                        </>
+                      ) : saveSuccess ? (
+                        '✓ ¡Guardado con Éxito!'
+                      ) : (
+                        '💾 Guardar Secciones'
+                      )}
                     </button>
                   </div>
                 </div>
@@ -715,13 +1024,28 @@ export const AdminWeddingPage: React.FC = () => {
 
       {/* Barra Inferior Fija de Guardado Accesible en Todo Momento */}
       <div className={styles.stickyFooterBar}>
-        <div className={styles.stickyFooterContent}>
+        <div className={`${styles.stickyFooterContent} ${saveSuccess ? styles.stickyFooterSuccess : ''}`}>
           <div className={styles.stickyFooterText}>
-            <span className={styles.stickyFooterTitle}>Configuración de la Boda</span>
-            <span className={styles.stickyFooterSubtitle}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
+              <span className={styles.stickyFooterTitle}>Configuración de la Boda</span>
+              {saveSuccess && (
+                <span className={styles.stickySuccessBadge}>
+                  ✓ ¡Guardado en la base de datos!
+                </span>
+              )}
+            </div>
+            <span
+              className={styles.stickyFooterSubtitle}
+              style={{
+                color: saveSuccess ? '#15803d' : undefined,
+                fontWeight: saveSuccess ? 600 : undefined,
+              }}
+            >
               {saving
-                ? 'Guardando cambios en el servidor...'
-                : 'Pulsa en Guardar para que las secciones y datos se mantengan y publiquen'}
+                ? '⏳ Guardando cambios en el servidor...'
+                : saveSuccess
+                ? '✓ Todos los cambios, fotos y secciones se han guardado y publicado correctamente.'
+                : 'Pulsa en Guardar para que las secciones, fotos y datos se mantengan y publiquen'}
             </span>
           </div>
 
@@ -732,10 +1056,19 @@ export const AdminWeddingPage: React.FC = () => {
             <button
               type="submit"
               form="weddingConfigForm"
-              className={styles.saveButton}
+              className={`${styles.saveButton} ${saveSuccess ? styles.saveButtonSuccess : ''}`}
               disabled={saving || loading}
             >
-              {saving ? 'Guardando...' : '💾 Guardar Configuración'}
+              {saving ? (
+                <>
+                  <span className={styles.uploadSpinner} style={{ borderTopColor: '#ffffff', width: '14px', height: '14px' }} />
+                  Guardando...
+                </>
+              ) : saveSuccess ? (
+                '✓ ¡Guardado con Éxito!'
+              ) : (
+                '💾 Guardar Configuración'
+              )}
             </button>
           </div>
         </div>

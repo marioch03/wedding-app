@@ -710,4 +710,33 @@ export const handlers = [
   http.get('*/api/admin/menus/catering-report', () => {
     return HttpResponse.json(mockCateringReport);
   }),
+
+  // Media Upload Mocks
+  http.post('*/api/v1/admin/media/upload', () => {
+    return HttpResponse.json(
+      {
+        url: '/media/mock-image.webp',
+        fileName: 'mock-image.webp',
+        sizeBytes: 1024 * 500,
+      },
+      { status: 201 }
+    );
+  }),
+  http.post('*/api/v1/admin/media/upload-multiple', () => {
+    return HttpResponse.json(
+      [
+        {
+          url: '/media/mock-image-1.webp',
+          fileName: 'mock-image-1.webp',
+          sizeBytes: 1024 * 500,
+        },
+        {
+          url: '/media/mock-image-2.webp',
+          fileName: 'mock-image-2.webp',
+          sizeBytes: 1024 * 600,
+        },
+      ],
+      { status: 201 }
+    );
+  }),
 ];

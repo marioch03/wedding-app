@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import type { GalleryPhotoItem } from '../../../../types';
+import { getMediaUrl } from '../../../../common/utils/media';
 import styles from './GallerySection.module.css';
 
 interface GallerySectionProps {
-  galleryImages?: string[];
+  galleryImages?: Array<string | GalleryPhotoItem>;
 }
 
 interface PhotoItem {
@@ -29,13 +31,19 @@ const DEFAULT_MOMENTS: PhotoItem[] = [
 export const GallerySection: React.FC<GallerySectionProps> = ({ galleryImages }) => {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
-  // Si hay imágenes personalizadas, toma hasta 3 o 4 para mantener el collage íntimo
   const photos: PhotoItem[] =
     galleryImages && galleryImages.length > 0
-      ? galleryImages.slice(0, 3).map((url, idx) => ({
-          url,
-          caption: `Momento especial ${idx + 1}`,
-        }))
+      ? galleryImages.map((item, idx) => {
+          const url = typeof item === 'string' ? item : item.url;
+          const caption =
+            typeof item === 'object' && item.caption?.trim()
+              ? item.caption.trim()
+              : `Momento especial ${idx + 1}`;
+          return {
+            url: getMediaUrl(url),
+            caption,
+          };
+        })
       : DEFAULT_MOMENTS;
 
   const openLightbox = (index: number) => {

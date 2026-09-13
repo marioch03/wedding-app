@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { getMediaUrl } from '../../../../common/utils/media';
 import styles from './HeroSection.module.css';
 
 interface HeroSectionProps {
@@ -61,7 +62,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
     day: 'numeric',
   });
 
-  const bgImage = coverImageUrl || DEFAULT_COVER_IMAGE;
+  const bgImage = getMediaUrl(coverImageUrl) || DEFAULT_COVER_IMAGE;
 
   return (
     <section className={styles.heroContainer}>

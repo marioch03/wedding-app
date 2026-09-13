@@ -1,4 +1,5 @@
 import React from 'react';
+import { getMediaUrl } from '../../../../common/utils/media';
 import styles from './StorySection.module.css';
 
 interface StorySectionProps {
@@ -19,7 +20,7 @@ export const StorySection: React.FC<StorySectionProps> = ({
     return null;
   }
 
-  const imageUrl = storyImageUrl || DEFAULT_STORY_IMAGE;
+  const imageUrl = getMediaUrl(storyImageUrl) || DEFAULT_STORY_IMAGE;
 
   return (
     <section className={styles.section}>

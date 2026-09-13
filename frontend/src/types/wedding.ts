@@ -5,13 +5,18 @@ export interface PracticalDetailSection {
   icon?: string;
 }
 
+export interface GalleryPhotoItem {
+  url: string;
+  caption?: string;
+}
+
 export interface WeddingContent {
   storyTitle?: string;
   storyText?: string;
   storyImageUrl?: string;
   heroSubtitle?: string;
   coverImageUrl?: string;
-  galleryImages?: string[];
+  galleryImages?: Array<string | GalleryPhotoItem>;
   faqs?: Array<{ question: string; answer: string }>;
   dressCode?: string;
   accommodations?: string;

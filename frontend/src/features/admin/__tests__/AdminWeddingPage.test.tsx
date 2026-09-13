@@ -126,4 +126,64 @@ describe('Feature: Configuración de Boda y Secciones Prácticas (AdminWeddingPa
       'Contaremos con ludoteca y monitores.'
     );
   });
+
+  it('permite subir una foto de portada y actualizar la URL automáticamente', async () => {
+    const user = userEvent.setup();
+    renderWithRouter(<AdminWeddingPage />);
+
+    await waitFor(() => {
+      expect(screen.getByDisplayValue(mockWeddingAdmin.partner1Name)).toBeInTheDocument();
+    });
+
+    const file = new File(['fake-cover-content'], 'nueva-portada.jpg', { type: 'image/jpeg' });
+    const fileInputs = document.querySelectorAll('input[type="file"]');
+    const coverFileInput = fileInputs[0] as HTMLInputElement;
+
+    await user.upload(coverFileInput, file);
+
+    await waitFor(() => {
+      expect(screen.getByDisplayValue('/media/mock-image.webp')).toBeInTheDocument();
+    });
+  });
+
+  it('permite subir múltiples fotos de golpe al álbum de la galería', async () => {
+    const user = userEvent.setup();
+    renderWithRouter(<AdminWeddingPage />);
+
+    await waitFor(() => {
+      expect(screen.getByDisplayValue(mockWeddingAdmin.partner1Name)).toBeInTheDocument();
+    });
+
+    const file1 = new File(['fake-photo-1'], 'foto1.jpg', { type: 'image/jpeg' });
+    const file2 = new File(['fake-photo-2'], 'foto2.jpg', { type: 'image/jpeg' });
+    const fileInputs = document.querySelectorAll('input[type="file"]');
+    const galleryFileInput = fileInputs[2] as HTMLInputElement; // 0: cover, 1: story, 2: gallery
+
+    await user.upload(galleryFileInput, [file1, file2]);
+
+    await waitFor(() => {
+      // Las fotos mockeadas son /media/mock-image-1.webp y /media/mock-image-2.webp
+      const imgs = screen.getAllByRole('img');
+      const hasUploadedPhoto = imgs.some((img) =>
+        img.getAttribute('src')?.includes('/media/mock-image-1.webp')
+      );
+      expect(hasUploadedPhoto).toBe(true);
+    });
+  });
+
+  it('permite editar el pie de foto de un momento especial en la galería', async () => {
+    const user = userEvent.setup();
+    renderWithRouter(<AdminWeddingPage />);
+
+    await waitFor(() => {
+      expect(screen.getByDisplayValue(mockWeddingAdmin.partner1Name)).toBeInTheDocument();
+    });
+
+    const captionInput = screen.getByDisplayValue('Momento especial 1');
+    await user.clear(captionInput);
+    await user.type(captionInput, 'El día que nos prometimos');
+
+    expect(captionInput).toHaveValue('El día que nos prometimos');
+  });
 });
+
