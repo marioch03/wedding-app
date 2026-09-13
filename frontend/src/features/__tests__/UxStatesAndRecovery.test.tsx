@@ -5,10 +5,17 @@ import { renderWithRouter } from '../../test/test-utils';
 import { WeddingLandingPage } from '../wedding/pages/WeddingLandingPage';
 import { RsvpPage } from '../rsvp/pages/RsvpPage';
 import { AdminEventsPage } from '../admin/pages/AdminEventsPage';
+import { AdminDashboardPage } from '../admin/pages/AdminDashboardPage';
 import { Route, Routes } from 'react-router-dom';
 import { http, HttpResponse } from 'msw';
 import { server } from '../../test/mocks/server';
-import { mockWeddingPublic, mockRsvpInfo, mockEvents } from '../../test/mocks/handlers';
+import { mockWeddingPublic, mockRsvpInfo, mockEvents, mockRsvpStats } from '../../test/mocks/handlers';
+
+vi.mock('@clerk/clerk-react', () => ({
+  useUser: () => ({
+    user: { firstName: 'Admin', fullName: 'Admin Tester' },
+  }),
+}));
 
 describe('Estados de la Interfaz (UX): Spinners, Skeletons y Recuperación de Red', () => {
   beforeEach(() => {
@@ -197,6 +204,51 @@ describe('Estados de la Interfaz (UX): Spinners, Skeletons y Recuperación de Re
         expect(screen.getByText('Ceremonia Religiosa')).toBeInTheDocument();
       });
       expect(screen.queryByText('Error al cargar eventos')).not.toBeInTheDocument();
+    });
+
+    it('muestra alerta y mensaje amigable en AdminDashboardPage tras caída del backend (PUB-005) y se recupera con Reintentar', async () => {
+      let networkFailing = true;
+
+      server.use(
+        http.get('*/api/v1/admin/rsvp/stats', () => {
+          if (networkFailing) {
+            return HttpResponse.error();
+          }
+          return HttpResponse.json(mockRsvpStats);
+        }),
+        http.get('*/api/admin/rsvp/stats', () => {
+          if (networkFailing) {
+            return HttpResponse.error();
+          }
+          return HttpResponse.json(mockRsvpStats);
+        })
+      );
+
+      renderWithRouter(<AdminDashboardPage />);
+
+      await waitFor(() => {
+        expect(screen.getByRole('alert')).toBeInTheDocument();
+      });
+      expect(screen.getByText('Error de conexión con el servidor')).toBeInTheDocument();
+      expect(
+        screen.getByText(/No se pudo conectar con el servidor\. Comprueba la conexión o que el backend esté levantado\./i)
+      ).toBeInTheDocument();
+
+      // Botón de reintento presente
+      const retryButton = screen.getByRole('button', { name: /Reintentar/i });
+      expect(retryButton).toBeInTheDocument();
+
+      // Al recuperar el servidor y hacer clic en reintentar
+      networkFailing = false;
+      const user = userEvent.setup();
+      await user.click(retryButton);
+
+      await waitFor(() => {
+        expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+      });
+      expect(screen.queryByText('Error de conexión con el servidor')).not.toBeInTheDocument();
+      // Métricas recuperadas
+      expect(screen.getByText('1 grupos confirmados')).toBeInTheDocument();
     });
   });
 });

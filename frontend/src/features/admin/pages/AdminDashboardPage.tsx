@@ -13,24 +13,31 @@ export const AdminDashboardPage: React.FC = () => {
   const [stats, setStats] = useState<RsvpStatsResponse | null>(null);
   const [wedding, setWedding] = useState<WeddingPublicResponse | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchData = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const [statsData, weddingData] = await Promise.all([
+        rsvpApi.getStatsAdmin(),
+        weddingApi.getPublic().catch(() => null),
+      ]);
+      setStats(statsData);
+      setWedding(weddingData);
+    } catch (err: any) {
+      console.error('Error cargando datos del Dashboard:', err);
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'No se pudo conectar con el servidor. Comprueba la conexión o que el backend esté levantado.'
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const [statsData, weddingData] = await Promise.all([
-          rsvpApi.getStatsAdmin(),
-          weddingApi.getPublic().catch(() => null),
-        ]);
-        setStats(statsData);
-        setWedding(weddingData);
-      } catch (err) {
-        console.error('Error cargando datos del Dashboard:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     fetchData();
   }, []);
 
@@ -78,6 +85,27 @@ export const AdminDashboardPage: React.FC = () => {
         )}
       </div>
 
+      {/* Alerta de Error / Resiliencia si el servidor falla */}
+      {error && (
+        <div className={styles.errorAlert} role="alert">
+          <div className={styles.errorAlertContent}>
+            <span className={styles.errorAlertIcon}>⚠️</span>
+            <div>
+              <h3 className={styles.errorAlertTitle}>Error de conexión con el servidor</h3>
+              <p className={styles.errorAlertMessage}>{error}</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            className={styles.retryButton}
+            onClick={fetchData}
+            disabled={isLoading}
+          >
+            <span>🔄</span> Reintentar
+          </button>
+        </div>
+      )}
+
       {/* KPI Cards Strip (4 Métricas Compactas y Vivas) */}
       <div className={styles.kpiGrid}>
         <div className={styles.kpiCard}>
@@ -86,10 +114,14 @@ export const AdminDashboardPage: React.FC = () => {
             <div className={`${styles.kpiIconWrapper} ${styles.iconConfirmed}`}>✓</div>
           </div>
           <div className={styles.kpiValue}>
-            {isLoading ? '...' : confirmedGuests}
+            {isLoading ? '...' : error && !stats ? '--' : confirmedGuests}
           </div>
           <div className={styles.kpiFoot}>
-            <span>{stats?.confirmedParties || 0} grupos confirmados</span>
+            <span>
+              {error && !stats
+                ? 'Información no disponible'
+                : `${stats?.confirmedParties || 0} grupos confirmados`}
+            </span>
           </div>
         </div>
 
@@ -99,10 +131,14 @@ export const AdminDashboardPage: React.FC = () => {
             <div className={`${styles.kpiIconWrapper} ${styles.iconPending}`}>⏳</div>
           </div>
           <div className={styles.kpiValue}>
-            {isLoading ? '...' : pendingGuests}
+            {isLoading ? '...' : error && !stats ? '--' : pendingGuests}
           </div>
           <div className={styles.kpiFoot}>
-            <span>{stats?.pendingParties || 0} grupos por responder</span>
+            <span>
+              {error && !stats
+                ? 'Información no disponible'
+                : `${stats?.pendingParties || 0} grupos por responder`}
+            </span>
           </div>
         </div>
 
@@ -112,10 +148,14 @@ export const AdminDashboardPage: React.FC = () => {
             <div className={`${styles.kpiIconWrapper} ${styles.iconDeclined}`}>✕</div>
           </div>
           <div className={styles.kpiValue}>
-            {isLoading ? '...' : declinedGuests}
+            {isLoading ? '...' : error && !stats ? '--' : declinedGuests}
           </div>
           <div className={styles.kpiFoot}>
-            <span>{stats?.declinedParties || 0} grupos no asisten</span>
+            <span>
+              {error && !stats
+                ? 'Información no disponible'
+                : `${stats?.declinedParties || 0} grupos no asisten`}
+            </span>
           </div>
         </div>
 
@@ -125,10 +165,18 @@ export const AdminDashboardPage: React.FC = () => {
             <div className={`${styles.kpiIconWrapper} ${styles.iconRate}`}>%</div>
           </div>
           <div className={styles.kpiValue}>
-            {isLoading ? '...' : `${stats?.responseRatePercentage.toFixed(0) || 0}%`}
+            {isLoading
+              ? '...'
+              : error && !stats
+              ? '--%'
+              : `${stats?.responseRatePercentage.toFixed(0) || 0}%`}
           </div>
           <div className={styles.kpiFoot}>
-            <span>{totalGuests} invitados totales en lista</span>
+            <span>
+              {error && !stats
+                ? 'Información no disponible'
+                : `${totalGuests} invitados totales en lista`}
+            </span>
           </div>
         </div>
       </div>
