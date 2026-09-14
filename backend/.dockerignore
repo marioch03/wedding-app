@@ -1,0 +1,15 @@
+target/
+.mvn/
+mvnw
+mvnw.cmd
+.git/
+.gitignore
+.gitattributes
+.idea/
+.vscode/
+bin/
+uploads/
+*.log
+.env*
+HELP.md
+.DS_Store

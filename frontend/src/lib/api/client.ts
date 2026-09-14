@@ -3,7 +3,7 @@ import type { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import type { ApiErrorResponse } from '../../types';
 import { ApiError } from '../../types';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080';
 
 // Manejador común para normalizar errores de API en ambas instancias
 export const handleResponseError = (error: AxiosError<ApiErrorResponse>) => {

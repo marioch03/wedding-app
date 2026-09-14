@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.git/
+.gitignore
+.env*
+*.log
+.vscode/
+.idea/
+e2e/
+playwright-report/
+test-results/
+.DS_Store
+README.md
+antigravity.md
