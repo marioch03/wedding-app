@@ -52,6 +52,17 @@
   --color-info: #0288d1;
   --color-info-bg: #e1f5fe;
 
+  /* --- Hero: Texto sobre fondo oscuro --- */
+  --color-hero-text: #ffffff;
+  --color-hero-text-secondary: rgba(255, 255, 255, 0.88);
+  --color-hero-glass-bg: rgba(255, 255, 255, 0.14);
+  --color-hero-glass-border: rgba(255, 255, 255, 0.32);
+  --color-hero-orb-warm: rgba(223, 106, 79, 0.22);
+  --color-hero-orb-gold: rgba(203, 162, 88, 0.18);
+  --color-hero-overlay-dark: rgba(12, 5, 3, 0.68);
+  --color-hero-overlay-mid: rgba(70, 28, 14, 0.42);
+  --color-hero-overlay-warm: rgba(205, 105, 70, 0.18);
+
   /* --- Tipografía --- */
   --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   --font-serif: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;

@@ -66,23 +66,53 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
   return (
     <section className={styles.heroContainer}>
+
+      {/* Capa 1: Imagen con Ken Burns */}
       <div
         className={styles.heroBackground}
         style={{ backgroundImage: `url(${bgImage})` }}
       />
+
+      {/* Capa 2: Overlay gradiente cinematográfico */}
       <div className={styles.heroOverlay} />
 
+      {/* Capa 3: Viñeta radial para profundidad */}
+      <div className={styles.heroVignette} />
+
+      {/* Capa 4: Orbes bokeh flotantes */}
+      <div className={styles.bokehLayer} aria-hidden="true">
+        <span className={`${styles.orb} ${styles.orb1}`} />
+        <span className={`${styles.orb} ${styles.orb2}`} />
+        <span className={`${styles.orb} ${styles.orb3}`} />
+      </div>
+
+      {/* Contenido principal */}
       <div className={styles.heroContent}>
+
+        {/* Ornamento superior */}
+        <div className={styles.ornament} aria-hidden="true">
+          <span className={styles.ornamentLine} />
+          <span className={styles.ornamentIcon}>✦ ✦ ✦</span>
+          <span className={styles.ornamentLine} />
+        </div>
+
         <span className={styles.badge}>{heroSubtitle || '¡Nos Casamos!'}</span>
 
+        {/* Nombres en layout editorial apilado */}
         <h1 className={styles.names}>
           <span>{partner1Name}</span>
-          <span className={styles.separator}>&</span>
+          <span className={styles.separator}>— &amp; —</span>
           <span>{partner2Name}</span>
         </h1>
 
         <p className={styles.date}>{formattedDate}</p>
 
+        {/* Divisor decorativo */}
+        <div className={styles.dateDivider} aria-hidden="true">
+          <span className={styles.dateDividerIcon}>✦</span>
+        </div>
+
+        {/* Countdown */}
         <div className={styles.countdownContainer}>
           <div className={styles.countdownBox}>
             <span className={styles.countdownNumber}>{timeLeft.days}</span>
@@ -109,10 +139,23 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         </div>
       </div>
 
-      {/* Transicion suave hacia la siguiente seccion */}
+      {/* Indicador de scroll animado */}
+      <div className={styles.scrollIndicator} aria-hidden="true">
+        <span className={styles.scrollLine} />
+        <span className={styles.scrollDot} />
+      </div>
+
+      {/* Ola de transición doble hacia la siguiente sección */}
       <div className={styles.sectionWave} aria-hidden="true">
-        <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
-          <path d="M0,0 C150,90 350,-40 500,60 C650,160 900,10 1200,40 L1200,120 L0,120 Z"></path>
+        <svg viewBox="0 0 1440 72" preserveAspectRatio="none" aria-hidden="true">
+          <path
+            className={styles.wavePath1}
+            d="M0,42 C360,78 720,8 1080,48 C1260,66 1380,36 1440,42 L1440,72 L0,72 Z"
+          />
+          <path
+            className={styles.wavePath2}
+            d="M0,58 C280,20 600,72 960,46 C1180,26 1340,64 1440,46 L1440,72 L0,72 Z"
+          />
         </svg>
       </div>
     </section>

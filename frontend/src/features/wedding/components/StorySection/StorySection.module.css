@@ -1,41 +1,158 @@
+/* ==========================================================================
+   StorySection — Diseño Editorial Premium con Background de Alta Ornamentación
+   ========================================================================== */
+
 .section {
-  padding: 5rem 1.5rem 6rem;
-  max-width: 1100px;
-  margin: 0 auto;
   position: relative;
+  padding: 6rem 1.5rem 7rem;
+  overflow: hidden;
+  background: linear-gradient(
+    180deg,
+    var(--color-bg)           0%,
+    var(--color-bg-secondary) 6%,
+    var(--color-bg-secondary) 94%,
+    var(--color-bg)           100%
+  );
 }
 
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Capa 1 — Lavados de tono crema/champagne (sin color rojizo)
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* Lavado superior-derecho — forma orgánica en marfil puro */
+.bgWash1 {
+  position: absolute;
+  top: -100px;
+  right: -80px;
+  width: 640px;
+  height: 640px;
+  /* Forma no perfectamente circular para efecto más artesanal */
+  border-radius: 40% 60% 55% 45% / 50% 45% 55% 50%;
+  background: rgba(255, 252, 244, 0.75);
+  filter: blur(72px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Lavado inferior-izquierdo — champagne suave */
+.bgWash2 {
+  position: absolute;
+  bottom: -80px;
+  left: -90px;
+  width: 520px;
+  height: 520px;
+  border-radius: 60% 40% 45% 55% / 45% 55% 45% 55%;
+  background: rgba(255, 249, 232, 0.65);
+  filter: blur(64px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Capa 2 — Destello diagonal central en champagne
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* Un único haz de luz diagonal que atraviesa la sección — efecto editorial */
+.bgHighlight {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    128deg,
+    transparent          0%,
+    rgba(255, 251, 238, 0.45) 30%,
+    rgba(255, 253, 244, 0.60) 50%,
+    rgba(255, 251, 238, 0.45) 70%,
+    transparent          100%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Capa 3 — Patrón de diamantes cruzados
+   ───────────────────────────────────────────────────────────────────────── */
+
+.bgPattern {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(45deg,  rgba(180, 150, 100, 0.07) 1px, transparent 1px),
+    linear-gradient(-45deg, rgba(180, 150, 100, 0.07) 1px, transparent 1px);
+  background-size: 22px 22px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Contenedor principal — encima de todas las decoraciones
+   ───────────────────────────────────────────────────────────────────────── */
+
 .container {
+  position: relative;
+  z-index: 2;
+  max-width: 1100px;
+  margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr 1.15fr;
   gap: 3.5rem;
   align-items: center;
 }
 
-/* Columna Imagen Editorial / Polaroid */
+/* ─────────────────────────────────────────────────────────────────────────
+   Columna Imagen — Polaroid con efecto de capas
+   ───────────────────────────────────────────────────────────────────────── */
+
 .imageWrapper {
   position: relative;
   display: flex;
   justify-content: center;
+  align-items: flex-start;
 }
 
-.photoFrame {
-  position: relative;
+/* Marco fantasma desplazado — sensación de pila de fotografías */
+.photoGhost {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(calc(-50% + 22px)) rotate(4deg) translateY(12px);
   width: 100%;
   max-width: 420px;
   aspect-ratio: 4 / 5;
-  background: #ffffff;
+  background: var(--color-bg-elevated);
+  border-radius: var(--radius-lg);
+  border: 1.5px solid var(--color-border);
+  box-shadow: 0 6px 20px rgba(44, 26, 22, 0.07);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Polaroid principal */
+.photoFrame {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 420px;
+  aspect-ratio: 4 / 5;
+  background: var(--color-bg-elevated);
   padding: 1rem 1rem 3.5rem;
   border-radius: var(--radius-lg);
-  box-shadow: 0 20px 45px rgba(46, 29, 26, 0.12), 0 4px 12px rgba(223, 106, 87, 0.08);
+  box-shadow:
+    0 24px 52px rgba(44, 26, 22, 0.14),
+    0 6px 18px rgba(223, 106, 79, 0.10),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
   border: 1.5px solid var(--color-border);
   transform: rotate(-2.5deg);
   transition: transform var(--transition-normal), box-shadow var(--transition-normal);
 }
 
 .photoFrame:hover {
-  transform: rotate(0deg) scale(1.02);
-  box-shadow: 0 25px 55px rgba(223, 106, 87, 0.18);
+  transform: rotate(0deg) scale(1.015);
+  box-shadow:
+    0 30px 65px rgba(44, 26, 22, 0.16),
+    0 8px 24px rgba(223, 106, 79, 0.16);
 }
 
 .storyPhoto {
@@ -44,6 +161,12 @@
   object-fit: cover;
   border-radius: var(--radius-sm);
   display: block;
+  filter: saturate(0.9);
+  transition: filter var(--transition-slow);
+}
+
+.photoFrame:hover .storyPhoto {
+  filter: saturate(1.06);
 }
 
 .photoCaption {
@@ -53,52 +176,92 @@
   right: 0;
   text-align: center;
   font-family: var(--font-serif);
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   font-style: italic;
   color: var(--color-text-heading);
 }
 
 .decorativeStamp {
   position: absolute;
-  top: -15px;
-  right: -15px;
-  width: 65px;
-  height: 65px;
+  top: -16px;
+  right: -16px;
+  width: 62px;
+  height: 62px;
   border-radius: 50%;
   background: var(--color-primary-gradient);
-  color: #ffffff;
+  color: var(--color-text-on-primary);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
+  font-size: 1.45rem;
   box-shadow: 0 6px 18px var(--color-primary-glow);
   transform: rotate(12deg);
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
 }
 
-/* Columna Texto */
+.photoFrame:hover .decorativeStamp {
+  transform: rotate(0deg) scale(1.08);
+  box-shadow: 0 8px 24px var(--color-primary-glow);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Columna Texto
+   ───────────────────────────────────────────────────────────────────────── */
+
 .content {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   text-align: left;
 }
 
+
 .tag {
+  position: relative;
+  z-index: 1;
   display: inline-block;
   text-transform: uppercase;
   letter-spacing: 0.22em;
   font-size: 0.78rem;
   font-weight: 700;
   color: var(--color-primary-dark);
-  margin-bottom: 1rem;
-  padding: 0.35rem 1rem;
+  margin-bottom: 0.75rem;
+  padding: 0.38rem 1.1rem;
   border-radius: var(--radius-full);
   background: var(--color-primary-light);
+  border: 1px solid var(--color-primary-border);
+}
+
+/* Ornamento dorado bajo el tag */
+.tagOrnament {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 1.25rem;
+}
+
+.tagOrnamentLine {
+  display: block;
+  width: 36px;
+  height: 1.5px;
+  background: var(--color-accent-gold);
+  border-radius: var(--radius-full);
+  opacity: 0.7;
+}
+
+.tagOrnamentIcon {
+  font-size: 1rem;
+  color: var(--color-accent-gold);
+  opacity: 0.65;
+  line-height: 1;
 }
 
 .title {
+  position: relative;
+  z-index: 1;
   font-family: var(--font-serif);
-  font-size: clamp(2.3rem, 4.5vw, 3.2rem);
+  font-size: clamp(2.2rem, 4.5vw, 3.2rem);
   font-weight: 600;
   color: var(--color-text-heading);
   margin-bottom: 1.5rem;
@@ -106,23 +269,24 @@
 }
 
 .text {
-  font-size: 1.08rem;
-  line-height: 1.85;
+  position: relative;
+  z-index: 1;
+  font-size: 1.06rem;
+  line-height: 1.9;
   color: var(--color-text-body);
   margin-bottom: 1.5rem;
   white-space: pre-line;
 }
 
-.quoteDecoration {
-  font-family: var(--font-serif);
-  font-size: 4rem;
-  color: var(--color-primary);
-  opacity: 0.3;
-  line-height: 0.5;
-  margin-bottom: 0.5rem;
-}
+/* ─────────────────────────────────────────────────────────────────────────
+   Responsive — Mobile
+   ───────────────────────────────────────────────────────────────────────── */
 
 @media (max-width: 900px) {
+  .section {
+    padding: 5rem 1.5rem 6rem;
+  }
+
   .container {
     grid-template-columns: 1fr;
     gap: 3rem;
@@ -133,8 +297,23 @@
     text-align: center;
   }
 
+  .tagOrnament {
+    justify-content: center;
+  }
+
+
+
+  /* Simplifica en mobile: oculta elementos complejos */
+  .photoGhost { display: none; }
+  .bgWash1 { width: 340px; height: 340px; right: -60px; }
+  .bgWash2 { width: 280px; height: 280px; left: -60px; }
+
   .photoFrame {
-    max-width: 360px;
+    max-width: 340px;
     transform: rotate(0deg);
+  }
+
+  .photoFrame:hover {
+    transform: scale(1.015);
   }
 }

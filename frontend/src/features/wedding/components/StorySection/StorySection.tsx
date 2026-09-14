@@ -24,9 +24,22 @@ export const StorySection: React.FC<StorySectionProps> = ({
 
   return (
     <section className={styles.section}>
+
+      {/* ── Capa 1: Lavados de tono crema — profundidad sin color ── */}
+      <div className={styles.bgWash1} aria-hidden="true" />
+      <div className={styles.bgWash2} aria-hidden="true" />
+
+      {/* ── Capa 2: Destello central diagonal en champagne ── */}
+      <div className={styles.bgHighlight} aria-hidden="true" />
+
+      {/* ── Capa 3: Patrón de diamantes ── */}
+      <div className={styles.bgPattern} aria-hidden="true" />
+
+      {/* ── Contenido ── */}
       <div className={styles.container}>
-        {/* Columna Izquierda: Fotografía Polaroid Editorial */}
+        {/* Columna Izquierda: Fotografía Polaroid Editorial con profundidad de capas */}
         <div className={styles.imageWrapper}>
+          <div className={styles.photoGhost} aria-hidden="true" />
           <div className={styles.photoFrame}>
             <img
               src={imageUrl}
@@ -43,8 +56,11 @@ export const StorySection: React.FC<StorySectionProps> = ({
 
         {/* Columna Derecha: Texto de la Historia */}
         <div className={styles.content}>
-          <div className={styles.quoteDecoration}>“</div>
           <span className={styles.tag}>Nuestra Historia</span>
+          <div className={styles.tagOrnament} aria-hidden="true">
+            <span className={styles.tagOrnamentLine} />
+            <span className={styles.tagOrnamentIcon}>❧</span>
+          </div>
           {storyTitle && <h2 className={styles.title}>{storyTitle}</h2>}
           {storyText && <p className={styles.text}>{storyText}</p>}
         </div>
