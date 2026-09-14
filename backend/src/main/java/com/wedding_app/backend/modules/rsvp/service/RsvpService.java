@@ -184,7 +184,7 @@ public class RsvpService {
 
           // Validar opción de menú si asiste
           MenuOption menuOption = null;
-          if (eventDto.attending() && eventDto.menuOptionId() != null) {
+          if (Boolean.TRUE.equals(eventDto.attending()) && eventDto.menuOptionId() != null) {
             menuOption = menuOptionRepository.findById(eventDto.menuOptionId())
                 .filter(m -> m.getEvent().getId().equals(eventDto.eventId()))
                 .orElseThrow(() -> new IllegalArgumentException(
@@ -202,9 +202,9 @@ public class RsvpService {
               });
 
           ge.setAttending(eventDto.attending());
-          ge.setMenuOption(menuOption);
+          ge.setMenuOption(Boolean.TRUE.equals(eventDto.attending()) ? menuOption : null);
           ge.setSpecialNotes(InputSanitizer.sanitize(eventDto.specialNotes()));
-          ge.setRespondedAt(now);
+          ge.setRespondedAt(eventDto.attending() != null ? now : null);
 
           guestEventRepository.save(ge);
         }
@@ -361,8 +361,13 @@ public class RsvpService {
       return PartyStatus.PENDING;
     }
 
-    long attendingCount = allEvents.stream().filter(EventRsvpDto::attending).count();
-    if (attendingCount == 0) {
+    long decidedCount = allEvents.stream().filter(e -> e.attending() != null).count();
+    if (decidedCount == 0) {
+      return PartyStatus.PENDING;
+    }
+
+    long attendingCount = allEvents.stream().filter(e -> Boolean.TRUE.equals(e.attending())).count();
+    if (attendingCount == 0 && decidedCount == allEvents.size()) {
       return PartyStatus.DECLINED;
     }
     if (attendingCount == allEvents.size()) {

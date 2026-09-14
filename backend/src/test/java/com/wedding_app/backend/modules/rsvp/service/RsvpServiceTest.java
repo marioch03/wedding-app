@@ -202,6 +202,27 @@ class RsvpServiceTest {
   }
 
   @Test
+  void submitRsvp_unselectedAttendance_success() {
+    PartyEvent pe = new PartyEvent();
+    pe.setParty(party);
+    pe.setEvent(event);
+
+    EventRsvpDto eventDto = new EventRsvpDto(eventId, null, null, null);
+    GuestRsvpDto guestDto = new GuestRsvpDto(guestId, "Ana", "Test", null, List.of(eventDto));
+    RsvpSubmitRequest request = new RsvpSubmitRequest(List.of(guestDto));
+
+    when(partyRepository.findByRsvpTokenIgnoreCase(token)).thenReturn(Optional.of(party));
+    when(partyEventRepository.findByPartyIdWithEvent(partyId)).thenReturn(List.of(pe));
+    when(guestRepository.findById(guestId)).thenReturn(Optional.of(guest));
+    when(guestEventRepository.findByGuestIdAndEventId(guestId, eventId)).thenReturn(Optional.empty());
+    when(eventRepository.getReferenceById(eventId)).thenReturn(event);
+
+    rsvpService.submitRsvp(token, request);
+
+    assertThat(party.getStatus()).isEqualTo(PartyStatus.PENDING);
+  }
+
+  @Test
   void submitRsvp_throwsException_whenEventNotAllowedForParty() {
     UUID uninvitedEventId = UUID.randomUUID();
 

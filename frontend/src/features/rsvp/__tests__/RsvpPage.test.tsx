@@ -177,6 +177,27 @@ describe('Feature: RSVP Multi-paso e Integración (RsvpPage)', () => {
   });
 
   describe('Interacción con el Formulario: Menús y Asistencia', () => {
+    it('inicia con los selectores de asistencia desmarcados/neutros por defecto', async () => {
+      renderRsvpFlow('/rsvp/valid-token-abc');
+
+      await waitFor(() => {
+        expect(screen.getByText('Familia Gómez Martínez')).toBeInTheDocument();
+      });
+
+      // Ningún botón de asistencia debe tener clase activa por defecto
+      const asistirButtons = screen.getAllByRole('button', { name: /✓ Asistiré/i });
+      const noAsistirButtons = screen.getAllByRole('button', { name: /✕ No podré asistir/i });
+
+      expect(asistirButtons.length).toBeGreaterThan(0);
+      expect(noAsistirButtons.length).toBeGreaterThan(0);
+
+      const hasAnyActiveYes = asistirButtons.some((btn) => btn.className.includes('toggleActiveYes'));
+      const hasAnyActiveNo = noAsistirButtons.some((btn) => btn.className.includes('toggleActiveNo'));
+
+      expect(hasAnyActiveYes).toBe(false);
+      expect(hasAnyActiveNo).toBe(false);
+    });
+
     it('permite alternar asistencia y seleccionar diferentes opciones de menú', async () => {
       const user = userEvent.setup();
       renderRsvpFlow('/rsvp/valid-token-abc');
@@ -186,11 +207,17 @@ describe('Feature: RSVP Multi-paso e Integración (RsvpPage)', () => {
       });
 
       // Localizar botones de asistencia para el primer evento
-      const noAsistirButtons = screen.getAllByRole('button', { name: /No podré asistir/i });
+      const noAsistirButtons = screen.getAllByRole('button', { name: /✕ No podré asistir/i });
       expect(noAsistirButtons.length).toBeGreaterThan(0);
 
-      // Alternar asistencia para un evento
+      // Alternar asistencia para el primer evento (marcar no asistir)
       await user.click(noAsistirButtons[0]);
+      expect(noAsistirButtons[0].className).toContain('toggleActiveNo');
+
+      // Marcar "Asistiré" en el segundo evento (Cóctel y Banquete) para ver menús
+      const asistirButtons = screen.getAllByRole('button', { name: /✓ Asistiré/i });
+      await user.click(asistirButtons[1]);
+      expect(asistirButtons[1].className).toContain('toggleActiveYes');
 
       // Verificar opciones de menú para Cóctel y Banquete (Solomillo, Risotto, Menú Infantil)
       const solomilloOption = screen.getAllByText('Solomillo Ibérico con Salsa Trufada')[0];
@@ -199,7 +226,7 @@ describe('Feature: RSVP Multi-paso e Integración (RsvpPage)', () => {
       expect(solomilloOption).toBeInTheDocument();
       expect(risottoOption).toBeInTheDocument();
 
-      // El solomillo viene seleccionado por defecto (primer elemento). Hacemos clic en Risotto
+      // Hacemos clic en Risotto
       const risottoCard = risottoOption.closest('[role="radio"]');
       expect(risottoCard).not.toBeNull();
 

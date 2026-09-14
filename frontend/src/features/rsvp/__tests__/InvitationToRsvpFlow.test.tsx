@@ -129,6 +129,10 @@ describe('Flujo de Punta a Punta: Panel de Invitaciones -> Enlace / QR -> Confir
     const dietInputs = screen.getAllByPlaceholderText(/Ej: Celíaco, alérgico/i);
     await user.type(dietInputs[0], 'Sin gluten');
 
+    // Marcar asistencia a Cóctel y Banquete para Marcos
+    const asistirButtons = screen.getAllByRole('button', { name: /Asistiré/i });
+    await user.click(asistirButtons[1]);
+
     // Cambiar opción de menú en Cóctel y Banquete seleccionando la tarjeta de Risotto
     const risottoOption = screen.getAllByText('Risotto de Setas Silvestres y Espárragos')[0];
     await user.click(risottoOption);

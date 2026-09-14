@@ -4,7 +4,7 @@ import type { PartyStatus } from './party';
 
 export interface EventRsvpDto {
   eventId: string;
-  attending: boolean;
+  attending?: boolean | null;
   menuOptionId?: string | null;
   specialNotes?: string;
 }

@@ -9,7 +9,7 @@ public record EventRsvpDto(
     @NotNull(message = "El identificador del evento es obligatorio")
     UUID eventId,
 
-    boolean attending,
+    Boolean attending,
 
     UUID menuOptionId,
 

@@ -32,11 +32,17 @@ export const RsvpGuestCard: React.FC<RsvpGuestCardProps> = ({
   const handleEventAttendance = (eventId: string, attending: boolean) => {
     const updatedEvents = guestState.events.map((ev) => {
       if (ev.eventId === eventId) {
+        // Si hace clic en la opción que ya estaba activa, se desmarca a null (neutro)
+        const nextAttending = ev.attending === attending ? null : attending;
         return {
           ...ev,
-          attending,
-          // Si no asiste, limpia la opción de menú
-          menuOptionId: attending ? ev.menuOptionId : null,
+          attending: nextAttending,
+          // Si pasa a asistir y no tenía menú, asigna la primera opción disponible
+          menuOptionId:
+            nextAttending === true
+              ? ev.menuOptionId ??
+                (allowedEvents.find((e) => e.id === eventId)?.menuOptions?.[0]?.id ?? null)
+              : null,
         };
       }
       return ev;
@@ -111,7 +117,8 @@ export const RsvpGuestCard: React.FC<RsvpGuestCardProps> = ({
       <div className={styles.eventsSection}>
         {allowedEvents.map((event) => {
           const eventRsvp = guestState.events.find((e) => e.eventId === event.id);
-          const isAttending = eventRsvp?.attending ?? false;
+          const isAttendingYes = eventRsvp?.attending === true;
+          const isAttendingNo = eventRsvp?.attending === false;
           const hasMenuOptions = event.menuOptions && event.menuOptions.length > 0;
 
           return (
@@ -121,14 +128,14 @@ export const RsvpGuestCard: React.FC<RsvpGuestCardProps> = ({
                 <div className={styles.attendanceToggle}>
                   <button
                     type="button"
-                    className={`${styles.toggleButton} ${isAttending ? styles.toggleActiveYes : ''}`}
+                    className={`${styles.toggleButton} ${isAttendingYes ? styles.toggleActiveYes : ''}`}
                     onClick={() => handleEventAttendance(event.id, true)}
                   >
                     ✓ Asistiré
                   </button>
                   <button
                     type="button"
-                    className={`${styles.toggleButton} ${!isAttending ? styles.toggleActiveNo : ''}`}
+                    className={`${styles.toggleButton} ${isAttendingNo ? styles.toggleActiveNo : ''}`}
                     onClick={() => handleEventAttendance(event.id, false)}
                   >
                     ✕ No podré asistir
@@ -137,7 +144,7 @@ export const RsvpGuestCard: React.FC<RsvpGuestCardProps> = ({
               </div>
 
               {/* Si asiste y el evento tiene opciones de menú */}
-              {isAttending && hasMenuOptions && (
+              {isAttendingYes && hasMenuOptions && (
                 <div className={styles.menuSection}>
                   <label className={styles.label}>Selección de Menú para {event.name}:</label>
                   <div className={styles.menuGrid}>

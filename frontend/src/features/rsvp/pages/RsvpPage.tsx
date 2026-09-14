@@ -51,18 +51,18 @@ export const RsvpPage: React.FC = () => {
             if (existingAttendance) {
               return {
                 eventId: ev.id,
-                attending: existingAttendance.attending ?? true,
+                attending: existingAttendance.attending ?? null,
                 menuOptionId:
                   existingAttendance.menuOptionId ??
-                  (ev.menuOptions && ev.menuOptions.length > 0 ? ev.menuOptions[0].id : null),
+                  (existingAttendance.attending && ev.menuOptions && ev.menuOptions.length > 0 ? ev.menuOptions[0].id : null),
                 specialNotes: existingAttendance.specialNotes || '',
               };
             }
 
             return {
               eventId: ev.id,
-              attending: true, // Asistencia seleccionada por defecto si no ha respondido
-              menuOptionId: ev.menuOptions && ev.menuOptions.length > 0 ? ev.menuOptions[0].id : null,
+              attending: null, // Sin selección predeterminada
+              menuOptionId: null,
               specialNotes: '',
             };
           }),
