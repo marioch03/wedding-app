@@ -7,9 +7,14 @@
   --color-bg: #faf7f2;
   --color-bg-secondary: #f4ede4;
   --color-bg-subtle: #fbf5ee;
-  --color-bg-card: rgba(255, 255, 255, 0.9);
-  --color-bg-elevated: #ffffff;
-  --color-bg-glass: rgba(255, 255, 255, 0.78);
+  --color-bg-card: rgba(254, 250, 245, 0.94);
+  --color-bg-card-hover: #fffdf9;
+  --color-bg-elevated: #fdfaf6;
+  --color-bg-glass: rgba(254, 250, 245, 0.82);
+  --color-surface-white: #fffdf9;
+  --color-surface-cream: #faf5ee;
+  --color-surface-card: #fdfaf6;
+  --color-surface-hover: #f7eee4;
 
   /* --- Colores Principales de Marca (Terracota Cálido Romántico) --- */
   --color-primary: #df6a4f;
@@ -44,13 +49,21 @@
 
   /* --- Estados y Validación --- */
   --color-success: #2e7d32;
-  --color-success-bg: #e8f5e9;
+  --color-success-bg: #eaf5ea;
+  --color-success-border: #c8e6c9;
+  --color-success-dark: #1b5e20;
   --color-warning: #d97706;
   --color-warning-bg: #fffbeb;
+  --color-warning-border: #fde68a;
+  --color-warning-dark: #92400e;
   --color-error: #c62828;
-  --color-error-bg: #ffebee;
-  --color-info: #0288d1;
-  --color-info-bg: #e1f5fe;
+  --color-error-bg: #fdf0f0;
+  --color-error-border: #ffcdd2;
+  --color-error-dark: #8c1b1b;
+  --color-info: #1565c0;
+  --color-info-bg: #eef2ff;
+  --color-info-border: #c7d2fe;
+  --color-info-dark: #3730a3;
 
   /* --- Hero: Texto sobre fondo oscuro --- */
   --color-hero-text: #ffffff;
@@ -63,6 +76,25 @@
   --color-hero-overlay-mid: rgba(70, 28, 14, 0.42);
   --color-hero-overlay-warm: rgba(205, 105, 70, 0.18);
 
+  /* --- Login / Dark Overlay --- */
+  --color-login-bg: #2c1a16;
+  --color-login-overlay-start: rgba(44, 26, 22, 0.78);
+  --color-login-overlay-mid: rgba(223, 106, 79, 0.42);
+  --color-login-overlay-end: rgba(44, 26, 22, 0.88);
+  --color-text-on-dark-subtle: rgba(255, 255, 255, 0.85);
+  --color-shadow-strong: rgba(0, 0, 0, 0.3);
+
+  /* --- Modales, Tablas e Inputs --- */
+  --color-modal-backdrop: rgba(44, 26, 22, 0.48);
+  --color-modal-bg: #fdfaf6;
+  --color-input-bg: rgba(254, 251, 247, 0.95);
+  --color-input-bg-focus: #fffdfa;
+  --color-input-border: var(--color-border);
+  --color-input-focus-ring: rgba(223, 106, 79, 0.18);
+  --color-table-header-bg: rgba(254, 248, 242, 0.9);
+  --color-table-row-hover: rgba(254, 248, 242, 0.55);
+  --color-table-row-even: rgba(254, 248, 242, 0.3);
+
   /* --- Tipografía --- */
   --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   --font-serif: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
@@ -73,6 +105,7 @@
   --shadow-md: 0 8px 24px rgba(184, 74, 50, 0.08);
   --shadow-lg: 0 16px 36px rgba(184, 74, 50, 0.12);
   --shadow-glass: 0 8px 32px rgba(44, 26, 22, 0.06);
+  --shadow-xl: 0 20px 50px rgba(44, 26, 22, 0.25);
   --shadow-primary: 0 8px 25px var(--color-primary-glow);
   --shadow-primary-hover: 0 12px 30px rgba(184, 74, 50, 0.4);
 

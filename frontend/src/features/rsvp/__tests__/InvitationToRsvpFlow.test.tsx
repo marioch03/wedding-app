@@ -67,20 +67,18 @@ describe('Flujo de Punta a Punta: Panel de Invitaciones -> Enlace / QR -> Confir
     });
 
     // 2. Probar generación de QR y enlace copiable
-    const copyButtons = screen.getAllByRole('button', { name: /Copiar Enlace/i });
-    await user.click(copyButtons[0]);
-
-    // Verificar que el enlace en portapapeles contiene el token esperado
-    const copiedUrl = await navigator.clipboard.readText();
-    expect(copiedUrl).toContain(`/rsvp/${mockParties[0].rsvpToken}`);
-    expect(screen.getByText('¡Copiado!')).toBeInTheDocument();
-
-    // Abrir el modal de QR para verificar generación de código QR
     const qrButton = screen.getAllByTitle('Ver código QR y compartir')[0];
     await user.click(qrButton);
 
     expect(screen.getByRole('dialog')).toBeInTheDocument();
     expect(screen.getByText('Invitación & Código QR')).toBeInTheDocument();
+
+    const copyButton = screen.getByRole('button', { name: /Copiar Enlace/i });
+    await user.click(copyButton);
+
+    // Verificar que el enlace en portapapeles contiene el token esperado
+    const copiedUrl = await navigator.clipboard.readText();
+    expect(copiedUrl).toContain(`/rsvp/${mockParties[0].rsvpToken}`);
     expect(screen.getByLabelText(/Enlace directo personalizado/i)).toHaveValue(copiedUrl);
 
     // Cerrar modal

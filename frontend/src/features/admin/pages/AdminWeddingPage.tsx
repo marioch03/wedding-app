@@ -455,7 +455,7 @@ export const AdminWeddingPage: React.FC = () => {
           >
             {saving ? (
               <>
-                <span className={styles.uploadSpinner} style={{ borderTopColor: '#ffffff', width: '14px', height: '14px' }} />
+                <span className={styles.uploadSpinner} style={{ borderTopColor: 'var(--color-text-on-primary)', width: '14px', height: '14px' }} />
                 Guardando...
               </>
             ) : saveSuccess ? (
@@ -719,7 +719,7 @@ export const AdminWeddingPage: React.FC = () => {
                       flexDirection: 'column',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      background: 'var(--color-bg-subtle, #faf7f5)',
+                      background: 'var(--color-bg-subtle)',
                       borderRadius: '4px',
                       color: 'var(--color-text-muted)',
                       fontSize: '0.85rem',
@@ -736,7 +736,7 @@ export const AdminWeddingPage: React.FC = () => {
               </div>
 
               {/* Story Content Form */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+              <div className={styles.storyContentForm}>
                 <div className={styles.formGroup}>
                   <label className={styles.label}>Título de la Historia</label>
                   <input
@@ -809,23 +809,14 @@ export const AdminWeddingPage: React.FC = () => {
                   </div>
 
                   {storyImageUrl && (
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '0.4rem', padding: '0.35rem 0.6rem', background: '#f8fafc', borderRadius: '6px', border: '1px solid var(--color-border)' }}>
-                      <span style={{ fontSize: '0.82rem', color: 'var(--color-text-body)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '300px' }}>
+                    <div className={styles.assignedImageBar}>
+                      <span className={styles.assignedImageText}>
                         ✓ Imagen asignada: {storyImageUrl.split('/').pop()}
                       </span>
                       <button
                         type="button"
                         onClick={() => setStoryImageUrl('')}
-                        style={{
-                          background: 'none',
-                          border: 'none',
-                          color: '#c53030',
-                          fontSize: '0.82rem',
-                          cursor: 'pointer',
-                          fontWeight: 600,
-                          textDecoration: 'underline',
-                          whiteSpace: 'nowrap',
-                        }}
+                        className={styles.removePhotoBtn}
                       >
                         Quitar foto
                       </button>
@@ -1133,7 +1124,7 @@ export const AdminWeddingPage: React.FC = () => {
                     >
                       {saving ? (
                         <>
-                          <span className={styles.uploadSpinner} style={{ borderTopColor: '#ffffff', width: '13px', height: '13px' }} />
+                          <span className={styles.uploadSpinner} style={{ borderTopColor: 'var(--color-text-on-primary)', width: '13px', height: '13px' }} />
                           Guardando...
                         </>
                       ) : saveSuccess ? (
@@ -1362,8 +1353,8 @@ export const AdminWeddingPage: React.FC = () => {
 
                     {/* Previsualización si hay imagen asignada */}
                     {hotelImageUrl && (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '0.6rem', padding: '0.6rem', background: '#f9fafb', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
-                        <div style={{ width: '80px', height: '56px', borderRadius: '6px', overflow: 'hidden', flexShrink: 0, background: '#eee' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '0.6rem', padding: '0.6rem', background: 'var(--color-bg-subtle)', borderRadius: '8px', border: '1px solid var(--color-border)' }}>
+                        <div style={{ width: '80px', height: '56px', borderRadius: '6px', overflow: 'hidden', flexShrink: 0, background: 'var(--color-surface-hover)' }}>
                           <img
                             src={getMediaUrl(hotelImageUrl)}
                             alt="Vista previa hotel"
@@ -1375,17 +1366,17 @@ export const AdminWeddingPage: React.FC = () => {
                           />
                         </div>
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#374151', display: 'block' }}>
+                          <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--color-text-heading)', display: 'block' }}>
                             Foto seleccionada
                           </span>
-                          <span style={{ fontSize: '0.75rem', color: '#6b7280', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>
+                          <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>
                             {hotelImageUrl}
                           </span>
                         </div>
                         <button
                           type="button"
                           onClick={() => setHotelImageUrl('')}
-                          style={{ background: 'transparent', border: 'none', color: '#ef4444', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer', padding: '0.3rem 0.6rem', borderRadius: '4px' }}
+                          style={{ background: 'transparent', border: 'none', color: 'var(--color-error)', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer', padding: '0.3rem 0.6rem', borderRadius: '4px' }}
                           title="Eliminar foto"
                         >
                           ✕ Quitar
@@ -1408,7 +1399,7 @@ export const AdminWeddingPage: React.FC = () => {
                     />
                   </div>
 
-                  <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
+                  <div className={styles.hotelFormActions}>
                     <button
                       type="button"
                       className={styles.cancelButton}
@@ -1457,7 +1448,7 @@ export const AdminWeddingPage: React.FC = () => {
                       <div key={h.id} className={styles.hotelItemCard}>
                         <div className={styles.hotelItemHeader}>
                           <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                            <div style={{ width: '56px', height: '56px', borderRadius: '8px', overflow: 'hidden', flexShrink: 0, background: '#f3f4f6' }}>
+                            <div style={{ width: '56px', height: '56px', borderRadius: '8px', overflow: 'hidden', flexShrink: 0, background: 'var(--color-bg-subtle)' }}>
                               <img
                                 src={h.imageUrl ? getMediaUrl(h.imageUrl) : defaultImg}
                                 alt={h.name}
@@ -1541,7 +1532,7 @@ export const AdminWeddingPage: React.FC = () => {
                       )}
 
                       {h.description && (
-                        <div className={styles.hotelMetaText} style={{ color: '#4a4a4a' }}>
+                        <div className={styles.hotelMetaText}>
                           {h.description}
                         </div>
                       )}
@@ -1584,7 +1575,7 @@ export const AdminWeddingPage: React.FC = () => {
             <span
               className={styles.stickyFooterSubtitle}
               style={{
-                color: saveSuccess ? '#15803d' : undefined,
+                color: saveSuccess ? 'var(--color-success-dark)' : undefined,
                 fontWeight: saveSuccess ? 600 : undefined,
               }}
             >
@@ -1608,7 +1599,7 @@ export const AdminWeddingPage: React.FC = () => {
             >
               {saving ? (
                 <>
-                  <span className={styles.uploadSpinner} style={{ borderTopColor: '#ffffff', width: '14px', height: '14px' }} />
+                  <span className={styles.uploadSpinner} style={{ borderTopColor: 'var(--color-text-on-primary)', width: '14px', height: '14px' }} />
                   Guardando...
                 </>
               ) : saveSuccess ? (

@@ -30,7 +30,6 @@ export const AdminPartiesPage: React.FC = () => {
   const [isRegeneratingToken, setIsRegeneratingToken] = useState(false);
 
   // Feedback states
-  const [copiedPartyId, setCopiedPartyId] = useState<string | null>(null);
   const [copiedCodeId, setCopiedCodeId] = useState<string | null>(null);
 
   // Pagination State
@@ -83,16 +82,6 @@ export const AdminPartiesPage: React.FC = () => {
     const declined = parties.filter((p) => p.status === 'DECLINED').length;
     return { total, confirmed, pending, declined };
   }, [parties]);
-
-  const handleCopyLink = (party: PartyResponse) => {
-    const origin = window.location.origin;
-    const url = `${origin}/rsvp/${party.rsvpToken}`;
-    navigator.clipboard.writeText(url);
-    setCopiedPartyId(party.id);
-    setTimeout(() => {
-      setCopiedPartyId(null);
-    }, 2000);
-  };
 
   const handleCopyCode = (party: PartyResponse) => {
     navigator.clipboard.writeText(party.rsvpToken);
@@ -308,12 +297,10 @@ export const AdminPartiesPage: React.FC = () => {
               </thead>
               <tbody>
                 {filteredParties.map((p) => {
-                  const isCopied = copiedPartyId === p.id;
-
                   return (
                     <tr key={p.id} className={styles.tr}>
                       {/* Name & Notes */}
-                      <td className={styles.td}>
+                      <td className={styles.td} data-label="Grupo">
                         <div className={styles.partyNameCell}>
                           <span className={styles.partyDisplayName}>{p.displayName}</span>
                           {p.internalNotes && (
@@ -323,10 +310,10 @@ export const AdminPartiesPage: React.FC = () => {
                       </td>
 
                       {/* Status */}
-                      <td className={styles.td}>{renderStatusBadge(p.status)}</td>
+                      <td className={styles.td} data-label="Estado">{renderStatusBadge(p.status)}</td>
 
                       {/* Token / Link Actions */}
-                      <td className={styles.td}>
+                      <td className={styles.td} data-label="Invitación">
                         <div className={styles.tokenBox}>
                           <button
                             type="button"
@@ -336,16 +323,6 @@ export const AdminPartiesPage: React.FC = () => {
                           >
                             <span>{copiedCodeId === p.id ? '✓' : '🏷️'}</span>
                             {copiedCodeId === p.id ? '¡Copiado!' : p.rsvpToken}
-                          </button>
-
-                          <button
-                            type="button"
-                            className={`${styles.tokenLinkButton} ${isCopied ? styles.tokenCopied : ''}`}
-                            onClick={() => handleCopyLink(p)}
-                            title="Copiar enlace directo RSVP"
-                          >
-                            <span>{isCopied ? '✓' : '📋'}</span>
-                            {isCopied ? '¡Copiado!' : 'Copiar Enlace'}
                           </button>
 
                           <button
@@ -366,6 +343,19 @@ export const AdminPartiesPage: React.FC = () => {
                           >
                             🌐
                           </a>
+                        </div>
+                      </td>
+
+                      {/* Action buttons */}
+                      <td className={styles.td} data-label="Acciones">
+                        <div className={styles.actionsCell}>
+                          <button
+                            type="button"
+                            className={styles.editButton}
+                            onClick={() => handleOpenEditModal(p)}
+                          >
+                            <span>✏️</span> Gestionar
+                          </button>
 
                           <button
                             type="button"
@@ -374,19 +364,6 @@ export const AdminPartiesPage: React.FC = () => {
                             title="Regenerar enlace / token"
                           >
                             🔄
-                          </button>
-                        </div>
-                      </td>
-
-                      {/* Action buttons */}
-                      <td className={styles.td}>
-                        <div className={styles.actionsCell}>
-                          <button
-                            type="button"
-                            className={styles.editButton}
-                            onClick={() => handleOpenEditModal(p)}
-                          >
-                            <span>✏️</span> Gestionar
                           </button>
 
                           <button

@@ -411,7 +411,7 @@ export const AdminRsvpPage: React.FC = () => {
 
                     return (
                       <tr key={guest.id} className={styles.tr}>
-                        <td className={styles.td}>
+                        <td className={styles.td} data-label="Invitado">
                           <div className={styles.guestCell}>
                             <div className={styles.guestAvatar}>
                               {guest.isPlusOne ? '➕' : guest.guestType === 'CHILD' ? '🧒' : '👤'}
@@ -430,11 +430,13 @@ export const AdminRsvpPage: React.FC = () => {
                           </div>
                         </td>
 
-                        <td className={styles.td}>
+                        <td className={styles.td} data-label="Grupo">
+                          <span className={styles.mobileFieldLabel}>Grupo:</span>
                           <span className={styles.partyName}>{partyName}</span>
                         </td>
 
-                        <td className={styles.td}>
+                        <td className={styles.td} data-label="Eventos">
+                          <span className={styles.mobileFieldLabel}>Eventos:</span>
                           {guest.eventAttendances && guest.eventAttendances.length > 0 ? (
                             <div className={styles.eventsBadgeList}>
                               {guest.eventAttendances.map((ea) => (
@@ -468,7 +470,8 @@ export const AdminRsvpPage: React.FC = () => {
                           )}
                         </td>
 
-                        <td className={styles.td}>
+                        <td className={styles.td} data-label="Dieta">
+                          <span className={styles.mobileFieldLabel}>Dieta:</span>
                           {guest.dietaryRestrictions ? (
                             <span className={styles.dietTag}>
                               ⚠️ {guest.dietaryRestrictions}
@@ -480,7 +483,7 @@ export const AdminRsvpPage: React.FC = () => {
                           )}
                         </td>
 
-                        <td className={styles.td} style={{ textAlign: 'right' }}>
+                        <td className={styles.td} data-label="Acción" style={{ textAlign: 'right' }}>
                           <button
                             type="button"
                             className={styles.modifyButton}

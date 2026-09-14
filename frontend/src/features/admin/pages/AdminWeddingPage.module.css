@@ -52,7 +52,7 @@
   padding: 0.75rem 1.4rem;
   border-radius: var(--radius-full);
   border: 1.5px solid var(--color-border);
-  background: #ffffff;
+  background: var(--color-bg-subtle);
   color: var(--color-text-heading);
   font-size: 0.9rem;
   font-weight: 700;
@@ -74,7 +74,7 @@
   border-radius: var(--radius-full);
   border: none;
   background: var(--color-primary-gradient);
-  color: #ffffff;
+  color: var(--color-text-on-primary);
   font-size: 0.92rem;
   font-weight: 700;
   cursor: pointer;
@@ -100,7 +100,7 @@
   padding: 0.85rem 1.25rem;
   background: var(--color-success-bg);
   color: var(--color-success);
-  border: 1px solid #c8e6c9;
+  border: 1px solid var(--color-success-border);
   border-radius: var(--radius-md);
   font-size: 0.9rem;
   font-weight: 600;
@@ -114,7 +114,7 @@
   padding: 0.85rem 1.25rem;
   background: var(--color-error-bg);
   color: var(--color-error);
-  border: 1px solid #ffcdd2;
+  border: 1px solid var(--color-error-border);
   border-radius: var(--radius-md);
   font-size: 0.9rem;
   font-weight: 600;
@@ -125,7 +125,7 @@
 
 /* Section Cards */
 .sectionCard {
-  background: #ffffff;
+  background: var(--color-bg-card);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-sm);
@@ -137,7 +137,7 @@
 .sectionHeader {
   padding: 1.5rem 2rem 1.25rem;
   border-bottom: 1px solid var(--color-border);
-  background: linear-gradient(135deg, rgba(254, 248, 242, 0.6) 0%, #ffffff 100%);
+  background: var(--color-table-header-bg);
   display: flex;
   align-items: center;
   gap: 0.85rem;
@@ -161,7 +161,7 @@
   font-size: 1.35rem;
   font-weight: 700;
   color: var(--color-text-heading);
-  margin: 0;
+  letter-spacing: -0.01em;
 }
 
 .sectionSubtitle {
@@ -171,23 +171,27 @@
 }
 
 .sectionBody {
-  padding: 2rem;
+  padding: 1.75rem 2rem 2rem;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
-/* Form Groups & Grids */
-.formRow {
+/* Form Groups & Layouts */
+.formGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1.5rem;
 }
 
+.formGridFull {
+  grid-column: span 2;
+}
+
 .formGroup {
   display: flex;
   flex-direction: column;
-  gap: 0.45rem;
+  gap: 0.5rem;
 }
 
 .label {
@@ -196,12 +200,12 @@
   color: var(--color-text-heading);
   display: flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.4rem;
 }
 
-.labelHint {
-  font-weight: 400;
-  font-size: 0.8rem;
+.labelHelp {
+  font-size: 0.78rem;
+  font-weight: 500;
   color: var(--color-text-muted);
 }
 
@@ -211,7 +215,7 @@
   padding: 0.75rem 1rem;
   border-radius: var(--radius-md);
   border: 1.5px solid var(--color-border);
-  background: #ffffff;
+  background: var(--color-input-bg);
   font-family: var(--font-sans);
   font-size: 0.95rem;
   color: var(--color-text-body);
@@ -222,7 +226,7 @@
 .input:focus,
 .textarea:focus {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(223, 106, 79, 0.15);
+  box-shadow: 0 0 0 3px var(--color-input-focus-ring);
 }
 
 .textarea {
@@ -232,7 +236,7 @@
 
 /* Couple Preview Card */
 .couplePreviewBox {
-  background: linear-gradient(135deg, #fff7f2 0%, #fffdfa 100%);
+  background: var(--color-bg-card);
   border: 1.5px solid var(--color-primary-border);
   border-radius: var(--radius-lg);
   padding: 1.75rem 2rem;
@@ -258,7 +262,7 @@
 }
 
 .countdownBadge {
-  background: #ffffff;
+  background: var(--color-bg-subtle);
   border: 1px solid var(--color-accent-gold-border);
   padding: 0.5rem 1rem;
   border-radius: var(--radius-full);
@@ -294,8 +298,8 @@
   position: absolute;
   bottom: 1rem;
   left: 1.25rem;
-  background: rgba(44, 26, 22, 0.75);
-  color: #ffffff;
+  background: var(--color-modal-backdrop);
+  color: var(--color-text-on-primary);
   backdrop-filter: blur(6px);
   padding: 0.4rem 0.85rem;
   border-radius: var(--radius-full);
@@ -335,13 +339,66 @@
 /* Story Polaroid Preview */
 .storyLayoutGrid {
   display: grid;
-  grid-template-columns: 260px 1fr;
+  grid-template-columns: minmax(220px, 260px) minmax(0, 1fr);
   gap: 2rem;
   align-items: start;
+  width: 100%;
+  min-width: 0;
+}
+
+.storyContentForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  min-width: 0;
+  width: 100%;
+}
+
+.assignedImageBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+  padding: 0.4rem 0.65rem;
+  background: var(--color-bg-subtle);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.assignedImageText {
+  font-size: 0.82rem;
+  color: var(--color-text-body);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.removePhotoBtn {
+  background: none;
+  border: none;
+  color: var(--color-error);
+  font-size: 0.82rem;
+  cursor: pointer;
+  font-weight: 600;
+  text-decoration: underline;
+  white-space: nowrap;
+  flex-shrink: 0;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+}
+
+.removePhotoBtn:hover {
+  opacity: 0.8;
 }
 
 .polaroidFrame {
-  background: #ffffff;
+  background: var(--color-bg-card);
   padding: 0.85rem 0.85rem 1.4rem;
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-md);
@@ -382,7 +439,7 @@
   border-radius: var(--radius-md);
   overflow: hidden;
   border: 1.5px solid var(--color-border);
-  background: #ffffff;
+  background: var(--color-bg-card);
   box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
@@ -419,8 +476,8 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: rgba(220, 53, 69, 0.9);
-  color: #ffffff;
+  background: var(--color-error);
+  color: var(--color-text-on-primary);
   border: none;
   cursor: pointer;
   display: flex;
@@ -437,13 +494,13 @@
 }
 
 .deletePhotoBtn:hover {
-  background: #c82333;
+  background: var(--color-error-dark);
   transform: scale(1.1);
 }
 
 .galleryCaptionWrapper {
   padding: 0.6rem 0.75rem;
-  background: #ffffff;
+  background: var(--color-bg-card);
   border-top: 1px solid var(--color-border);
 }
 
@@ -460,7 +517,7 @@
 
 .galleryCaptionInput:focus {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 2px rgba(223, 106, 79, 0.15);
+  box-shadow: 0 0 0 2px var(--color-input-focus-ring);
 }
 
 .addPhotoInputRow {
@@ -485,7 +542,7 @@
 
 .addPhotoBtn:hover {
   background: var(--color-primary);
-  color: #ffffff;
+  color: var(--color-text-on-primary);
   border-color: var(--color-primary);
 }
 
@@ -495,12 +552,9 @@
   padding: 2.5rem 1rem;
   color: var(--color-text-muted);
   background: var(--color-bg);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   border: 1.5px dashed var(--color-border);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.85rem;
+  font-size: 0.92rem;
 }
 
 .quickSamplesBtn {
@@ -517,7 +571,7 @@
 
 .quickSamplesBtn:hover {
   background: var(--color-accent-gold);
-  color: #ffffff;
+  color: var(--color-text-on-primary);
 }
 
 /* Gestor de Secciones Personalizadas de Información */
@@ -562,7 +616,7 @@
 
 .addSectionBtn:hover {
   background: var(--color-primary);
-  color: #ffffff;
+  color: var(--color-text-on-primary);
   border-color: var(--color-primary);
   transform: translateY(-1px);
 }
@@ -574,7 +628,7 @@
 }
 
 .customSectionCard {
-  background: #faf7f5;
+  background: var(--color-bg-subtle);
   border: 1.5px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: 1.5rem;
@@ -607,7 +661,7 @@
   font-size: 0.82rem;
   font-weight: 700;
   color: var(--color-text-muted);
-  background: #ffffff;
+  background: var(--color-bg-card);
   padding: 0.3rem 0.75rem;
   border-radius: var(--radius-full);
   border: 1px solid var(--color-border);
@@ -624,7 +678,7 @@
   height: 32px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--color-border);
-  background: #ffffff;
+  background: var(--color-bg-card);
   color: var(--color-text-heading);
   cursor: pointer;
   display: flex;
@@ -649,9 +703,9 @@
   width: 32px;
   height: 32px;
   border-radius: var(--radius-sm);
-  border: 1px solid #ffcdd2;
-  background: #fff5f5;
-  color: #d32f2f;
+  border: 1px solid var(--color-error-border);
+  background: var(--color-error-bg);
+  color: var(--color-error);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -661,8 +715,8 @@
 }
 
 .deleteSectionBtn:hover {
-  background: #ffebee;
-  border-color: #ef5350;
+  background: var(--color-error-bg);
+  border-color: var(--color-error);
   transform: scale(1.06);
 }
 
@@ -684,7 +738,7 @@
   height: 38px;
   border-radius: var(--radius-md);
   border: 1.5px solid var(--color-border);
-  background: #ffffff;
+  background: var(--color-bg-subtle);
   font-size: 1.2rem;
   cursor: pointer;
   display: flex;
@@ -701,7 +755,7 @@
 .iconChipSelected {
   border-color: var(--color-primary);
   background: var(--color-primary-light);
-  box-shadow: 0 0 0 2px rgba(223, 106, 79, 0.25);
+  box-shadow: 0 0 0 2px var(--color-input-focus-ring);
   transform: scale(1.08);
 }
 
@@ -712,13 +766,13 @@
   padding: 0.45rem;
   border-radius: var(--radius-md);
   border: 1.5px solid var(--color-border);
-  background: #ffffff;
+  background: var(--color-bg-card);
 }
 
 .emptyCustomSections {
   text-align: center;
   padding: 2.2rem 1.5rem;
-  background: #faf8f6;
+  background: var(--color-bg-subtle);
   border-radius: var(--radius-lg);
   border: 1.5px dashed var(--color-border);
   color: var(--color-text-muted);
@@ -736,7 +790,7 @@
   padding: 0.6rem 1.4rem;
   border-radius: var(--radius-full);
   background: var(--color-primary-gradient);
-  color: #ffffff;
+  color: var(--color-text-on-primary);
   font-size: 0.88rem;
   font-weight: 700;
   border: none;
@@ -775,7 +829,7 @@
 }
 
 .stickyFooterContent {
-  background: rgba(255, 255, 255, 0.96);
+  background: var(--color-bg-glass);
   backdrop-filter: blur(12px);
   border: 1.5px solid var(--color-border);
   border-radius: var(--radius-xl);
@@ -785,7 +839,7 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 1rem;
-  box-shadow: 0 8px 30px rgba(44, 26, 22, 0.12);
+  box-shadow: var(--shadow-lg);
 }
 
 .stickyFooterText {
@@ -808,9 +862,9 @@
 }
 
 .stickyFooterSuccess {
-  background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%) !important;
-  border-color: #22c55e !important;
-  box-shadow: 0 8px 32px rgba(34, 197, 94, 0.22) !important;
+  background: var(--color-success-bg) !important;
+  border-color: var(--color-success) !important;
+  box-shadow: var(--shadow-md) !important;
   animation: pulseSuccess 0.4s ease-out;
 }
 
@@ -821,8 +875,8 @@
 }
 
 .saveButtonSuccess {
-  background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%) !important;
-  box-shadow: 0 4px 16px rgba(34, 197, 94, 0.35) !important;
+  background: var(--color-success) !important;
+  box-shadow: var(--shadow-sm) !important;
   transform: scale(1.02);
 }
 
@@ -831,28 +885,13 @@
   align-items: center;
   gap: 0.35rem;
   padding: 0.25rem 0.75rem;
-  background: #dcfce7;
-  color: #15803d;
+  background: var(--color-success-bg);
+  color: var(--color-success-dark);
   font-size: 0.8rem;
   font-weight: 700;
   border-radius: var(--radius-full);
-  border: 1px solid #bbf7d0;
+  border: 1px solid var(--color-success-border);
   animation: fadeIn 0.25s ease forwards;
-}
-
-@media (max-width: 768px) {
-  .formRow {
-    grid-template-columns: 1fr;
-  }
-
-  .storyLayoutGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .polaroidFrame {
-    max-width: 280px;
-    margin: 0 auto;
-  }
 }
 
 /* Media Upload Components */
@@ -860,7 +899,7 @@
   border: 2px dashed var(--color-border);
   border-radius: var(--radius-lg);
   padding: 1.5rem;
-  background: #faf7f5;
+  background: var(--color-bg-subtle);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -869,12 +908,15 @@
   text-align: center;
   cursor: pointer;
   transition: all var(--transition-fast);
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .uploadDropzone:hover,
 .uploadDropzoneActive {
   border-color: var(--color-primary);
-  background: rgba(223, 106, 79, 0.05);
+  background: var(--color-primary-light);
 }
 
 .uploadDropzoneActive {
@@ -889,11 +931,15 @@
   font-size: 0.95rem;
   font-weight: 700;
   color: var(--color-text-heading);
+  max-width: 100%;
+  word-break: break-word;
 }
 
 .uploadSubtitle {
   font-size: 0.8rem;
   color: var(--color-text-muted);
+  max-width: 100%;
+  word-break: break-word;
 }
 
 .uploadActionsRow {
@@ -910,7 +956,7 @@
   padding: 0.65rem 1.25rem;
   border-radius: var(--radius-md);
   background: var(--color-primary);
-  color: #ffffff;
+  color: var(--color-text-on-primary);
   font-size: 0.88rem;
   font-weight: 600;
   cursor: pointer;
@@ -934,7 +980,7 @@
   gap: 0.45rem;
   padding: 0.6rem 1rem;
   border-radius: var(--radius-md);
-  background: #ffffff;
+  background: var(--color-bg-card);
   color: var(--color-text-heading);
   border: 1.5px solid var(--color-border);
   font-size: 0.85rem;
@@ -954,7 +1000,7 @@
   gap: 0.5rem;
   padding: 0.4rem 0.85rem;
   border-radius: var(--radius-full);
-  background: rgba(223, 106, 79, 0.12);
+  background: var(--color-primary-light);
   color: var(--color-primary-dark);
   font-size: 0.82rem;
   font-weight: 600;
@@ -963,7 +1009,7 @@
 .uploadSpinner {
   width: 14px;
   height: 14px;
-  border: 2px solid rgba(223, 106, 79, 0.3);
+  border: 2px solid var(--color-primary-border);
   border-top-color: var(--color-primary);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
@@ -974,12 +1020,12 @@
 }
 
 .uploadErrorBanner {
-  background: #fff5f5;
-  border: 1.5px solid #feb2b2;
+  background: var(--color-error-bg);
+  border: 1.5px solid var(--color-error-border);
   border-radius: var(--radius-md);
   padding: 0.75rem 1rem;
   font-size: 0.85rem;
-  color: #c53030;
+  color: var(--color-error-dark);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -989,7 +1035,7 @@
 .uploadErrorClose {
   background: none;
   border: none;
-  color: #c53030;
+  color: var(--color-error-dark);
   cursor: pointer;
   font-weight: 700;
   font-size: 1rem;
@@ -1001,38 +1047,38 @@
 
 /* Hoteles y Alojamientos */
 .hotelFormContainer {
-  background: #fdfbfb;
-  border: 1.5px solid var(--color-primary-border, #f0d5d8);
-  border-radius: var(--radius-md, 12px);
+  background: var(--color-bg-subtle);
+  border: 1.5px solid var(--color-primary-border);
+  border-radius: var(--radius-md);
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
   margin-bottom: 1.5rem;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+  box-shadow: var(--shadow-sm);
 }
 
 .hotelFormHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid var(--color-border, #eaeaea);
+  border-bottom: 1px solid var(--color-border);
   padding-bottom: 0.75rem;
 }
 
 .hotelFormTitle {
   font-size: 1.05rem;
   font-weight: 700;
-  color: var(--color-text-heading, #2c2c2c);
+  color: var(--color-text-heading);
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
 .hotelItemCard {
-  background: #ffffff;
-  border: 1px solid var(--color-border, #e5e7eb);
-  border-radius: var(--radius-md, 10px);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
   padding: 1.25rem;
   display: flex;
   flex-direction: column;
@@ -1041,8 +1087,8 @@
 }
 
 .hotelItemCard:hover {
-  border-color: var(--color-primary, #b76e79);
-  box-shadow: 0 4px 12px rgba(183, 110, 121, 0.08);
+  border-color: var(--color-primary);
+  box-shadow: 0 4px 12px var(--color-primary-glow);
 }
 
 .hotelItemHeader {
@@ -1056,7 +1102,7 @@
 .hotelItemTitle {
   font-size: 1.15rem;
   font-weight: 700;
-  color: var(--color-text-heading, #2c2c2c);
+  color: var(--color-text-heading);
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -1074,13 +1120,13 @@
   font-weight: 600;
   padding: 0.2rem 0.55rem;
   border-radius: 4px;
-  background: #f3f4f6;
-  color: #4b5563;
+  background: var(--color-bg-subtle);
+  color: var(--color-text-muted);
 }
 
 .hotelMetaText {
   font-size: 0.88rem;
-  color: var(--color-text-muted, #666);
+  color: var(--color-text-muted);
   line-height: 1.4;
 }
 
@@ -1093,10 +1139,10 @@
 .editBtn {
   width: 32px;
   height: 32px;
-  border-radius: var(--radius-sm, 6px);
-  border: 1px solid var(--color-border, #e5e7eb);
-  background: #ffffff;
-  color: var(--color-text-heading, #333);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-subtle);
+  color: var(--color-text-heading);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -1106,9 +1152,9 @@
 }
 
 .editBtn:hover {
-  border-color: var(--color-primary, #b76e79);
-  color: var(--color-primary, #b76e79);
-  background: #fdf5f5;
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: var(--color-primary-light);
 }
 
 .cancelButton {
@@ -1117,19 +1163,368 @@
   justify-content: center;
   padding: 0.6rem 1.25rem;
   border-radius: var(--radius-full);
-  background: #ffffff;
-  color: var(--color-text-muted, #666);
+  background: var(--color-bg-card);
+  color: var(--color-text-muted);
   font-size: 0.88rem;
   font-weight: 600;
-  border: 1.5px solid var(--color-border, #e5e7eb);
+  border: 1.5px solid var(--color-border);
   cursor: pointer;
-  transition: all var(--transition-fast, 0.15s ease);
+  transition: all var(--transition-fast);
 }
 
 .cancelButton:hover {
-  background: var(--color-background-subtle, #f9fafb);
-  color: var(--color-text-heading, #1f2937);
-  border-color: #cbd5e1;
+  background: var(--color-bg);
+  color: var(--color-text-heading);
+  border-color: var(--color-border-strong);
   transform: translateY(-1px);
+}
+
+.hotelFormActions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* ==========================================================================
+   Adaptabilidad Móvil & Responsive Design (Mobile-First / Breakpoints)
+   ========================================================================== */
+
+@media (max-width: 1024px) {
+  .storyLayoutGrid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .polaroidFrame {
+    max-width: 280px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    gap: 1.5rem;
+  }
+
+  /* Encabezado Principal */
+  .pageHeader {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .title {
+    font-size: clamp(1.45rem, 5vw, 1.85rem);
+  }
+
+  .subtitle {
+    font-size: 0.88rem;
+  }
+
+  .headerActions {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .publicLinkButton,
+  .saveButton {
+    width: 100%;
+    justify-content: center;
+    min-height: 44px;
+  }
+
+  /* Tarjetas de Sección */
+  .sectionCard {
+    padding: 1.25rem 1rem;
+    border-radius: var(--radius-lg);
+  }
+
+  .sectionHeader {
+    gap: 0.75rem;
+  }
+
+  .sectionIcon {
+    font-size: 1.5rem;
+    width: 40px;
+    height: 40px;
+  }
+
+  .sectionTitle {
+    font-size: 1.2rem;
+  }
+
+  .sectionSubtitle {
+    font-size: 0.82rem;
+  }
+
+  /* Formularios e Inputs */
+  .formRow {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  /* Caja Monograma y Cuenta Atrás */
+  .couplePreviewBox {
+    padding: 1.25rem 1rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .monogramDisplay {
+    font-size: clamp(1.8rem, 6vw, 2.2rem);
+  }
+
+  .countdownDisplay {
+    width: 100%;
+  }
+
+  .countdownBadge {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+    display: flex;
+  }
+
+  /* Vista previa Portada e Historia */
+  .imagePreviewWrapper {
+    height: 190px;
+  }
+
+  .storyLayoutGrid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .polaroidFrame {
+    max-width: 260px;
+    margin: 0 auto;
+  }
+
+  /* Galería: Cuadrícula compacta de 2 columnas en móvil */
+  .galleryGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  .galleryCardImageWrapper {
+    height: 130px;
+  }
+
+  /* El botón de borrar foto debe ser visible y accesible sin hover en pantallas táctiles */
+  .deletePhotoBtn {
+    opacity: 1;
+    width: 36px;
+    height: 36px;
+    top: 0.35rem;
+    right: 0.35rem;
+    font-size: 1rem;
+  }
+
+  .galleryCaptionWrapper {
+    padding: 0.4rem 0.5rem;
+  }
+
+  .galleryCaptionInput {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.5rem;
+  }
+
+  .addPhotoInputRow {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+  }
+
+  .addPhotoBtn {
+    width: 100%;
+    justify-content: center;
+    min-height: 44px;
+  }
+
+  /* Detalles Prácticos */
+  .customSectionsHeader {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .addSectionBtn {
+    width: 100%;
+    justify-content: center;
+    min-height: 44px;
+  }
+
+  .customSectionCard {
+    padding: 1.15rem 0.9rem;
+  }
+
+  .customSectionTop {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.65rem;
+  }
+
+  .sectionActions {
+    width: 100%;
+    justify-content: flex-end;
+    gap: 0.6rem;
+  }
+
+  /* Áreas táctiles mínimas de 44px para botones de acción en móvil */
+  .moveBtn,
+  .deleteSectionBtn {
+    min-width: 44px;
+    min-height: 44px;
+    font-size: 1.05rem;
+  }
+
+  .iconChip {
+    min-width: 44px;
+    min-height: 44px;
+    font-size: 1.3rem;
+  }
+
+  .sectionSaveBtn {
+    width: 100%;
+    justify-content: center;
+    min-height: 44px;
+  }
+
+  /* Hoteles y Alojamientos */
+  .hotelFormContainer {
+    padding: 1.15rem 0.85rem;
+  }
+
+  .hotelFormHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .hotelItemCard {
+    padding: 1rem 0.85rem;
+  }
+
+  .hotelItemHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .hotelActionsGroup {
+    width: 100%;
+    justify-content: flex-end;
+    gap: 0.6rem;
+    margin-top: 0.25rem;
+  }
+
+  .editBtn {
+    min-width: 44px;
+    min-height: 44px;
+    font-size: 1rem;
+  }
+
+  .cancelButton {
+    width: 100%;
+    justify-content: center;
+    min-height: 44px;
+  }
+
+  .hotelFormActions {
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .hotelFormActions button {
+    width: 100%;
+    justify-content: center;
+    min-height: 44px;
+  }
+
+  /* Barra inferior fija de guardado adaptada a móvil */
+  .stickyFooterBar {
+    bottom: 0;
+    margin-top: 1rem;
+  }
+
+  .stickyFooterContent {
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    padding: 0.85rem 1rem;
+    gap: 0.6rem;
+    flex-direction: column;
+    align-items: stretch;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .stickyFooterText {
+    text-align: center;
+  }
+
+  .stickyFooterSubtitle {
+    display: none; /* Ahorra espacio visual en móvil */
+  }
+
+  .stickyFooterContent .headerActions {
+    flex-direction: row;
+    gap: 0.5rem;
+  }
+
+  .stickyFooterContent .publicLinkButton {
+    flex: 1;
+    padding: 0.6rem 0.5rem;
+    font-size: 0.82rem;
+    min-height: 44px;
+  }
+
+  .stickyFooterContent .saveButton {
+    flex: 1.5;
+    padding: 0.6rem 0.75rem;
+    font-size: 0.85rem;
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 1.35rem;
+  }
+
+  .sectionCard {
+    padding: 1rem 0.75rem;
+  }
+
+  .galleryGrid {
+    gap: 0.5rem;
+  }
+
+  .galleryCardImageWrapper {
+    height: 110px;
+  }
+
+  .uploadDropzone {
+    padding: 1.25rem 0.75rem;
+  }
+
+  .uploadActionsRow {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .uploadButtonPrimary,
+  .uploadButtonOutline {
+    width: 100%;
+    justify-content: center;
+    min-height: 44px;
+  }
+
+  .stickyFooterContent .headerActions {
+    flex-direction: column;
+    gap: 0.4rem;
+  }
 }
 

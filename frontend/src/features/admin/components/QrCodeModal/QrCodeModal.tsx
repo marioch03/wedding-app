@@ -133,9 +133,11 @@ export const QrCodeModal: React.FC<QrCodeModalProps> = ({ party, onClose }) => {
                 type="button"
                 className={`${styles.copyButton} ${copied ? styles.copyButtonSuccess : ''}`}
                 onClick={handleCopyLink}
+                title={copied ? '¡Copiado!' : 'Copiar Enlace'}
+                aria-label={copied ? '¡Copiado!' : 'Copiar Enlace'}
               >
-                <span>{copied ? '✓' : '📋'}</span>
-                {copied ? '¡Copiado!' : 'Copiar Enlace'}
+                <span className={styles.copyIcon} aria-hidden="true">{copied ? '✓' : '📋'}</span>
+                <span className={styles.copyText}>{copied ? '¡Copiado!' : 'Copiar Enlace'}</span>
               </button>
             </div>
           </div>

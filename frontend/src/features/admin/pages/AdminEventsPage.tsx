@@ -333,7 +333,7 @@ export const AdminEventsPage: React.FC = () => {
                         {ev.isPublic ? (
                           <span className={styles.publicTag}>🌐 Web Pública</span>
                         ) : (
-                          <span className={styles.publicTag} style={{ background: '#f1f5f9', color: '#64748b' }}>
+                          <span className={styles.privateTag}>
                             🔒 Solo Admin
                           </span>
                         )}

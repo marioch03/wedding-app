@@ -36,10 +36,10 @@ export const AdminLoginPage: React.FC = () => {
                 },
                 card: {
                   width: '100%',
-                  background: '#ffffff',
+                  background: 'var(--color-bg-card)',
                   borderRadius: '20px',
                   border: '1.5px solid var(--color-border)',
-                  boxShadow: '0 20px 50px rgba(0, 0, 0, 0.25)',
+                  boxShadow: 'var(--shadow-xl)',
                 },
                 headerTitle: {
                   fontFamily: 'var(--font-serif)',

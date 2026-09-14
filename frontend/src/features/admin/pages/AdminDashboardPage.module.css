@@ -5,7 +5,7 @@
 
 /* Banner de Bienvenida y Resumen */
 .welcomeBanner {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(254, 248, 242, 0.9) 100%);
+  background: var(--color-bg-card);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--color-border);
@@ -50,11 +50,11 @@
   display: flex;
   align-items: center;
   gap: 0.85rem;
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--color-bg-subtle);
   padding: 0.85rem 1.4rem;
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-accent-gold-border);
-  box-shadow: 0 4px 16px rgba(203, 162, 88, 0.12);
+  box-shadow: var(--shadow-sm);
 }
 
 .weddingBadgeIcon {
@@ -78,15 +78,15 @@
 
 /* Alerta de Error y Conexión */
 .errorAlert {
-  background: linear-gradient(135deg, rgba(254, 242, 242, 0.96) 0%, rgba(255, 247, 237, 0.96) 100%);
+  background: var(--color-error-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  border-left: 5px solid #dc2626;
+  border: 1px solid var(--color-error-border);
+  border-left: 5px solid var(--color-error);
   border-radius: var(--radius-lg);
   padding: 1.25rem 1.75rem;
   margin-bottom: 2rem;
-  box-shadow: 0 4px 16px rgba(220, 38, 38, 0.08);
+  box-shadow: var(--shadow-sm);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -125,13 +125,13 @@
 .errorAlertTitle {
   font-size: 1.05rem;
   font-weight: 700;
-  color: #991b1b;
+  color: var(--color-error-dark);
   margin-bottom: 0.25rem;
 }
 
 .errorAlertMessage {
   font-size: 0.9rem;
-  color: #7f1d1d;
+  color: var(--color-error-dark);
   line-height: 1.4;
   margin: 0;
 }
@@ -141,9 +141,9 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.65rem 1.35rem;
-  background: #ffffff;
-  color: #b91c1c;
-  border: 1.5px solid rgba(185, 28, 28, 0.4);
+  background: var(--color-bg-card);
+  color: var(--color-error);
+  border: 1.5px solid var(--color-error-border);
   border-radius: var(--radius-full);
   font-size: 0.9rem;
   font-weight: 700;
@@ -153,10 +153,10 @@
 }
 
 .retryButton:hover:not(:disabled) {
-  background: #dc2626;
-  color: #ffffff;
-  border-color: #dc2626;
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+  background: var(--color-error);
+  color: var(--color-text-on-primary);
+  border-color: var(--color-error);
+  box-shadow: var(--shadow-sm);
   transform: translateY(-1px);
 }
 
@@ -174,7 +174,7 @@
 }
 
 .kpiCard {
-  background: rgba(255, 255, 255, 0.88);
+  background: var(--color-bg-card);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--color-border);
@@ -220,9 +220,9 @@
 }
 
 .iconConfirmed {
-  background: #eaf5ea;
-  color: #246828;
-  border: 1px solid #c8e6c9;
+  background: var(--color-success-bg);
+  color: var(--color-success-dark);
+  border: 1px solid var(--color-success-border);
 }
 
 .iconPending {
@@ -232,9 +232,9 @@
 }
 
 .iconDeclined {
-  background: #fdf0f0;
-  color: #b71c1c;
-  border: 1px solid #ffcdd2;
+  background: var(--color-error-bg);
+  color: var(--color-error-dark);
+  border: 1px solid var(--color-error-border);
 }
 
 .iconRate {
@@ -269,7 +269,7 @@
 
 /* Tarjeta de Balance y Desglose */
 .breakdownCard {
-  background: rgba(255, 255, 255, 0.88);
+  background: var(--color-bg-card);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--color-border);
@@ -294,7 +294,7 @@
 .multiProgressBar {
   width: 100%;
   height: 14px;
-  background: rgba(244, 237, 228, 0.8);
+  background: var(--color-bg-subtle);
   border-radius: var(--radius-full);
   overflow: hidden;
   display: flex;
@@ -303,7 +303,7 @@
 }
 
 .progressSegmentConfirmed {
-  background: linear-gradient(90deg, #2e7d32, #43a047);
+  background: var(--color-success);
   transition: width 0.6s ease;
 }
 
@@ -313,7 +313,7 @@
 }
 
 .progressSegmentDeclined {
-  background: linear-gradient(90deg, #d32f2f, #e53935);
+  background: var(--color-error);
   transition: width 0.6s ease;
 }
 
@@ -330,13 +330,13 @@
   align-items: center;
   padding: 0.8rem 1.1rem;
   border-radius: var(--radius-md);
-  background: rgba(250, 247, 242, 0.7);
+  background: var(--color-bg-subtle);
   border: 1px solid var(--color-border);
   transition: background var(--transition-fast);
 }
 
 .legendItem:hover {
-  background: #ffffff;
+  background: var(--color-bg-card-hover);
 }
 
 .legendLeft {
@@ -349,12 +349,12 @@
   width: 11px;
   height: 11px;
   border-radius: 50%;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
 }
 
-.dotConfirmed { background: #2e7d32; }
+.dotConfirmed { background: var(--color-success); }
 .dotPending { background: var(--color-accent-gold); }
-.dotDeclined { background: #d32f2f; }
+.dotDeclined { background: var(--color-error); }
 
 .legendName {
   font-size: 0.92rem;
@@ -377,7 +377,7 @@
   padding: 0.9rem 1.6rem;
   border-radius: var(--radius-full);
   background: var(--color-primary-gradient);
-  color: #ffffff !important;
+  color: var(--color-text-on-primary) !important;
   font-weight: 700;
   font-size: 0.95rem;
   text-decoration: none;
@@ -392,7 +392,7 @@
 
 /* Columna de Accesos Rápidos Compactos */
 .quickActionsCard {
-  background: rgba(255, 255, 255, 0.88);
+  background: var(--color-bg-card);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--color-border);
@@ -416,7 +416,7 @@
   padding: 1.05rem 1.25rem;
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-border);
-  background: rgba(250, 247, 242, 0.6);
+  background: var(--color-bg-subtle);
   text-decoration: none;
   color: inherit;
   transition: all var(--transition-fast);
@@ -424,7 +424,7 @@
 
 .actionRow:hover {
   border-color: var(--color-primary-border);
-  background: #ffffff;
+  background: var(--color-bg-card-hover);
   transform: translateX(4px);
   box-shadow: var(--shadow-sm);
 }
@@ -433,7 +433,7 @@
   width: 44px;
   height: 44px;
   border-radius: 12px;
-  background: #ffffff;
+  background: var(--color-bg-card);
   border: 1px solid var(--color-border);
   display: flex;
   align-items: center;
@@ -470,7 +470,7 @@
 /* Sección de Asistencia por Evento */
 .eventStatsSection {
   margin-top: 2rem;
-  background: rgba(255, 255, 255, 0.95);
+  background: var(--color-bg-card);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--color-border);
@@ -526,7 +526,7 @@
 }
 
 .eventStatCard {
-  background: #ffffff;
+  background: var(--color-bg-card);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: 1.35rem 1.5rem;
@@ -559,7 +559,7 @@
 .eventStatIcon {
   font-size: 1.6rem;
   line-height: 1;
-  background: var(--color-background-soft, #fbf7f4);
+  background: var(--color-bg-subtle);
   padding: 0.5rem;
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border);
@@ -592,7 +592,7 @@
 
 .eventStatRatio strong {
   font-size: 1.15rem;
-  color: #15803d;
+  color: var(--color-success-dark);
 }
 
 .eventStatPct {
@@ -603,7 +603,7 @@
 
 .miniProgressBar {
   height: 8px;
-  background: #f1f5f9;
+  background: var(--color-bg-subtle);
   border-radius: 9999px;
   overflow: hidden;
   display: flex;
@@ -619,9 +619,9 @@
 .pillConfirmed {
   font-size: 0.75rem;
   font-weight: 600;
-  color: #15803d;
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
+  color: var(--color-success-dark);
+  background: var(--color-success-bg);
+  border: 1px solid var(--color-success-border);
   padding: 0.2rem 0.55rem;
   border-radius: 9999px;
 }
@@ -629,9 +629,9 @@
 .pillPending {
   font-size: 0.75rem;
   font-weight: 600;
-  color: #b45309;
-  background: #fffbeb;
-  border: 1px solid #fde68a;
+  color: var(--color-warning-dark);
+  background: var(--color-warning-bg);
+  border: 1px solid var(--color-warning-border);
   padding: 0.2rem 0.55rem;
   border-radius: 9999px;
 }
@@ -639,9 +639,9 @@
 .pillDeclined {
   font-size: 0.75rem;
   font-weight: 600;
-  color: #b91c1c;
-  background: #fef2f2;
-  border: 1px solid #fecaca;
+  color: var(--color-error-dark);
+  background: var(--color-error-bg);
+  border: 1px solid var(--color-error-border);
   padding: 0.2rem 0.55rem;
   border-radius: 9999px;
 }

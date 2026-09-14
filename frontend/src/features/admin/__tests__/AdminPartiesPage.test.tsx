@@ -68,7 +68,7 @@ describe('Feature: Panel de Invitaciones y Gestión de QR (AdminPartiesPage)', (
     expect(screen.getByText('⏱ Pendiente')).toBeInTheDocument();
   });
 
-  it('permite copiar el enlace RSVP personalizado con feedback visual', async () => {
+  it('permite copiar el código de invitación personalizado con feedback visual', async () => {
     const user = userEvent.setup();
     renderWithRouter(<AdminPartiesPage />);
 
@@ -76,15 +76,15 @@ describe('Feature: Panel de Invitaciones y Gestión de QR (AdminPartiesPage)', (
       expect(screen.getByText('Familia Gómez Martínez')).toBeInTheDocument();
     });
 
-    const copyButtons = screen.getAllByRole('button', { name: /Copiar Enlace/i });
-    expect(copyButtons.length).toBeGreaterThanOrEqual(1);
+    const codeButtons = screen.getAllByTitle('Código para tarjeta física (haz clic para copiar)');
+    expect(codeButtons.length).toBeGreaterThanOrEqual(1);
 
-    // Copiar enlace del primer grupo
-    await user.click(copyButtons[0]);
+    // Copiar código del primer grupo
+    await user.click(codeButtons[0]);
 
-    // Verificar que el portapapeles recibió la URL completa
+    // Verificar que el portapapeles recibió el token
     const clipboardText = await navigator.clipboard.readText();
-    expect(clipboardText).toContain(`/rsvp/${mockParties[0].rsvpToken}`);
+    expect(clipboardText).toBe(mockParties[0].rsvpToken);
 
     // Feedback visual "¡Copiado!"
     expect(screen.getByText('¡Copiado!')).toBeInTheDocument();
