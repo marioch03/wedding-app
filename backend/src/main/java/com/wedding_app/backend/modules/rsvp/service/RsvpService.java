@@ -29,11 +29,13 @@ import com.wedding_app.backend.modules.party.repository.PartyRepository;
 import com.wedding_app.backend.modules.party.entity.Party;
 import com.wedding_app.backend.modules.party.entity.PartyEvent;
 import com.wedding_app.backend.modules.party.entity.PartyStatus;
+import com.wedding_app.backend.modules.rsvp.dto.EventAttendanceStatsDto;
 import com.wedding_app.backend.modules.rsvp.dto.EventRsvpDto;
 import com.wedding_app.backend.modules.rsvp.dto.GuestRsvpDto;
 import com.wedding_app.backend.modules.rsvp.dto.RsvpInfoResponse;
 import com.wedding_app.backend.modules.rsvp.dto.RsvpStatsResponse;
 import com.wedding_app.backend.modules.rsvp.dto.RsvpSubmitRequest;
+import java.util.Comparator;
 
 import lombok.RequiredArgsConstructor;
 
@@ -273,6 +275,74 @@ public class RsvpService {
         ? ((double) (totalParties - pendingParties) / totalParties) * 100.0
         : 0.0;
 
+    // Cálculo de estadísticas detalladas por cada evento específico
+    List<Event> allEvents = eventRepository.findAll();
+    allEvents.sort(Comparator.comparing(Event::getDisplayOrder, Comparator.nullsLast(Comparator.naturalOrder()))
+        .thenComparing(Event::getStartDatetime, Comparator.nullsLast(Comparator.naturalOrder())));
+
+    List<PartyEvent> allPartyEvents = partyEventRepository.findAll();
+    java.util.Map<UUID, java.util.Set<UUID>> allowedEventsByParty = allPartyEvents.stream()
+        .filter(pe -> pe.getParty() != null && pe.getEvent() != null)
+        .collect(Collectors.groupingBy(
+            pe -> pe.getParty().getId(),
+            Collectors.mapping(pe -> pe.getEvent().getId(), Collectors.toSet())
+        ));
+
+    java.util.Map<String, GuestEvent> guestEventMap = allGuestEvents.stream()
+        .filter(ge -> ge.getGuest() != null && ge.getEvent() != null)
+        .collect(Collectors.toMap(
+            ge -> ge.getGuest().getId() + "_" + ge.getEvent().getId(),
+            ge -> ge,
+            (existing, replacement) -> existing
+        ));
+
+    List<EventAttendanceStatsDto> eventStats = new java.util.ArrayList<>();
+
+    for (Event event : allEvents) {
+      UUID eventId = event.getId();
+      long eventConfirmed = 0;
+      long eventDeclined = 0;
+      long eventPending = 0;
+      long eventTotalInvited = 0;
+
+      for (Guest guest : allGuests) {
+        if (guest.getParty() == null) {
+          continue;
+        }
+        java.util.Set<UUID> partyAllowedEvents = allowedEventsByParty.getOrDefault(guest.getParty().getId(), java.util.Set.of());
+        if (!partyAllowedEvents.contains(eventId)) {
+          continue;
+        }
+
+        eventTotalInvited++;
+
+        GuestEvent ge = guestEventMap.get(guest.getId() + "_" + eventId);
+        if (ge != null && Boolean.TRUE.equals(ge.getAttending())) {
+          eventConfirmed++;
+        } else if (ge != null && Boolean.FALSE.equals(ge.getAttending())) {
+          eventDeclined++;
+        } else {
+          if (guest.getParty().getStatus() == PartyStatus.CONFIRMED && (ge == null || ge.getAttending() == null)) {
+            eventConfirmed++;
+          } else if (guest.getParty().getStatus() == PartyStatus.DECLINED && (ge == null || ge.getAttending() == null)) {
+            eventDeclined++;
+          } else {
+            eventPending++;
+          }
+        }
+      }
+
+      eventStats.add(new EventAttendanceStatsDto(
+          eventId,
+          event.getName(),
+          event.getEventType(),
+          eventConfirmed,
+          eventDeclined,
+          eventPending,
+          eventTotalInvited
+      ));
+    }
+
     return new RsvpStatsResponse(
         totalParties,
         confirmedParties,
@@ -283,7 +353,8 @@ public class RsvpService {
         confirmedGuests,
         declinedGuests,
         pendingGuests,
-        Math.round(responseRate * 100.0) / 100.0);
+        Math.round(responseRate * 100.0) / 100.0,
+        eventStats);
   }
 
   // ---------------------------------------------------------------------------

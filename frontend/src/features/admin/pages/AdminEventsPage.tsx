@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import type { EventResponse, MenuOptionResponse, DietType } from '../../../types';
+import type { EventResponse, MenuOptionResponse, DietType, EventAttendanceStatsDto } from '../../../types';
 import { eventsApi } from '../../../lib/api/events';
 import { weddingApi } from '../../../lib/api/wedding';
+import { rsvpApi } from '../../../lib/api/rsvp';
 import { EventModal } from '../components/EventModal/EventModal';
 import { MenuOptionModal } from '../components/MenuOptionModal/MenuOptionModal';
 import { ConfirmModal } from '../../../common/components';
@@ -14,6 +15,7 @@ export const AdminEventsPage: React.FC = () => {
   const [weddingId, setWeddingId] = useState<string>('');
   const [events, setEvents] = useState<EventResponse[]>([]);
   const [eventMenus, setEventMenus] = useState<Record<string, MenuOptionResponse[]>>({});
+  const [eventStatsMap, setEventStatsMap] = useState<Record<string, EventAttendanceStatsDto>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -80,6 +82,20 @@ export const AdminEventsPage: React.FC = () => {
         })
       );
       setEventMenus(menusMap);
+
+      // 4. Cargar estadísticas de asistencia por evento
+      try {
+        const rsvpStats = await rsvpApi.getStatsAdmin();
+        if (rsvpStats.eventStats) {
+          const map: Record<string, EventAttendanceStatsDto> = {};
+          for (const es of rsvpStats.eventStats) {
+            map[es.eventId] = es;
+          }
+          setEventStatsMap(map);
+        }
+      } catch (stErr) {
+        console.warn('No se pudieron cargar estadísticas de asistencia para eventos:', stErr);
+      }
     } catch (err: any) {
       console.error('Error loading events:', err);
       setError(err?.message || 'Error al cargar los eventos del día.');
@@ -319,6 +335,14 @@ export const AdminEventsPage: React.FC = () => {
                         ) : (
                           <span className={styles.publicTag} style={{ background: '#f1f5f9', color: '#64748b' }}>
                             🔒 Solo Admin
+                          </span>
+                        )}
+                        {eventStatsMap[ev.id] && (
+                          <span
+                            className={styles.attendanceBadge}
+                            title={`${eventStatsMap[ev.id].confirmedCount} confirmados de ${eventStatsMap[ev.id].totalInvitedCount} convocados`}
+                          >
+                            👥 <strong>{eventStatsMap[ev.id].confirmedCount}</strong> / {eventStatsMap[ev.id].totalInvitedCount} confirmados
                           </span>
                         )}
                       </div>

@@ -240,6 +240,24 @@
   border: 1px solid #c8e6c9;
 }
 
+.attendanceBadge {
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 0.2rem 0.65rem;
+  border-radius: var(--radius-full);
+  background: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.attendanceBadge strong {
+  color: #166534;
+  font-weight: 700;
+}
+
 .eventMetaRow {
   display: flex;
   align-items: center;

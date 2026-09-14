@@ -32,6 +32,7 @@ import com.wedding_app.backend.modules.party.entity.PartyEvent;
 import com.wedding_app.backend.modules.party.entity.PartyStatus;
 import com.wedding_app.backend.modules.party.repository.PartyEventRepository;
 import com.wedding_app.backend.modules.party.repository.PartyRepository;
+import com.wedding_app.backend.modules.rsvp.dto.EventAttendanceStatsDto;
 import com.wedding_app.backend.modules.rsvp.dto.EventRsvpDto;
 import com.wedding_app.backend.modules.rsvp.dto.GuestRsvpDto;
 import com.wedding_app.backend.modules.rsvp.dto.RsvpInfoResponse;
@@ -328,6 +329,70 @@ class RsvpServiceTest {
     assertThat(stats.confirmedGuests() + stats.declinedGuests() + stats.pendingGuests())
         .isEqualTo(stats.totalGuests());
     assertThat(stats.responseRatePercentage()).isEqualTo(50.0);
+  }
+
+  @Test
+  void getRsvpStats_calculatesPerEventStatsCorrectly() {
+    party.setStatus(PartyStatus.PARTIAL);
+
+    Event event2 = new Event();
+    event2.setId(UUID.randomUUID());
+    event2.setName("Cóctel y Banquete");
+    event2.setDisplayOrder(2);
+
+    PartyEvent pe1 = new PartyEvent(party, event);
+    PartyEvent pe2 = new PartyEvent(party, event2);
+
+    Guest guest1 = new Guest();
+    guest1.setId(UUID.randomUUID());
+    guest1.setParty(party);
+
+    Guest guest2 = new Guest();
+    guest2.setId(UUID.randomUUID());
+    guest2.setParty(party);
+
+    // Guest 1 asiste a evento 1 y declina evento 2
+    GuestEvent ge1_1 = new GuestEvent();
+    ge1_1.setGuest(guest1);
+    ge1_1.setEvent(event);
+    ge1_1.setAttending(true);
+
+    GuestEvent ge1_2 = new GuestEvent();
+    ge1_2.setGuest(guest1);
+    ge1_2.setEvent(event2);
+    ge1_2.setAttending(false);
+
+    // Guest 2 asiste a evento 2 y tiene evento 1 sin responder (null)
+    GuestEvent ge2_2 = new GuestEvent();
+    ge2_2.setGuest(guest2);
+    ge2_2.setEvent(event2);
+    ge2_2.setAttending(true);
+
+    when(partyRepository.findAll()).thenReturn(List.of(party));
+    when(guestRepository.findAll()).thenReturn(List.of(guest1, guest2));
+    when(guestEventRepository.findAll()).thenReturn(List.of(ge1_1, ge1_2, ge2_2));
+    when(eventRepository.findAll()).thenReturn(new java.util.ArrayList<>(List.of(event, event2)));
+    when(partyEventRepository.findAll()).thenReturn(List.of(pe1, pe2));
+
+    RsvpStatsResponse stats = rsvpService.getRsvpStats();
+
+    assertThat(stats.eventStats()).hasSize(2);
+
+    EventAttendanceStatsDto ev1Stat = stats.eventStats().stream()
+        .filter(es -> es.eventId().equals(event.getId()))
+        .findFirst().orElseThrow();
+    assertThat(ev1Stat.totalInvitedCount()).isEqualTo(2);
+    assertThat(ev1Stat.confirmedCount()).isEqualTo(1); // guest 1
+    assertThat(ev1Stat.declinedCount()).isEqualTo(0);
+    assertThat(ev1Stat.pendingCount()).isEqualTo(1); // guest 2 pendiente
+
+    EventAttendanceStatsDto ev2Stat = stats.eventStats().stream()
+        .filter(es -> es.eventId().equals(event2.getId()))
+        .findFirst().orElseThrow();
+    assertThat(ev2Stat.totalInvitedCount()).isEqualTo(2);
+    assertThat(ev2Stat.confirmedCount()).isEqualTo(1); // guest 2
+    assertThat(ev2Stat.declinedCount()).isEqualTo(1); // guest 1
+    assertThat(ev2Stat.pendingCount()).isEqualTo(0);
   }
 
   @Test

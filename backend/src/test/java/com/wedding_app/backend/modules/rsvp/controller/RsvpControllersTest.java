@@ -24,6 +24,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.wedding_app.backend.common.exception.GlobalExceptionHandler;
 import com.wedding_app.backend.common.exception.ResourceNotFoundException;
+import com.wedding_app.backend.modules.event.entity.EventType;
+import com.wedding_app.backend.modules.rsvp.dto.EventAttendanceStatsDto;
 import com.wedding_app.backend.modules.rsvp.dto.RsvpInfoResponse;
 import com.wedding_app.backend.modules.rsvp.dto.RsvpStatsResponse;
 import com.wedding_app.backend.modules.rsvp.dto.RsvpSubmitRequest;
@@ -118,14 +120,17 @@ class RsvpControllersTest {
 
   @Test
   void adminGetStats_returnsStats() throws Exception {
-    RsvpStatsResponse stats = new RsvpStatsResponse(10, 7, 1, 1, 1, 25, 18, 2, 5, 90.0);
+    EventAttendanceStatsDto evStat = new EventAttendanceStatsDto(
+        UUID.randomUUID(), "Ceremonia", EventType.CEREMONY, 18, 2, 5, 25);
+    RsvpStatsResponse stats = new RsvpStatsResponse(10, 7, 1, 1, 1, 25, 18, 2, 5, 90.0, List.of(evStat));
     when(rsvpService.getRsvpStats()).thenReturn(stats);
 
     adminMockMvc.perform(get("/api/v1/admin/rsvp/stats"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.totalParties").value(10))
         .andExpect(jsonPath("$.confirmedParties").value(7))
-        .andExpect(jsonPath("$.responseRatePercentage").value(90.0));
+        .andExpect(jsonPath("$.responseRatePercentage").value(90.0))
+        .andExpect(jsonPath("$.eventStats[0].confirmedCount").value(18));
   }
 
   @Test

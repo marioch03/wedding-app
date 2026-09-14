@@ -29,6 +29,16 @@ export interface RsvpInfoResponse {
   allowedEvents: EventDto[];
 }
 
+export interface EventAttendanceStatsDto {
+  eventId: string;
+  eventName: string;
+  eventType: string;
+  confirmedCount: number;
+  declinedCount: number;
+  pendingCount: number;
+  totalInvitedCount: number;
+}
+
 export interface RsvpStatsResponse {
   totalParties: number;
   confirmedParties: number;
@@ -40,4 +50,5 @@ export interface RsvpStatsResponse {
   declinedGuests: number;
   pendingGuests: number;
   responseRatePercentage: number;
+  eventStats?: EventAttendanceStatsDto[];
 }

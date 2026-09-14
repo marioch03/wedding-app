@@ -37,7 +37,7 @@ describe('Feature: Panel de Control Admin (AdminDashboardPage)', () => {
     });
 
     expect(screen.getByText('Balance de Invitados')).toBeInTheDocument();
-    expect(screen.getByText('100% Asistencia')).toBeInTheDocument();
+    expect(screen.getAllByText(/100% Asistencia/i).length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText('2 invitados totales en lista')).toBeInTheDocument();
   });
 
@@ -102,5 +102,23 @@ describe('Feature: Panel de Control Admin (AdminDashboardPage)', () => {
     });
     expect(screen.queryByText('Error de conexión con el servidor')).not.toBeInTheDocument();
     expect(screen.getByText('1 grupos confirmados')).toBeInTheDocument();
+  });
+
+  it('muestra la sección de asistencia por evento con el desglose de confirmados y convocados', async () => {
+    renderWithRouter(<AdminDashboardPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Asistencia por Evento/i)).toBeInTheDocument();
+    });
+
+    // Validar eventos desglosados en tarjetas
+    expect(screen.getByText('Ceremonia Religiosa')).toBeInTheDocument();
+    expect(screen.getByText('Cóctel y Banquete')).toBeInTheDocument();
+
+    // Validar contadores y badges
+    expect(screen.getAllByText('2 convocados')).toHaveLength(2);
+    expect(screen.getByText('✓ 2 asisten')).toBeInTheDocument();
+    expect(screen.getByText('✓ 1 asisten')).toBeInTheDocument();
+    expect(screen.getByText('✕ 1 no asisten')).toBeInTheDocument();
   });
 });

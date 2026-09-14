@@ -179,6 +179,26 @@ export const mockRsvpStats: RsvpStatsResponse = {
   declinedGuests: 0,
   pendingGuests: 0,
   responseRatePercentage: 50,
+  eventStats: [
+    {
+      eventId: 'ev-1',
+      eventName: 'Ceremonia Religiosa',
+      eventType: 'CEREMONY',
+      confirmedCount: 2,
+      declinedCount: 0,
+      pendingCount: 0,
+      totalInvitedCount: 2,
+    },
+    {
+      eventId: 'ev-2',
+      eventName: 'Cóctel y Banquete',
+      eventType: 'RECEPTION',
+      confirmedCount: 1,
+      declinedCount: 1,
+      pendingCount: 0,
+      totalInvitedCount: 2,
+    },
+  ],
 };
 
 export const mockCateringReport: CateringReportResponse = {

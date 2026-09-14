@@ -291,6 +291,108 @@ export const AdminDashboardPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Sección: Asistencia Detallada por Evento */}
+      {stats?.eventStats && stats.eventStats.length > 0 && (
+        <div className={styles.eventStatsSection}>
+          <div className={styles.sectionHeader}>
+            <div>
+              <h2 className={styles.sectionTitle}>
+                <span>📅 Asistencia por Evento</span>
+              </h2>
+              <p className={styles.sectionSubtitle}>
+                Desglose de invitados confirmados, pendientes y bajas para cada momento del enlace.
+              </p>
+            </div>
+            <Link to="/admin/events" className={styles.sectionLink}>
+              Configurar Eventos →
+            </Link>
+          </div>
+
+          <div className={styles.eventStatsGrid}>
+            {stats.eventStats.map((ev) => {
+              const evConfirmedPct = ev.totalInvitedCount > 0
+                ? (ev.confirmedCount / ev.totalInvitedCount) * 100
+                : 0;
+              const evPendingPct = ev.totalInvitedCount > 0
+                ? (ev.pendingCount / ev.totalInvitedCount) * 100
+                : 0;
+              const evDeclinedPct = ev.totalInvitedCount > 0
+                ? (ev.declinedCount / ev.totalInvitedCount) * 100
+                : 0;
+
+              const getEventIcon = (type: string) => {
+                switch (type) {
+                  case 'CEREMONY':
+                    return '💍';
+                  case 'RECEPTION':
+                    return '🍽️';
+                  case 'PARTY':
+                    return '🎉';
+                  default:
+                    return '✨';
+                }
+              };
+
+              return (
+                <div key={ev.eventId} className={styles.eventStatCard}>
+                  <div className={styles.eventStatTop}>
+                    <div className={styles.eventStatHeaderLeft}>
+                      <span className={styles.eventStatIcon}>{getEventIcon(ev.eventType)}</span>
+                      <div>
+                        <h3 className={styles.eventStatName}>{ev.eventName}</h3>
+                        <span className={styles.eventStatTotal}>
+                          {ev.totalInvitedCount} convocados
+                        </span>
+                      </div>
+                    </div>
+                    <div className={styles.eventStatBadge}>
+                      <span className={styles.eventStatRatio}>
+                        <strong>{ev.confirmedCount}</strong> / {ev.totalInvitedCount}
+                      </span>
+                      <span className={styles.eventStatPct}>
+                        {evConfirmedPct.toFixed(0)}% Asistencia
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Barra de progreso por evento */}
+                  <div className={styles.miniProgressBar}>
+                    <div
+                      className={styles.progressSegmentConfirmed}
+                      style={{ width: `${evConfirmedPct}%` }}
+                      title={`Confirmados: ${ev.confirmedCount} (${evConfirmedPct.toFixed(1)}%)`}
+                    />
+                    <div
+                      className={styles.progressSegmentPending}
+                      style={{ width: `${evPendingPct}%` }}
+                      title={`Pendientes: ${ev.pendingCount} (${evPendingPct.toFixed(1)}%)`}
+                    />
+                    <div
+                      className={styles.progressSegmentDeclined}
+                      style={{ width: `${evDeclinedPct}%` }}
+                      title={`Declinados: ${ev.declinedCount} (${evDeclinedPct.toFixed(1)}%)`}
+                    />
+                  </div>
+
+                  {/* Desglose de etiquetas */}
+                  <div className={styles.eventStatPills}>
+                    <span className={styles.pillConfirmed}>
+                      ✓ {ev.confirmedCount} asisten
+                    </span>
+                    <span className={styles.pillPending}>
+                      ⏳ {ev.pendingCount} pendientes
+                    </span>
+                    <span className={styles.pillDeclined}>
+                      ✕ {ev.declinedCount} no asisten
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
