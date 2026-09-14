@@ -1,18 +1,12 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import * as XLSX from 'xlsx';
 import { exportRsvpGuestsToExcel, exportRsvpGuestsToCsv } from '../rsvpExport';
 import type { PartyResponse } from '../../../types/party';
 import type { GuestDetailResponse } from '../../../types/guest';
 
-vi.mock('xlsx', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('xlsx')>();
-  return {
-    ...actual,
-    writeFile: vi.fn(),
-  };
-});
-
 describe('rsvpExport', () => {
+  let createdAnchor: HTMLAnchorElement;
+  let clickMock: any;
+
   const mockParties: PartyResponse[] = [
     {
       id: 'p1',
@@ -51,49 +45,42 @@ describe('rsvpExport', () => {
   ];
 
   beforeEach(() => {
-    vi.clearAllMocks();
+    clickMock = vi.fn();
+    vi.spyOn(document, 'createElement').mockImplementation((tagName) => {
+      const el = document.createElementNS('http://www.w3.org/1999/xhtml', tagName);
+      if (tagName.toLowerCase() === 'a') {
+        el.click = clickMock;
+        createdAnchor = el as HTMLAnchorElement;
+      }
+      return el;
+    });
+    vi.spyOn(window.URL, 'createObjectURL').mockReturnValue('blob:mock-url');
+    vi.spyOn(window.URL, 'revokeObjectURL').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   describe('exportRsvpGuestsToExcel', () => {
-    it('creates workbook and triggers Excel file download', () => {
-      exportRsvpGuestsToExcel(mockGuests, mockParties, 'Confirmados');
+    it('creates workbook and triggers Excel file download', async () => {
+      await exportRsvpGuestsToExcel(mockGuests, mockParties, 'Confirmados');
 
-      expect(XLSX.writeFile).toHaveBeenCalledOnce();
-      const [wb, fileName] = (XLSX.writeFile as any).mock.calls[0];
-      expect(fileName).toContain('invitados_rsvp_confirmados_');
-      expect(fileName).toContain('.xlsx');
-      expect(wb.SheetNames).toEqual(['Invitados RSVP']);
+      expect(clickMock).toHaveBeenCalledOnce();
+      expect(createdAnchor.getAttribute('download')).toContain('invitados_rsvp_confirmados_');
+      expect(createdAnchor.getAttribute('download')).toContain('.xlsx');
+      expect(createdAnchor.getAttribute('href')).toBe('blob:mock-url');
     });
   });
 
   describe('exportRsvpGuestsToCsv', () => {
-    let createdAnchor: HTMLAnchorElement;
-    let clickMock: any;
-
-    beforeEach(() => {
-      clickMock = vi.fn();
-      vi.spyOn(document, 'createElement').mockImplementation((tagName) => {
-        const el = document.createElementNS('http://www.w3.org/1999/xhtml', tagName);
-        if (tagName.toLowerCase() === 'a') {
-          el.click = clickMock;
-          createdAnchor = el as HTMLAnchorElement;
-        }
-        return el;
-      });
-      vi.spyOn(window.URL, 'createObjectURL').mockReturnValue('blob:mock-url');
-      vi.spyOn(window.URL, 'revokeObjectURL').mockImplementation(() => {});
-    });
-
-    afterEach(() => {
-      vi.restoreAllMocks();
-    });
-
     it('creates CSV blob and triggers download', () => {
       exportRsvpGuestsToCsv(mockGuests, mockParties, 'Confirmados');
 
       expect(clickMock).toHaveBeenCalledOnce();
       expect(createdAnchor.getAttribute('download')).toContain('invitados_rsvp_confirmados_');
       expect(createdAnchor.getAttribute('download')).toContain('.csv');
+      expect(createdAnchor.getAttribute('href')).toBe('blob:mock-url');
     });
   });
 });

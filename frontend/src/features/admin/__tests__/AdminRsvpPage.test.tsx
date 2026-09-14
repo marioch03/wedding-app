@@ -51,7 +51,7 @@ describe('AdminRsvpPage - Control RSVP & Exportación Catering', () => {
 
   it('dispara la exportación a Excel (.xlsx) al hacer clic en el botón de la pestaña Catering', async () => {
     const user = userEvent.setup();
-    const excelSpy = vi.spyOn(cateringExportModule, 'exportCateringToExcel').mockImplementation(() => {});
+    const excelSpy = vi.spyOn(cateringExportModule, 'exportCateringToExcel').mockImplementation(() => Promise.resolve());
 
     renderWithRouter(<AdminRsvpPage />);
 
@@ -106,7 +106,7 @@ describe('AdminRsvpPage - Control RSVP & Exportación Catering', () => {
 
   it('permite exportar la lista de invitados a Excel y CSV desde la pestaña de asistencia', async () => {
     const user = userEvent.setup();
-    const excelGuestsSpy = vi.spyOn(rsvpExportModule, 'exportRsvpGuestsToExcel').mockImplementation(() => {});
+    const excelGuestsSpy = vi.spyOn(rsvpExportModule, 'exportRsvpGuestsToExcel').mockImplementation(() => Promise.resolve());
     const csvGuestsSpy = vi.spyOn(rsvpExportModule, 'exportRsvpGuestsToCsv').mockImplementation(() => {});
 
     renderWithRouter(<AdminRsvpPage />);

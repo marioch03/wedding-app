@@ -36,6 +36,13 @@ if (typeof window !== 'undefined') {
 
   // Polyfill alert si no existe o para silenciar en tests
   window.alert = vi.fn();
+
+  if (!window.URL.createObjectURL) {
+    window.URL.createObjectURL = vi.fn().mockReturnValue('blob:mock-url');
+  }
+  if (!window.URL.revokeObjectURL) {
+    window.URL.revokeObjectURL = vi.fn();
+  }
 }
 
 globalThis.ResizeObserver = class ResizeObserver {

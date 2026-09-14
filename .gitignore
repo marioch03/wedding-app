@@ -92,6 +92,10 @@ lerna-debug.log*
 .stylelintcache
 .vite/
 **/.vite/
+playwright-report/
+**/playwright-report/
+test-results/
+**/test-results/
 
 # ==========================================
 # Secretos y Variables de Entorno
