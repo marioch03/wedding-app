@@ -204,4 +204,49 @@ describe('Feature: Panel de Invitaciones y Gestión de QR (AdminPartiesPage)', (
 
     expect(screen.getByText('Invitación & Código QR')).toBeInTheDocument();
   });
+
+  it('permite añadir invitados directamente en el modal de nuevo grupo sin crearlo primero', async () => {
+    const user = userEvent.setup();
+    renderWithRouter(<AdminPartiesPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Invitados & Grupos')).toBeInTheDocument();
+    });
+
+    // Abrir modal de nuevo grupo
+    const newPartyBtn = screen.getByRole('button', { name: /Nuevo Grupo \/ Familia/i });
+    await user.click(newPartyBtn);
+
+    expect(screen.getByText('Nuevo Grupo de Invitación')).toBeInTheDocument();
+
+    // Rellenar información básica
+    const nameInput = screen.getByPlaceholderText('Ej. Familia García Gómez');
+    await user.type(nameInput, 'Familia Ruiz');
+
+    // Cambiar a la pestaña de Invitados del Grupo (accesible en modo creación)
+    const guestsTabBtn = screen.getByRole('button', { name: /Invitados del Grupo/i });
+    await user.click(guestsTabBtn);
+
+    // Añadir un invitado en memoria
+    const addGuestBtn = screen.getByRole('button', { name: /\+ Añadir Invitado/i });
+    await user.click(addGuestBtn);
+
+    const firstNameInput = screen.getByPlaceholderText('Ej. Carlos');
+    await user.type(firstNameInput, 'Pedro');
+
+    const saveGuestBtn = screen.getByRole('button', { name: /Añadir Integrante/i });
+    await user.click(saveGuestBtn);
+
+    // Verificar que el invitado aparece en la lista previa
+    expect(screen.getByText('Pedro')).toBeInTheDocument();
+
+    // Guardar el grupo con sus integrantes en un solo paso
+    const createPartyBtn = screen.getByRole('button', { name: /Crear Grupo/i });
+    await user.click(createPartyBtn);
+
+    // Modal se cierra tras guardar
+    await waitFor(() => {
+      expect(screen.queryByText('Nuevo Grupo de Invitación')).not.toBeInTheDocument();
+    });
+  });
 });

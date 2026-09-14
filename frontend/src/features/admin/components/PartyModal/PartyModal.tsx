@@ -12,6 +12,17 @@ interface PartyModalProps {
   onSaved: (savedParty: PartyResponse) => void;
 }
 
+interface PendingGuest {
+  _tempId: string;
+  firstName?: string;
+  lastName?: string;
+  guestType: GuestType;
+  isPlusOne: boolean;
+  email?: string;
+  phone?: string;
+  dietaryRestrictions?: string;
+}
+
 export const PartyModal: React.FC<PartyModalProps> = ({ party, onClose, onSaved }) => {
   const isEditing = !!party;
   const [activeTab, setActiveTab] = useState<'info' | 'guests' | 'events'>('info');
@@ -27,6 +38,7 @@ export const PartyModal: React.FC<PartyModalProps> = ({ party, onClose, onSaved 
 
   // Guests State
   const [guests, setGuests] = useState<GuestResponse[]>([]);
+  const [pendingGuests, setPendingGuests] = useState<PendingGuest[]>([]);
   const [loadingGuests, setLoadingGuests] = useState(false);
   const [isAddingGuest, setIsAddingGuest] = useState(false);
   const [editingGuestId, setEditingGuestId] = useState<string | null>(null);
@@ -119,7 +131,16 @@ export const PartyModal: React.FC<PartyModalProps> = ({ party, onClose, onSaved 
     setEditingGuestId(null);
   };
 
-  const handleStartEditGuest = (guest: GuestResponse) => {
+  const handleStartEditGuest = (guest: {
+    id: string;
+    firstName?: string | null;
+    lastName?: string | null;
+    guestType: GuestType;
+    isPlusOne: boolean;
+    email?: string | null;
+    phone?: string | null;
+    dietaryRestrictions?: string | null;
+  }) => {
     setEditingGuestId(guest.id);
     setGuestFirstName(guest.firstName || '');
     setGuestLastName(guest.lastName || '');
@@ -133,8 +154,35 @@ export const PartyModal: React.FC<PartyModalProps> = ({ party, onClose, onSaved 
 
   const handleSaveGuest = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validar que tenga nombre si no es un acompañante (+1)
+    if (!guestIsPlusOne && !guestFirstName.trim()) {
+      setError('El nombre del invitado es obligatorio si no es un acompañante (+1).');
+      return;
+    }
+
     if (!party) {
-      setError('Debes guardar primero el grupo para poder añadir invitados.');
+      // Modo creación: almacenar en memoria local
+      const newPendingGuest: PendingGuest = {
+        _tempId: editingGuestId || `temp-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+        firstName: guestFirstName.trim() || undefined,
+        lastName: guestLastName.trim() || undefined,
+        guestType,
+        isPlusOne: guestIsPlusOne,
+        email: guestEmail.trim() || undefined,
+        phone: guestPhone.trim() || undefined,
+        dietaryRestrictions: guestDiet.trim() || undefined,
+      };
+
+      if (editingGuestId) {
+        setPendingGuests((prev) =>
+          prev.map((g) => (g._tempId === editingGuestId ? newPendingGuest : g))
+        );
+      } else {
+        setPendingGuests((prev) => [...prev, newPendingGuest]);
+      }
+      resetGuestForm();
+      setError(null);
       return;
     }
 
@@ -156,6 +204,7 @@ export const PartyModal: React.FC<PartyModalProps> = ({ party, onClose, onSaved 
         await guestsApi.createInParty(party.id, guestPayload);
       }
       resetGuestForm();
+      setError(null);
       await loadGuests(party.id);
     } catch (err: any) {
       console.error('Error saving guest:', err);
@@ -165,9 +214,13 @@ export const PartyModal: React.FC<PartyModalProps> = ({ party, onClose, onSaved 
 
   const handleDeleteGuest = async (guestId: string) => {
     if (!confirm('¿Eliminar este invitado del grupo?')) return;
+    if (!party) {
+      setPendingGuests((prev) => prev.filter((g) => g._tempId !== guestId));
+      return;
+    }
     try {
       await guestsApi.delete(guestId);
-      if (party) await loadGuests(party.id);
+      await loadGuests(party.id);
     } catch (err: any) {
       alert(err?.message || 'Error al eliminar invitado');
     }
@@ -195,6 +248,21 @@ export const PartyModal: React.FC<PartyModalProps> = ({ party, onClose, onSaved 
         saved = await partiesApi.update(party.id, payload);
       } else {
         saved = await partiesApi.create(payload);
+        // Si hay invitados agregados en memoria antes de guardar el grupo, crearlos ahora en el backend
+        if (pendingGuests.length > 0) {
+          for (const pending of pendingGuests) {
+            await guestsApi.createInParty(saved.id, {
+              partyId: saved.id,
+              firstName: pending.firstName,
+              lastName: pending.lastName,
+              guestType: pending.guestType,
+              isPlusOne: pending.isPlusOne,
+              email: pending.email,
+              phone: pending.phone,
+              dietaryRestrictions: pending.dietaryRestrictions,
+            });
+          }
+        }
       }
       onSaved(saved);
       onClose();
@@ -205,6 +273,22 @@ export const PartyModal: React.FC<PartyModalProps> = ({ party, onClose, onSaved 
       setSaving(false);
     }
   };
+
+  const displayedGuests = isEditing
+    ? guests
+    : pendingGuests.map((pg) => ({
+        id: pg._tempId,
+        partyId: '',
+        firstName: pg.firstName || null,
+        lastName: pg.lastName || null,
+        guestType: pg.guestType,
+        isPlusOne: pg.isPlusOne,
+        email: pg.email || null,
+        phone: pg.phone || null,
+        dietaryRestrictions: pg.dietaryRestrictions || null,
+        createdAt: '',
+        updatedAt: '',
+      } as unknown as GuestResponse));
 
   return (
     <div className={styles.modalOverlay} onClick={onClose}>
@@ -248,16 +332,14 @@ export const PartyModal: React.FC<PartyModalProps> = ({ party, onClose, onSaved 
             Eventos Asignados
             <span className={styles.tabBadge}>{selectedEventIds.length}</span>
           </button>
-          {isEditing && (
-            <button
-              type="button"
-              className={`${styles.tabButton} ${activeTab === 'guests' ? styles.tabButtonActive : ''}`}
-              onClick={() => setActiveTab('guests')}
-            >
-              Invitados del Grupo
-              <span className={styles.tabBadge}>{guests.length}</span>
-            </button>
-          )}
+          <button
+            type="button"
+            className={`${styles.tabButton} ${activeTab === 'guests' ? styles.tabButtonActive : ''}`}
+            onClick={() => setActiveTab('guests')}
+          >
+            Invitados del Grupo
+            <span className={styles.tabBadge}>{isEditing ? guests.length : pendingGuests.length}</span>
+          </button>
         </div>
 
         {/* Body */}
@@ -402,7 +484,7 @@ export const PartyModal: React.FC<PartyModalProps> = ({ party, onClose, onSaved 
             </div>
           )}
 
-          {/* TAB 3: INVITADOS INDIVIDUALES (Only when editing party) */}
+          {/* TAB 3: INVITADOS INDIVIDUALES */}
           {activeTab === 'guests' && (
             <div>
               <div className={styles.guestsHeader}>
@@ -528,15 +610,15 @@ export const PartyModal: React.FC<PartyModalProps> = ({ party, onClose, onSaved 
               )}
 
               {/* Guest List */}
-              {loadingGuests ? (
+              {loadingGuests && isEditing ? (
                 <div className={styles.emptyGuests}>Cargando invitados...</div>
-              ) : guests.length === 0 ? (
+              ) : displayedGuests.length === 0 ? (
                 <div className={styles.emptyGuests}>
                   No hay personas añadidas a este grupo todavía. Haz clic en <strong>+ Añadir Invitado</strong>.
                 </div>
               ) : (
                 <div className={styles.guestList}>
-                  {guests.map((g) => (
+                  {displayedGuests.map((g) => (
                     <div key={g.id} className={styles.guestItem}>
                       <div className={styles.guestItemLeft}>
                         <div className={styles.guestAvatar}>
