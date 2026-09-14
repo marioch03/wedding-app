@@ -36,7 +36,7 @@ public class GuestService {
   public GuestResponse createInParty(UUID partyId, GuestRequest request) {
     Party party = partyService.getEntityById(partyId);
 
-    validateGuestNames(request.firstName(), request.isPlusOne());
+    validateGuestNames(request.firstName(), request.lastName(), request.isPlusOne());
 
     Guest guest = new Guest();
     guest.setParty(party);
@@ -52,7 +52,8 @@ public class GuestService {
 
     boolean isPlusOne = request.isPlusOne() != null ? request.isPlusOne() : Boolean.TRUE.equals(guest.getIsPlusOne());
     String firstName = request.firstName() != null ? request.firstName() : guest.getFirstName();
-    validateGuestNames(firstName, isPlusOne);
+    String lastName = request.lastName() != null ? request.lastName() : guest.getLastName();
+    validateGuestNames(firstName, lastName, isPlusOne);
 
     applyRequestToGuest(guest, request);
 
@@ -137,10 +138,13 @@ public class GuestService {
   // Helpers privados
   // =========================================================================
 
-  private void validateGuestNames(String firstName, Boolean isPlusOne) {
+  private void validateGuestNames(String firstName, String lastName, Boolean isPlusOne) {
     boolean plusOne = Boolean.TRUE.equals(isPlusOne);
     if (!plusOne && (firstName == null || firstName.isBlank())) {
       throw new IllegalArgumentException("El nombre del invitado es obligatorio si no es un acompañante (+1)");
+    }
+    if (plusOne && (firstName == null || firstName.isBlank()) && (lastName != null && !lastName.isBlank())) {
+      throw new IllegalArgumentException("No se puede indicar el apellido del acompañante sin especificar su nombre");
     }
   }
 

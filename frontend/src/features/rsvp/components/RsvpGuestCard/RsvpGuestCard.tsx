@@ -77,6 +77,10 @@ export const RsvpGuestCard: React.FC<RsvpGuestCardProps> = ({
       : 'Acompañante (+1)'
     : `${guest.firstName || ''} ${guest.lastName || ''}`.trim();
 
+  const isAttendingAny = guestState.events.some((e) => e.attending === true);
+  const hasLastName = Boolean(guestState.lastName && guestState.lastName.trim());
+  const isNameRequired = isAttendingAny || hasLastName;
+
   return (
     <div className={styles.guestCard}>
       <div className={styles.guestHeader}>
@@ -90,14 +94,16 @@ export const RsvpGuestCard: React.FC<RsvpGuestCardProps> = ({
       {guest.isPlusOne && (
         <div className={styles.plusOneInputs}>
           <div className={styles.inputGroup}>
-            <label className={styles.label}>Nombre del Acompañante</label>
+            <label className={styles.label}>
+              Nombre del Acompañante {isNameRequired && '*'}
+            </label>
             <input
               type="text"
               className={styles.input}
               placeholder="Nombre"
               value={guestState.firstName || ''}
               onChange={(e) => handleNameChange('firstName', e.target.value)}
-              required
+              required={isNameRequired}
             />
           </div>
           <div className={styles.inputGroup}>

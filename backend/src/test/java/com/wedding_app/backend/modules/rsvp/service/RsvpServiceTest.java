@@ -224,6 +224,76 @@ class RsvpServiceTest {
   }
 
   @Test
+  void submitRsvp_plusOne_clearsNameWhenEmpty_success() {
+    PartyEvent pe = new PartyEvent();
+    pe.setParty(party);
+    pe.setEvent(event);
+
+    guest.setIsPlusOne(true);
+    guest.setFirstName("NombrePrevio");
+    guest.setLastName("ApellidoPrevio");
+
+    EventRsvpDto eventDto = new EventRsvpDto(eventId, null, null, null);
+    GuestRsvpDto guestDto = new GuestRsvpDto(guestId, "", "   ", null, List.of(eventDto));
+    RsvpSubmitRequest request = new RsvpSubmitRequest(List.of(guestDto));
+
+    when(partyRepository.findByRsvpTokenIgnoreCase(token)).thenReturn(Optional.of(party));
+    when(partyEventRepository.findByPartyIdWithEvent(partyId)).thenReturn(List.of(pe));
+    when(guestRepository.findById(guestId)).thenReturn(Optional.of(guest));
+    when(guestEventRepository.findByGuestIdAndEventId(guestId, eventId)).thenReturn(Optional.empty());
+    when(eventRepository.getReferenceById(eventId)).thenReturn(event);
+
+    rsvpService.submitRsvp(token, request);
+
+    assertThat(guest.getFirstName()).isNull();
+    assertThat(guest.getLastName()).isNull();
+  }
+
+  @Test
+  void submitRsvp_plusOne_updatesName_success() {
+    PartyEvent pe = new PartyEvent();
+    pe.setParty(party);
+    pe.setEvent(event);
+
+    guest.setIsPlusOne(true);
+    guest.setFirstName(null);
+    guest.setLastName(null);
+
+    EventRsvpDto eventDto = new EventRsvpDto(eventId, true, menuId, null);
+    GuestRsvpDto guestDto = new GuestRsvpDto(guestId, "Carlos", "Gómez", null, List.of(eventDto));
+    RsvpSubmitRequest request = new RsvpSubmitRequest(List.of(guestDto));
+
+    when(partyRepository.findByRsvpTokenIgnoreCase(token)).thenReturn(Optional.of(party));
+    when(partyEventRepository.findByPartyIdWithEvent(partyId)).thenReturn(List.of(pe));
+    when(guestRepository.findById(guestId)).thenReturn(Optional.of(guest));
+    when(menuOptionRepository.findById(menuId)).thenReturn(Optional.of(menuOption));
+    when(guestEventRepository.findByGuestIdAndEventId(guestId, eventId)).thenReturn(Optional.empty());
+    when(eventRepository.getReferenceById(eventId)).thenReturn(event);
+
+    rsvpService.submitRsvp(token, request);
+
+    assertThat(guest.getFirstName()).isEqualTo("Carlos");
+    assertThat(guest.getLastName()).isEqualTo("Gómez");
+  }
+
+  @Test
+  void submitRsvp_plusOne_throwsException_whenLastNameProvidedWithoutFirstName() {
+    guest.setIsPlusOne(true);
+
+    EventRsvpDto eventDto = new EventRsvpDto(eventId, false, null, null);
+    GuestRsvpDto guestDto = new GuestRsvpDto(guestId, "   ", "Gómez", null, List.of(eventDto));
+    RsvpSubmitRequest request = new RsvpSubmitRequest(List.of(guestDto));
+
+    when(partyRepository.findByRsvpTokenIgnoreCase(token)).thenReturn(Optional.of(party));
+    when(partyEventRepository.findByPartyIdWithEvent(partyId)).thenReturn(List.of());
+    when(guestRepository.findById(guestId)).thenReturn(Optional.of(guest));
+
+    assertThatThrownBy(() -> rsvpService.submitRsvp(token, request))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("No se puede indicar el apellido del acompañante sin especificar su nombre");
+  }
+
+  @Test
   void submitRsvp_throwsException_whenEventNotAllowedForParty() {
     UUID uninvitedEventId = UUID.randomUUID();
 

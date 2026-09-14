@@ -124,6 +124,19 @@ class GuestServiceTest {
   }
 
   @Test
+  void createInParty_throwsException_whenPlusOneHasLastNameWithoutFirstName() {
+    GuestRequest request = new GuestRequest(
+        "   ", "Martínez", GuestType.ADULT, true,
+        null, null, null);
+
+    when(partyService.getEntityById(partyId)).thenReturn(party);
+
+    assertThatThrownBy(() -> guestService.createInParty(partyId, request))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("No se puede indicar el apellido del acompañante sin especificar su nombre");
+  }
+
+  @Test
   void update_success() {
     Guest existing = new Guest();
     existing.setId(guestId);

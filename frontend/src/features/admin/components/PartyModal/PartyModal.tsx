@@ -161,6 +161,12 @@ export const PartyModal: React.FC<PartyModalProps> = ({ party, onClose, onSaved 
       return;
     }
 
+    // Validar que si es acompañante (+1) y se introduce apellido, también tenga nombre
+    if (guestIsPlusOne && !guestFirstName.trim() && guestLastName.trim()) {
+      setError('El nombre del acompañante es obligatorio si se indica un apellido.');
+      return;
+    }
+
     if (!party) {
       // Modo creación: almacenar en memoria local
       const newPendingGuest: PendingGuest = {

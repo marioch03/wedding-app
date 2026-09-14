@@ -136,13 +136,23 @@ export const RsvpPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validación básica: nombre para acompañantes
+    // Validación básica: nombre para acompañantes solo si confirman asistencia o se indica apellido
     for (let i = 0; i < rsvpInfo.guests.length; i++) {
       const g = rsvpInfo.guests[i];
       const gState = guestsState[i];
-      if (g.isPlusOne && (!gState.firstName || !gState.firstName.trim())) {
-        alert('Por favor indica el nombre de tu acompañante.');
-        return;
+      const isAttendingAny = gState.events?.some((ev) => ev.attending === true);
+      const hasLastName = Boolean(gState.lastName && gState.lastName.trim());
+      const hasFirstName = Boolean(gState.firstName && gState.firstName.trim());
+
+      if (g.isPlusOne) {
+        if (hasLastName && !hasFirstName) {
+          alert('Por favor indica el nombre de tu acompañante si has introducido sus apellidos.');
+          return;
+        }
+        if (isAttendingAny && !hasFirstName) {
+          alert('Por favor indica el nombre de tu acompañante para confirmar su asistencia.');
+          return;
+        }
       }
     }
 

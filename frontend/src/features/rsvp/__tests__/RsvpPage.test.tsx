@@ -236,7 +236,8 @@ describe('Feature: RSVP Multi-paso e Integración (RsvpPage)', () => {
       }
     });
 
-    it('valida que el nombre de un acompañante (+1) no esté vacío antes de enviar', async () => {
+    it('valida que el nombre de un acompañante (+1) solo es obligatorio si confirma asistencia', async () => {
+      const user = userEvent.setup();
       renderRsvpFlow('/rsvp/valid-token-abc');
 
       await waitFor(() => {
@@ -244,6 +245,14 @@ describe('Feature: RSVP Multi-paso e Integración (RsvpPage)', () => {
       });
 
       const plusOneInput = screen.getByPlaceholderText('Nombre');
+      // No debe ser requerido por defecto si aún no confirma asistencia
+      expect(plusOneInput).not.toBeRequired();
+
+      // Si marcamos que el acompañante asistirá a un evento
+      const asistirButtons = screen.getAllByRole('button', { name: /Asistiré/i });
+      // Para el acompañante (segundo invitado), seleccionamos el primer evento disponible
+      await user.click(asistirButtons[2]);
+
       expect(plusOneInput).toBeRequired();
 
       // Al disparar el evento submit en el formulario con el campo en blanco
@@ -252,7 +261,50 @@ describe('Feature: RSVP Multi-paso e Integración (RsvpPage)', () => {
       fireEvent.submit(form);
 
       expect(window.alert).toHaveBeenCalledWith(
-        'Por favor indica el nombre de tu acompañante.'
+        'Por favor indica el nombre de tu acompañante para confirmar su asistencia.'
+      );
+    });
+
+    it('permite enviar la confirmación si el acompañante no asiste o no ha respondido sin exigir su nombre', async () => {
+      const user = userEvent.setup();
+      renderRsvpFlow('/rsvp/valid-token-abc');
+
+      await waitFor(() => {
+        expect(screen.getByText('Familia Gómez Martínez')).toBeInTheDocument();
+      });
+
+      const plusOneInput = screen.getByPlaceholderText('Nombre');
+      expect(plusOneInput).toHaveValue('');
+      expect(plusOneInput).not.toBeRequired();
+
+      const submitButton = screen.getByRole('button', { name: /Enviar Confirmación/i });
+      await user.click(submitButton);
+
+      await waitFor(() => {
+        expect(screen.getByText('¡Confirmación Enviada!')).toBeInTheDocument();
+      });
+    });
+
+    it('no permite enviar si se introduce apellido del acompañante pero se deja el nombre en blanco', async () => {
+      const user = userEvent.setup();
+      renderRsvpFlow('/rsvp/valid-token-abc');
+
+      await waitFor(() => {
+        expect(screen.getByText('Familia Gómez Martínez')).toBeInTheDocument();
+      });
+
+      const plusOneLastNameInput = screen.getByPlaceholderText('Apellidos');
+      await user.type(plusOneLastNameInput, 'Martínez');
+
+      const plusOneNameInput = screen.getByPlaceholderText('Nombre');
+      expect(plusOneNameInput).toBeRequired();
+
+      const submitButton = screen.getByRole('button', { name: /Enviar Confirmación/i });
+      const form = submitButton.closest('form')!;
+      fireEvent.submit(form);
+
+      expect(window.alert).toHaveBeenCalledWith(
+        'Por favor indica el nombre de tu acompañante si has introducido sus apellidos.'
       );
     });
 

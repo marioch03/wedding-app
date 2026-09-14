@@ -161,13 +161,20 @@ public class RsvpService {
           .orElseThrow(() -> new IllegalArgumentException(
               "El invitado con ID " + guestDto.guestId() + " no pertenece a este grupo de invitación"));
 
-      // Si es +1, permitir actualizar nombre
+      // Si es +1, permitir actualizar o resetear nombre y apellidos a null si se han borrado
       if (Boolean.TRUE.equals(guest.getIsPlusOne())) {
-        if (guestDto.firstName() != null && !guestDto.firstName().isBlank()) {
-          guest.setFirstName(InputSanitizer.sanitize(guestDto.firstName()));
+        String sanitizedFirstName = InputSanitizer.sanitize(guestDto.firstName());
+        String sanitizedLastName = InputSanitizer.sanitize(guestDto.lastName());
+
+        if (sanitizedFirstName == null && sanitizedLastName != null) {
+          throw new IllegalArgumentException("No se puede indicar el apellido del acompañante sin especificar su nombre");
         }
-        if (guestDto.lastName() != null && !guestDto.lastName().isBlank()) {
-          guest.setLastName(InputSanitizer.sanitize(guestDto.lastName()));
+
+        if (guestDto.firstName() != null) {
+          guest.setFirstName(sanitizedFirstName);
+        }
+        if (guestDto.lastName() != null) {
+          guest.setLastName(sanitizedLastName);
         }
       }
 
