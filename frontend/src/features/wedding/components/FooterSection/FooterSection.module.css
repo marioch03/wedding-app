@@ -1,58 +1,189 @@
+/* ==========================================================================
+   FooterSection — Cierre Editorial & Despedida Romántica
+   ========================================================================== */
+
 .footer {
-  padding: 4.5rem 1.5rem 3rem;
+  position: relative;
+  width: 100%;
+  overflow: hidden;
   text-align: center;
   border-top: 1.5px solid var(--color-border);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.4) 0%, var(--color-bg-secondary) 100%);
-  margin-top: 5rem;
+  background: linear-gradient(
+    180deg,
+    var(--color-bg-subtle) 0%,
+    var(--color-bg-secondary) 50%,
+    var(--color-bg) 100%
+  );
+  margin-top: 6rem;
 }
 
-.heart {
-  display: inline-block;
-  font-size: 1.8rem;
-  color: var(--color-primary);
-  margin-bottom: 1rem;
-  animation: pulse 2s ease-in-out infinite;
+/* Resplandor champagne oro central (sin tonos rojizos) */
+.bgGlowCenter {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 480px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--color-hero-orb-gold), transparent 70%);
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
 }
 
-@keyframes pulse {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.12);
-  }
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 4.5rem 1.5rem 3.5rem;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
+/* Botón sutil para volver arriba (integrado de forma fluida con el fondo, sin color blanco) */
+.scrollTopButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 44px;
+  padding: 0.5rem 1.25rem;
+  background: transparent;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-full);
+  color: var(--color-text-body);
+  font-size: 0.86rem;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: none;
+  margin-bottom: 2.5rem;
+  transition: all var(--transition-fast);
+}
+
+.scrollTopButton:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-accent-gold);
+  background: rgba(203, 162, 88, 0.08);
+  color: var(--color-text-heading);
+}
+
+.scrollTopButton:focus-visible {
+  outline: 2px solid var(--color-accent-gold);
+  outline-offset: 2px;
+}
+
+.scrollTopArrow {
+  font-size: 1rem;
+  line-height: 1;
+  transition: transform var(--transition-fast);
+}
+
+.scrollTopButton:hover .scrollTopArrow {
+  transform: translateY(-2px);
+}
+
+/* Nombres de la pareja */
 .names {
   font-family: var(--font-serif);
-  font-size: 2.3rem;
+  font-size: clamp(2.2rem, 5vw, 3rem);
+  font-weight: 600;
   color: var(--color-text-heading);
-  margin-bottom: 0.6rem;
+  margin-bottom: 0.85rem;
+  line-height: 1.2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.ampersand {
+  color: var(--color-text-muted);
+  font-style: italic;
+  font-weight: 400;
+  padding: 0 0.2rem;
 }
 
 .note {
-  font-size: 1rem;
+  font-size: 1.05rem;
   color: var(--color-text-body);
-  margin-bottom: 2.5rem;
+  max-width: 480px;
+  margin: 0 auto 3rem;
+  line-height: 1.6;
 }
 
+/* Contenedor del Acceso Administrador */
 .adminLinkContainer {
   padding-top: 1.75rem;
   border-top: 1px dashed var(--color-border);
-  max-width: 320px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: 280px;
+  display: flex;
+  justify-content: center;
 }
 
 .adminLink {
-  font-size: 0.82rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  padding: 0.45rem 1.15rem;
+  border-radius: var(--radius-full);
+  font-size: 0.84rem;
   font-weight: 500;
   color: var(--color-text-muted);
   text-decoration: none;
-  opacity: 0.8;
-  transition: opacity var(--transition-fast), color var(--transition-fast);
+  background: transparent;
+  border: 1px solid var(--color-border);
+  box-shadow: none;
+  transition: all var(--transition-fast);
+}
+
+.lockIcon {
+  font-size: 0.85rem;
+  line-height: 1;
 }
 
 .adminLink:hover {
-  opacity: 1;
-  color: var(--color-primary-dark);
+  color: var(--color-text-heading);
+  border-color: var(--color-border-strong);
+  background: rgba(0, 0, 0, 0.03);
+  transform: translateY(-1px);
+}
+
+.adminLink:focus-visible {
+  outline: 2px solid var(--color-accent-gold);
+  outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   Adaptabilidad Móvil
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 600px) {
+  .footer {
+    margin-top: 4rem;
+  }
+
+  .container {
+    padding: 3.5rem 1.25rem 3rem;
+  }
+
+  .names {
+    font-size: clamp(1.85rem, 6.5vw, 2.3rem);
+  }
+
+  .note {
+    font-size: 0.96rem;
+    margin-bottom: 2.25rem;
+  }
+
+  .adminLink {
+    width: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
 }

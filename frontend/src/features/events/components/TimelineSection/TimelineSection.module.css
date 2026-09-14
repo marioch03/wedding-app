@@ -1,9 +1,77 @@
+/* ==========================================================================
+   TimelineSection — Diseño Editorial & Experiencia Cinematográfica
+   ========================================================================== */
+
 .section {
-  padding: 6rem 1.5rem 7rem;
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: linear-gradient(
+    180deg,
+    var(--color-bg) 0%,
+    var(--color-bg-subtle) 25%,
+    var(--color-bg-secondary) 75%,
+    var(--color-bg) 100%
+  );
+}
+
+/* --------------------------------------------------------------------------
+   Capas Ambientales de Fondo (Atmósfera Cálida y Cristalina)
+   -------------------------------------------------------------------------- */
+
+.bgGlowWarm {
+  position: absolute;
+  top: 5%;
+  right: -80px;
+  width: 540px;
+  height: 540px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--color-hero-orb-warm), transparent 70%);
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bgGlowGold {
+  position: absolute;
+  bottom: 10%;
+  left: -90px;
+  width: 480px;
+  height: 480px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--color-hero-orb-gold), transparent 70%);
+  filter: blur(84px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bgPattern {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, var(--color-border-subtle) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: radial-gradient(ellipse 75% 65% at 50% 50%, black 20%, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse 75% 65% at 50% 50%, black 20%, transparent 80%);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.75;
+}
+
+/* --------------------------------------------------------------------------
+   Contenedor Principal Centrado
+   -------------------------------------------------------------------------- */
+
+.container {
   max-width: 1050px;
   margin: 0 auto;
+  padding: 6rem 1.5rem 7rem;
   position: relative;
+  z-index: 1;
 }
+
+/* --------------------------------------------------------------------------
+   Cabecera de la Sección
+   -------------------------------------------------------------------------- */
 
 .header {
   text-align: center;
@@ -14,14 +82,15 @@
   display: inline-block;
   text-transform: uppercase;
   letter-spacing: 0.22em;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 700;
   color: var(--color-accent-gold-dark);
   margin-bottom: 0.85rem;
-  padding: 0.35rem 1.15rem;
+  padding: 0.35rem 1.2rem;
   border-radius: var(--radius-full);
   background: var(--color-accent-gold-light);
   border: 1px solid var(--color-accent-gold-border);
+  box-shadow: var(--shadow-sm);
 }
 
 .title {
@@ -29,8 +98,29 @@
   font-size: clamp(2.3rem, 4.5vw, 3.2rem);
   font-weight: 600;
   color: var(--color-text-heading);
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
   line-height: 1.15;
+}
+
+.headerDivider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin: 0.75rem auto 1.25rem;
+  max-width: 220px;
+}
+
+.dividerLine {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--color-accent-gold-border), transparent);
+}
+
+.dividerIcon {
+  color: var(--color-accent-gold);
+  font-size: 0.8rem;
+  opacity: 0.85;
 }
 
 .subtitle {
@@ -38,128 +128,246 @@
   color: var(--color-text-muted);
   max-width: 580px;
   margin: 0 auto;
-  line-height: 1.6;
+  line-height: 1.65;
 }
 
-/* --- Timeline Layout --- */
+/* --------------------------------------------------------------------------
+   Timeline Layout & Línea Conectora
+   -------------------------------------------------------------------------- */
+
 .timeline {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 2.5rem;
+  gap: 2.75rem;
 }
 
-/* Línea vertical conectora */
+/* Línea vertical conectora con gradiente vivo y halo sutil */
 .timeline::before {
   content: '';
   position: absolute;
   top: 1.5rem;
   bottom: 2rem;
-  left: 28px;
+  left: 27px;
   width: 2px;
   background: linear-gradient(
     to bottom,
-    var(--color-primary-light) 0%,
-    var(--color-accent-gold) 25%,
-    var(--color-primary) 75%,
-    var(--color-accent-gold-light) 100%
+    var(--color-accent-gold-border) 0%,
+    var(--color-primary) 30%,
+    var(--color-accent-gold) 70%,
+    var(--color-primary-light) 100%
   );
+  box-shadow: 0 0 8px var(--color-primary-glow);
 }
 
 .timelineItem {
   position: relative;
   display: flex;
   align-items: flex-start;
-  gap: 1.75rem;
+  gap: 2rem;
 }
 
-/* Nodo Circular con Icono */
+/* --------------------------------------------------------------------------
+   Nodo Circular con Icono
+   -------------------------------------------------------------------------- */
+
 .nodeWrapper {
   position: relative;
   z-index: 2;
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: #ffffff;
-  border: 2px solid var(--color-accent-gold);
-  box-shadow: 0 4px 14px rgba(203, 162, 88, 0.25);
+  background: var(--color-bg-elevated);
+  border: 2px solid var(--color-accent-gold-border);
+  box-shadow: 0 0 0 4px var(--color-bg-subtle), var(--shadow-md);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.45rem;
   flex-shrink: 0;
-  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
-}
-
-.timelineItem:hover .nodeWrapper {
-  transform: scale(1.12);
-  box-shadow: 0 6px 20px rgba(223, 106, 79, 0.35);
-  border-color: var(--color-primary);
-}
-
-/* Tarjeta del Evento */
-.eventCard {
-  flex: 1;
-  background: var(--color-bg-card);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: 1.75rem 2rem;
-  box-shadow: var(--shadow-sm);
   transition: transform var(--transition-normal), box-shadow var(--transition-normal), border-color var(--transition-normal);
 }
 
-.eventCard:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-md);
-  border-color: var(--color-border-strong);
+.nodeIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  transition: transform var(--transition-fast);
 }
+
+.timelineItem:hover .nodeWrapper {
+  transform: scale(1.14);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 5px var(--color-primary-light), var(--shadow-primary);
+}
+
+.timelineItem:hover .nodeIcon {
+  transform: scale(1.08);
+}
+
+/* --------------------------------------------------------------------------
+   Tarjeta del Evento (Glassmorphism & Microinteracción)
+   -------------------------------------------------------------------------- */
+
+.eventCard {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background: var(--color-bg-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 2rem 2.25rem;
+  box-shadow: inset 0 1px 0 var(--color-border-glass), var(--shadow-sm);
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal), border-color var(--transition-normal);
+}
+
+/* Barra superior de acento dinámico según tipo de evento */
+.cardAccentBar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--color-accent-gold-gradient);
+  opacity: 0.85;
+  transition: height var(--transition-fast), opacity var(--transition-fast);
+}
+
+/* Variaciones por tipo de evento */
+.type_ceremony .cardAccentBar {
+  background: var(--color-accent-gold-gradient);
+}
+
+.type_reception .cardAccentBar {
+  background: var(--color-primary-gradient);
+}
+
+.type_party .cardAccentBar {
+  background: linear-gradient(135deg, var(--color-accent-amber) 0%, var(--color-primary) 100%);
+}
+
+.type_other .cardAccentBar {
+  background: linear-gradient(135deg, var(--color-accent-sage) 0%, var(--color-accent-gold) 100%);
+}
+
+.eventCard:hover {
+  transform: translateY(-4px);
+  box-shadow: inset 0 1px 0 var(--color-border-glass), var(--shadow-lg);
+  border-color: var(--color-primary-border);
+}
+
+.eventCard:hover .cardAccentBar {
+  height: 4px;
+  opacity: 1;
+}
+
+/* --------------------------------------------------------------------------
+   Fila Superior (Horario y Tipo)
+   -------------------------------------------------------------------------- */
 
 .eventTopRow {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 0.6rem;
+  gap: 0.85rem;
+  margin-bottom: 0.85rem;
 }
 
 .timeBadge {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.45rem;
   font-size: 0.92rem;
   font-weight: 700;
+  font-feature-settings: 'tnum';
   color: var(--color-primary-dark);
   background: var(--color-primary-light);
+  border: 1px solid var(--color-primary-border);
   padding: 0.35rem 0.85rem;
   border-radius: var(--radius-full);
+  box-shadow: var(--shadow-sm);
+}
+
+.timeIcon {
+  font-size: 0.95rem;
+  line-height: 1;
 }
 
 .typeBadge {
-  font-size: 0.8rem;
-  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.78rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   color: var(--color-text-muted);
+  background: var(--color-bg-subtle);
+  border: 1px solid var(--color-border);
+  padding: 0.28rem 0.75rem;
+  border-radius: var(--radius-full);
 }
+
+.typeDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-accent-gold);
+}
+
+.type_ceremony .typeDot {
+  background: var(--color-accent-gold);
+}
+
+.type_reception .typeDot {
+  background: var(--color-primary);
+}
+
+.type_party .typeDot {
+  background: var(--color-accent-amber);
+}
+
+.type_other .typeDot {
+  background: var(--color-accent-sage);
+}
+
+/* --------------------------------------------------------------------------
+   Cuerpo de la Tarjeta (Nombre, Recinto, Descripción)
+   -------------------------------------------------------------------------- */
 
 .eventName {
   font-family: var(--font-serif);
-  font-size: 1.65rem;
+  font-size: clamp(1.5rem, 3vw, 1.85rem);
   font-weight: 600;
   color: var(--color-text-heading);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.65rem;
+  line-height: 1.25;
 }
 
 .venueRow {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5rem;
+  align-items: baseline;
+  gap: 0.55rem;
   font-size: 0.96rem;
   color: var(--color-text-body);
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.85rem;
+}
+
+.venueIcon {
+  font-size: 1.05rem;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.venueDetails {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem;
 }
 
 .venueName {
@@ -169,107 +377,153 @@
 
 .venueAddress {
   color: var(--color-text-muted);
+  font-size: 0.92rem;
 }
 
 .description {
-  font-size: 0.96rem;
+  font-size: 0.98rem;
   color: var(--color-text-body);
-  line-height: 1.6;
-  margin-bottom: 1.15rem;
+  line-height: 1.65;
+  margin-bottom: 1.35rem;
+}
+
+/* --------------------------------------------------------------------------
+   Acciones de la Tarjeta (Botón Cómo Llegar Accesible - Touch Target >= 44px)
+   -------------------------------------------------------------------------- */
+
+.cardActions {
+  display: flex;
+  align-items: center;
+  padding-top: 0.5rem;
 }
 
 .mapsButton {
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
-  font-size: 0.88rem;
+  justify-content: center;
+  gap: 0.55rem;
+  min-height: 44px;
+  padding: 0.55rem 1.25rem;
+  font-size: 0.92rem;
   font-weight: 600;
   color: var(--color-primary-dark);
-  background: transparent;
-  padding: 0.4rem 0.85rem;
+  background: var(--color-bg-subtle);
+  border: 1.5px solid var(--color-primary-border);
   border-radius: var(--radius-md);
-  border: 1px solid var(--color-primary-border);
   text-decoration: none;
-  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-normal), background-color var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.mapsIcon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.mapsArrow {
+  font-size: 1.05rem;
+  line-height: 1;
+  transition: transform var(--transition-normal);
 }
 
 .mapsButton:hover {
   background: var(--color-primary-light);
   border-color: var(--color-primary);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
-/* --- Estados Vacío / Error --- */
+.mapsButton:hover .mapsArrow {
+  transform: translateX(4px);
+}
+
+.mapsButton:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   Estados Vacío & Skeleton
+   -------------------------------------------------------------------------- */
+
 .emptyState {
   text-align: center;
-  padding: 3rem 1.5rem;
-  background: var(--color-bg-subtle);
+  padding: 3.5rem 2rem;
+  background: var(--color-bg-card);
+  backdrop-filter: blur(12px);
   border-radius: var(--radius-lg);
   border: 1px dashed var(--color-border);
   color: var(--color-text-muted);
+  box-shadow: var(--shadow-sm);
 }
 
 .emptyIcon {
-  font-size: 2.2rem;
-  margin-bottom: 0.6rem;
+  font-size: 2.4rem;
+  margin-bottom: 0.75rem;
 }
 
-/* --- Skeleton Styles --- */
 .skeletonTimeline {
   display: flex;
   flex-direction: column;
-  gap: 2.5rem;
+  gap: 2.75rem;
 }
 
 .skeletonItem {
   display: flex;
   align-items: flex-start;
-  gap: 1.75rem;
+  gap: 2rem;
 }
 
 .skeletonNode {
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: #eae2d8;
+  background: var(--color-bg-secondary);
+  border: 2px solid var(--color-border);
   flex-shrink: 0;
 }
 
 .skeletonCard {
   flex: 1;
-  background: #ffffff;
+  background: var(--color-bg-card);
   border-radius: var(--radius-lg);
-  padding: 1.75rem 2rem;
-  border: 1px solid #ebdcd2;
+  padding: 2rem 2.25rem;
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
 }
 
 .skeletonShimmer {
-  background: linear-gradient(90deg, #f0e9e1 25%, #faf6f0 50%, #f0e9e1 75%);
+  background: linear-gradient(
+    90deg,
+    var(--color-bg-secondary) 25%,
+    var(--color-bg-subtle) 50%,
+    var(--color-bg-secondary) 75%
+  );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
   border-radius: var(--radius-sm);
 }
 
 .skeletonBadge {
-  width: 130px;
-  height: 24px;
-  margin-bottom: 1rem;
+  width: 140px;
+  height: 28px;
+  margin-bottom: 1.25rem;
 }
 
 .skeletonTitle {
-  width: 55%;
-  height: 30px;
-  margin-bottom: 0.8rem;
+  width: 60%;
+  height: 32px;
+  margin-bottom: 1rem;
 }
 
 .skeletonMeta {
-  width: 40%;
-  height: 20px;
-  margin-bottom: 0.8rem;
+  width: 45%;
+  height: 22px;
+  margin-bottom: 1rem;
 }
 
 .skeletonText {
-  width: 80%;
+  width: 85%;
   height: 18px;
 }
 
@@ -282,27 +536,224 @@
   }
 }
 
-@media (max-width: 650px) {
+/* --------------------------------------------------------------------------
+   Adaptabilidad Móvil & Breakpoints (Mobile-First de Alta Precisión)
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 768px) {
+  .container {
+    padding: 4.5rem 1.25rem 5.5rem;
+  }
+
+  .header {
+    margin-bottom: 3.25rem;
+  }
+
+  .title {
+    font-size: clamp(2rem, 5.5vw, 2.6rem);
+  }
+
+  .subtitle {
+    font-size: 0.98rem;
+    padding: 0 0.5rem;
+  }
+
+  .timeline {
+    gap: 2.25rem;
+  }
+
+  .timelineItem {
+    gap: 1.25rem;
+  }
+
+  .eventCard {
+    padding: 1.6rem 1.5rem;
+  }
+}
+
+@media (max-width: 600px) {
+  /* Orbes optimizados para GPU móvil para garantizar 60-120fps */
+  .bgGlowWarm {
+    width: 280px;
+    height: 280px;
+    filter: blur(50px);
+    right: -40px;
+  }
+
+  .bgGlowGold {
+    width: 240px;
+    height: 240px;
+    filter: blur(50px);
+    left: -40px;
+  }
+
+  .container {
+    padding: 3.5rem 1rem 4.5rem;
+  }
+
+  .header {
+    margin-bottom: 2.5rem;
+  }
+
+  .title {
+    font-size: clamp(1.85rem, 6.5vw, 2.3rem);
+  }
+
+  .tag {
+    font-size: 0.74rem;
+    padding: 0.3rem 1rem;
+    letter-spacing: 0.18em;
+  }
+
+  /* Línea conectora alineada al centro del nodo de 44px */
   .timeline::before {
-    left: 20px;
-  }
-
-  .nodeWrapper {
-    width: 42px;
-    height: 42px;
-    font-size: 1.15rem;
-  }
-
-  .skeletonNode {
-    width: 42px;
-    height: 42px;
+    left: 21px;
+    width: 2px;
   }
 
   .timelineItem {
     gap: 1rem;
   }
 
+  /* Nodo compacto de 44px */
+  .nodeWrapper {
+    width: 44px;
+    height: 44px;
+    font-size: 1.2rem;
+    box-shadow: 0 0 0 3px var(--color-bg-subtle), var(--shadow-sm);
+  }
+
+  .skeletonNode {
+    width: 44px;
+    height: 44px;
+  }
+
   .eventCard {
-    padding: 1.25rem 1.4rem;
+    padding: 1.35rem 1.2rem;
+    border-radius: var(--radius-md);
+  }
+
+  .eventName {
+    font-size: 1.45rem;
+    margin-bottom: 0.45rem;
+  }
+
+  .eventTopRow {
+    gap: 0.5rem;
+    margin-bottom: 0.65rem;
+  }
+
+  .timeBadge {
+    font-size: 0.86rem;
+    padding: 0.28rem 0.72rem;
+  }
+
+  .typeBadge {
+    font-size: 0.72rem;
+    padding: 0.24rem 0.62rem;
+  }
+
+  .venueRow {
+    font-size: 0.92rem;
+    gap: 0.45rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .description {
+    font-size: 0.92rem;
+    line-height: 1.6;
+    margin-bottom: 1.15rem;
+  }
+
+  .cardActions {
+    width: 100%;
+    padding-top: 0.35rem;
+  }
+
+  .mapsButton {
+    width: 100%;
+    min-height: 44px;
+    font-size: 0.9rem;
+    padding: 0.65rem 1rem;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .mapsButton:active {
+    transform: scale(0.98);
+    background: var(--color-primary-light);
+  }
+}
+
+@media (max-width: 420px) {
+  .container {
+    padding: 3rem 0.75rem 4rem;
+  }
+
+  /* Línea conectora alineada al centro del nodo de 36px */
+  .timeline::before {
+    left: 17px;
+  }
+
+  .timelineItem {
+    gap: 0.75rem;
+  }
+
+  /* Nodo ultra-optimizado de 36px: concede el máximo ancho posible a la tarjeta */
+  .nodeWrapper {
+    width: 36px;
+    height: 36px;
+    font-size: 1.05rem;
+    box-shadow: 0 0 0 2.5px var(--color-bg-subtle), var(--shadow-sm);
+  }
+
+  .skeletonNode {
+    width: 36px;
+    height: 36px;
+  }
+
+  .eventCard {
+    padding: 1.15rem 0.95rem;
+    border-radius: var(--radius-md);
+  }
+
+  .eventName {
+    font-size: 1.3rem;
+  }
+
+  .eventTopRow {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .timeBadge {
+    font-size: 0.82rem;
+    padding: 0.25rem 0.62rem;
+  }
+
+  .typeBadge {
+    font-size: 0.68rem;
+    padding: 0.2rem 0.52rem;
+  }
+
+  .venueRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .venueDetails {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.15rem;
+  }
+
+  .venueAddress {
+    font-size: 0.85rem;
+  }
+
+  .description {
+    font-size: 0.9rem;
+    line-height: 1.55;
   }
 }

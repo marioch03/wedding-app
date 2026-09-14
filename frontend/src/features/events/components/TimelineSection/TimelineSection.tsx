@@ -91,14 +91,26 @@ export const TimelineSection: React.FC<TimelineSectionProps> = ({ events: initia
   if (isLoading) {
     return (
       <section className={styles.section} aria-label="Itinerario de la boda">
-        <div className={styles.header}>
-          <span className={styles.tag}>Itinerario</span>
-          <h2 className={styles.title}>Cronograma del Día</h2>
-          <p className={styles.subtitle}>
-            Los momentos clave pensados para disfrutar juntos de este día inolvidable.
-          </p>
+        {/* Capas ambientales decorativas */}
+        <div className={styles.bgGlowWarm} aria-hidden="true" />
+        <div className={styles.bgGlowGold} aria-hidden="true" />
+        <div className={styles.bgPattern} aria-hidden="true" />
+
+        <div className={styles.container}>
+          <div className={styles.header}>
+            <span className={styles.tag}>Itinerario</span>
+            <h2 className={styles.title}>Cronograma del Día</h2>
+            <div className={styles.headerDivider} aria-hidden="true">
+              <span className={styles.dividerLine} />
+              <span className={styles.dividerIcon}>✦</span>
+              <span className={styles.dividerLine} />
+            </div>
+            <p className={styles.subtitle}>
+              Los momentos clave pensados para disfrutar juntos de este día inolvidable.
+            </p>
+          </div>
+          <TimelineSkeleton />
         </div>
-        <TimelineSkeleton />
       </section>
     );
   }
@@ -110,62 +122,88 @@ export const TimelineSection: React.FC<TimelineSectionProps> = ({ events: initia
 
   return (
     <section className={styles.section} id="itinerario" aria-label="Itinerario de la boda">
-      <div className={styles.header}>
-        <span className={styles.tag}>Itinerario</span>
-        <h2 className={styles.title}>Cronograma del Día</h2>
-        <p className={styles.subtitle}>
-          Acompañadnos en cada instante. Aquí tenéis los momentos principales y detalles de cada evento.
-        </p>
-      </div>
+      {/* Capas ambientales decorativas */}
+      <div className={styles.bgGlowWarm} aria-hidden="true" />
+      <div className={styles.bgGlowGold} aria-hidden="true" />
+      <div className={styles.bgPattern} aria-hidden="true" />
 
-      <div className={styles.timeline}>
-        {events.map((event) => {
-          const mapQuery = encodeURIComponent(
-            event.address ? `${event.venueName ? event.venueName + ', ' : ''}${event.address}` : event.venueName || ''
-          );
-          const mapsUrl = mapQuery ? `https://www.google.com/maps/search/?api=1&query=${mapQuery}` : null;
+      <div className={styles.container}>
+        <div className={styles.header}>
+          <span className={styles.tag}>Itinerario</span>
+          <h2 className={styles.title}>Cronograma del Día</h2>
+          <div className={styles.headerDivider} aria-hidden="true">
+            <span className={styles.dividerLine} />
+            <span className={styles.dividerIcon}>✦</span>
+            <span className={styles.dividerLine} />
+          </div>
+          <p className={styles.subtitle}>
+            Acompañadnos en cada instante. Aquí tenéis los momentos principales y detalles de cada evento.
+          </p>
+        </div>
 
-          return (
-            <div key={event.id} className={styles.timelineItem}>
-              <div className={styles.nodeWrapper} aria-hidden="true">
-                {getEventIcon(event.eventType)}
-              </div>
+        <div className={styles.timeline}>
+          {events.map((event) => {
+            const mapQuery = encodeURIComponent(
+              event.address ? `${event.venueName ? event.venueName + ', ' : ''}${event.address}` : event.venueName || ''
+            );
+            const mapsUrl = mapQuery ? `https://www.google.com/maps/search/?api=1&query=${mapQuery}` : null;
+            const eventTypeClass = styles[`type_${event.eventType.toLowerCase()}`] || '';
 
-              <article className={styles.eventCard}>
-                <div className={styles.eventTopRow}>
-                  <time className={styles.timeBadge} dateTime={event.startDatetime}>
-                    <span>⏱️</span> {formatEventTime(event.startDatetime, event.endDatetime)}
-                  </time>
-                  <span className={styles.typeBadge}>{getEventTypeName(event.eventType)}</span>
+            return (
+              <div key={event.id} className={`${styles.timelineItem} ${eventTypeClass}`}>
+                <div className={styles.nodeWrapper} aria-hidden="true">
+                  <span className={styles.nodeIcon}>{getEventIcon(event.eventType)}</span>
                 </div>
 
-                <h3 className={styles.eventName}>{event.name}</h3>
+                <article className={styles.eventCard}>
+                  {/* Micro-resplandor de acento superior según tipo de evento */}
+                  <div className={styles.cardAccentBar} aria-hidden="true" />
 
-                {(event.venueName || event.address) && (
-                  <div className={styles.venueRow}>
-                    <span>📍</span>
-                    {event.venueName && <span className={styles.venueName}>{event.venueName}</span>}
-                    {event.address && <span className={styles.venueAddress}>({event.address})</span>}
+                  <div className={styles.eventTopRow}>
+                    <time className={styles.timeBadge} dateTime={event.startDatetime}>
+                      <span className={styles.timeIcon} aria-hidden="true">⏱️</span>
+                      <span>{formatEventTime(event.startDatetime, event.endDatetime)}</span>
+                    </time>
+                    <span className={styles.typeBadge}>
+                      <span className={styles.typeDot} aria-hidden="true" />
+                      {getEventTypeName(event.eventType)}
+                    </span>
                   </div>
-                )}
 
-                {event.description && <p className={styles.description}>{event.description}</p>}
+                  <h3 className={styles.eventName}>{event.name}</h3>
 
-                {mapsUrl && (
-                  <a
-                    href={mapsUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={styles.mapsButton}
-                    title={`Ver ubicación de ${event.name} en Google Maps`}
-                  >
-                    <span>🗺️</span> Cómo llegar
-                  </a>
-                )}
-              </article>
-            </div>
-          );
-        })}
+                  {(event.venueName || event.address) && (
+                    <div className={styles.venueRow}>
+                      <span className={styles.venueIcon} aria-hidden="true">📍</span>
+                      <div className={styles.venueDetails}>
+                        {event.venueName && <span className={styles.venueName}>{event.venueName}</span>}
+                        {event.address && <span className={styles.venueAddress}>({event.address})</span>}
+                      </div>
+                    </div>
+                  )}
+
+                  {event.description && <p className={styles.description}>{event.description}</p>}
+
+                  {mapsUrl && (
+                    <div className={styles.cardActions}>
+                      <a
+                        href={mapsUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.mapsButton}
+                        title={`Ver ubicación de ${event.name} en Google Maps`}
+                      >
+                        <span className={styles.mapsIcon} aria-hidden="true">🗺️</span>
+                        <span>Cómo llegar</span>
+                        <span className={styles.mapsArrow} aria-hidden="true">→</span>
+                      </a>
+                    </div>
+                  )}
+                </article>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </section>
   );

@@ -12,7 +12,7 @@ interface PhotoItem {
   caption: string;
 }
 
-// 3 Momentos icónicos y elegantes por defecto
+// Momentos icónicos y elegantes por defecto con respaldo de alta calidad
 const DEFAULT_MOMENTS: PhotoItem[] = [
   {
     url: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=900&q=85',
@@ -25,6 +25,10 @@ const DEFAULT_MOMENTS: PhotoItem[] = [
   {
     url: 'https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=900&q=85',
     caption: 'Un paseo al atardecer',
+  },
+  {
+    url: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=900&q=85',
+    caption: 'Celebrando nuestro amor',
   },
 ];
 
@@ -45,6 +49,14 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ galleryImages })
           };
         })
       : DEFAULT_MOMENTS;
+
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>, index: number) => {
+    const target = e.currentTarget;
+    if (!target.dataset.fallbackApplied) {
+      target.dataset.fallbackApplied = 'true';
+      target.src = DEFAULT_MOMENTS[index % DEFAULT_MOMENTS.length]?.url || DEFAULT_MOMENTS[0].url;
+    }
+  };
 
   const openLightbox = (index: number) => {
     setSelectedIndex(index);
@@ -85,38 +97,60 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ galleryImages })
   }, [selectedIndex, photos.length]);
 
   return (
-    <section className={styles.section}>
-      <div className={styles.header}>
-        <span className={styles.tag}>Momentos Especiales</span>
-        <h2 className={styles.title}>Nuestros Recuerdos</h2>
-        <p className={styles.subtitle}>
-          Instantes inolvidables que nos han traído hasta este emocionante capítulo.
-        </p>
-      </div>
+    <section className={styles.section} id="recuerdos" aria-label="Galería de recuerdos">
+      {/* Capas ambientales decorativas */}
+      <div className={styles.bgGlowGold} aria-hidden="true" />
+      <div className={styles.bgGlowWarm} aria-hidden="true" />
 
-      <div className={styles.momentsGrid}>
-        {photos.map((photo, index) => (
-          <div
-            key={index}
-            className={styles.momentCard}
-            onClick={() => openLightbox(index)}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') openLightbox(index);
-            }}
-          >
-            <div className={styles.imageWrapper}>
-              <img
-                src={photo.url}
-                alt={photo.caption}
-                className={styles.photo}
-                loading="lazy"
-              />
-            </div>
-            <span className={styles.caption}>{photo.caption}</span>
+      <div className={styles.container}>
+        <div className={styles.header}>
+          <span className={styles.tag}>Momentos Especiales</span>
+          <h2 className={styles.title}>Nuestros Recuerdos</h2>
+          <div className={styles.headerDivider} aria-hidden="true">
+            <span className={styles.dividerLine} />
+            <span className={styles.dividerIcon}>❦</span>
+            <span className={styles.dividerLine} />
           </div>
-        ))}
+          <p className={styles.subtitle}>
+            Instantes inolvidables que nos han traído hasta este emocionante capítulo.
+          </p>
+        </div>
+
+        <div className={styles.momentsGrid}>
+          {photos.map((photo, index) => (
+            <div
+              key={index}
+              className={styles.momentCard}
+              onClick={() => openLightbox(index)}
+              role="button"
+              tabIndex={0}
+              aria-label={`Ver foto: ${photo.caption}`}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  openLightbox(index);
+                }
+              }}
+            >
+              <div className={styles.imageWrapper}>
+                <img
+                  src={photo.url}
+                  alt={photo.caption}
+                  className={styles.photo}
+                  loading="lazy"
+                  onError={(e) => handleImageError(e, index)}
+                />
+                <div className={styles.zoomHint} aria-hidden="true">
+                  <span className={styles.zoomIcon}>✦</span>
+                </div>
+              </div>
+              <div className={styles.cardFooter}>
+                <span className={styles.caption}>{photo.caption}</span>
+                <span className={styles.cardStamp} aria-hidden="true">❦</span>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Lightbox Modal */}
@@ -126,6 +160,7 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ galleryImages })
           onClick={closeLightbox}
           role="dialog"
           aria-modal="true"
+          aria-label="Visor de fotografía"
         >
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
             <button
@@ -146,13 +181,21 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ galleryImages })
               ‹
             </button>
 
-            <img
-              src={photos[selectedIndex].url}
-              alt={photos[selectedIndex].caption}
-              className={styles.modalImage}
-            />
+            <div className={styles.modalImageWrapper}>
+              <img
+                src={photos[selectedIndex].url}
+                alt={photos[selectedIndex].caption}
+                className={styles.modalImage}
+                onError={(e) => handleImageError(e, selectedIndex)}
+              />
+            </div>
 
-            <p className={styles.modalCaption}>{photos[selectedIndex].caption}</p>
+            <div className={styles.modalInfo}>
+              <p className={styles.modalCaption}>{photos[selectedIndex].caption}</p>
+              <span className={styles.modalCounter}>
+                {selectedIndex + 1} de {photos.length}
+              </span>
+            </div>
 
             <button
               type="button"

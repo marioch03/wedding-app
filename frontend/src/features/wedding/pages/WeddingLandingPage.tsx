@@ -81,11 +81,11 @@ export const WeddingLandingPage: React.FC = () => {
           storyImageUrl={wedding.content?.storyImageUrl}
         />
 
-        <TimelineSection />
-
         <GallerySection
           galleryImages={wedding.content?.galleryImages}
         />
+
+        <TimelineSection />
 
         <AccommodationsSection
           hotels={wedding.content?.hotels}

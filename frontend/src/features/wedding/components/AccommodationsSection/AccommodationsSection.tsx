@@ -61,108 +61,126 @@ export const AccommodationsSection: React.FC<AccommodationsSectionProps> = ({ ho
   }
 
   return (
-    <section className={styles.section} id="alojamiento">
-      <div className={styles.header}>
-        <span className={styles.tag}>Dónde Alojarse</span>
-        <h2 className={styles.title}>Hoteles y Alojamientos Recomendados</h2>
-        <p className={styles.subtitle}>
-          Hemos seleccionado estas opciones cercanas para que vuestra estancia sea lo más cómoda posible.
-        </p>
-      </div>
+    <section className={styles.section} id="alojamiento" aria-label="Alojamientos recomendados">
+      {/* Capas ambientales decorativas */}
+      <div className={styles.bgGlowWarm} aria-hidden="true" />
+      <div className={styles.bgGlowGold} aria-hidden="true" />
 
-      <div className={styles.grid}>
-        {hotels.map((hotel) => {
-          const mapsUrl = getGoogleMapsUrl(hotel);
-          const icon = getAccommodationIcon(hotel.accommodationType);
-          const label = getAccommodationLabel(hotel.accommodationType);
-          const hotelImg = hotel.imageUrl ? getMediaUrl(hotel.imageUrl) : DEFAULT_HOTEL_IMAGES[hotel.accommodationType || 'HOTEL'];
+      <div className={styles.container}>
+        <div className={styles.header}>
+          <span className={styles.tag}>Dónde Alojarse</span>
+          <h2 className={styles.title}>Hoteles y Alojamientos Recomendados</h2>
+          <div className={styles.headerDivider} aria-hidden="true">
+            <span className={styles.dividerLine} />
+            <span className={styles.dividerIcon}>✦</span>
+            <span className={styles.dividerLine} />
+          </div>
+          <p className={styles.subtitle}>
+            Hemos seleccionado estas opciones cercanas para que vuestra estancia sea lo más cómoda posible.
+          </p>
+        </div>
 
-          return (
-            <article key={hotel.id} className={styles.card}>
-              <div className={styles.imageWrapper}>
-                <img
-                  src={hotelImg}
-                  alt={`Fotografía de ${hotel.name}`}
-                  className={styles.hotelImage}
-                  loading="lazy"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src =
-                      DEFAULT_HOTEL_IMAGES[hotel.accommodationType || 'HOTEL'];
-                  }}
-                />
-                <div className={styles.imageOverlayBadge}>
-                  <span className={styles.typeBadge}>
-                    <span>{icon}</span> {label}
-                  </span>
+        <div className={styles.grid}>
+          {hotels.map((hotel) => {
+            const mapsUrl = getGoogleMapsUrl(hotel);
+            const icon = getAccommodationIcon(hotel.accommodationType);
+            const label = getAccommodationLabel(hotel.accommodationType);
+            const defaultImg = DEFAULT_HOTEL_IMAGES[hotel.accommodationType || 'HOTEL'];
+            const hotelImg = hotel.imageUrl ? getMediaUrl(hotel.imageUrl) : defaultImg;
+
+            return (
+              <article key={hotel.id} className={styles.card}>
+                <div className={styles.imageWrapper}>
+                  <img
+                    src={hotelImg}
+                    alt={`Fotografía de ${hotel.name}`}
+                    className={styles.hotelImage}
+                    loading="lazy"
+                    onError={(e) => {
+                      const target = e.currentTarget;
+                      if (!target.dataset.fallbackApplied) {
+                        target.dataset.fallbackApplied = 'true';
+                        target.src = defaultImg;
+                      }
+                    }}
+                  />
+                  <div className={styles.imageOverlayBadge}>
+                    <span className={styles.typeBadge}>
+                      <span className={styles.typeIcon} aria-hidden="true">{icon}</span> {label}
+                    </span>
+                  </div>
                 </div>
-              </div>
 
-              <div className={styles.cardContent}>
-                <h3 className={styles.hotelName}>{hotel.name}</h3>
+                <div className={styles.cardContent}>
+                  <h3 className={styles.hotelName}>{hotel.name}</h3>
 
-                {(hotel.distance || hotel.priceRange) && (
-                  <div className={styles.badgesRow}>
-                    {hotel.distance && (
-                      <span className={styles.metaBadge}>
-                        ⏱️ {hotel.distance}
-                      </span>
-                    )}
-                    {hotel.priceRange && (
-                      <span className={styles.metaBadge}>
-                        💶 {hotel.priceRange}
-                      </span>
-                    )}
-                  </div>
-                )}
+                  {(hotel.distance || hotel.priceRange) && (
+                    <div className={styles.badgesRow}>
+                      {hotel.distance && (
+                        <span className={styles.metaBadge}>
+                          ⏱️ {hotel.distance}
+                        </span>
+                      )}
+                      {hotel.priceRange && (
+                        <span className={styles.metaBadge}>
+                          💶 {hotel.priceRange}
+                        </span>
+                      )}
+                    </div>
+                  )}
 
-                {hotel.description && (
-                  <p className={styles.description}>{hotel.description}</p>
-                )}
+                  {hotel.description && (
+                    <p className={styles.description}>{hotel.description}</p>
+                  )}
 
-                {hotel.address && (
-                  <div className={styles.addressRow}>
-                    <span className={styles.addressIcon}>📍</span>
-                    <span>{hotel.address}</span>
-                  </div>
-                )}
-              </div>
+                  {hotel.address && (
+                    <div className={styles.addressRow}>
+                      <span className={styles.addressIcon} aria-hidden="true">📍</span>
+                      <span className={styles.addressText}>{hotel.address}</span>
+                    </div>
+                  )}
+                </div>
 
-              <div className={styles.cardActions}>
-                <a
-                  href={mapsUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={styles.mapButton}
-                  title={`Cómo llegar a ${hotel.name} en Google Maps`}
-                >
-                  🗺️ Cómo llegar
-                </a>
-
-                {hotel.websiteUrl && (
+                <div className={styles.cardActions}>
                   <a
-                    href={hotel.websiteUrl}
+                    href={mapsUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={styles.webButton}
-                    title={`Visitar sitio web oficial o reservar en ${hotel.name}`}
+                    className={styles.mapButton}
+                    title={`Cómo llegar a ${hotel.name} en Google Maps`}
                   >
-                    🌐 Sitio Web / Reservar
+                    <span className={styles.actionIcon} aria-hidden="true">🗺️</span>
+                    <span>Cómo llegar</span>
                   </a>
-                )}
 
-                {hotel.phone && (
-                  <a
-                    href={`tel:${hotel.phone.replace(/\s+/g, '')}`}
-                    className={styles.phoneButton}
-                    title={`Llamar a ${hotel.name}: ${hotel.phone}`}
-                  >
-                    📞
-                  </a>
-                )}
-              </div>
-            </article>
-          );
-        })}
+                  {hotel.websiteUrl && (
+                    <a
+                      href={hotel.websiteUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={styles.webButton}
+                      title={`Visitar sitio web oficial o reservar en ${hotel.name}`}
+                    >
+                      <span className={styles.actionIcon} aria-hidden="true">🌐</span>
+                      <span>Sitio Web / Reservar</span>
+                    </a>
+                  )}
+
+                  {hotel.phone && (
+                    <a
+                      href={`tel:${hotel.phone.replace(/\s+/g, '')}`}
+                      className={styles.phoneButton}
+                      title={`Llamar a ${hotel.name}: ${hotel.phone}`}
+                    >
+                      <span className={styles.actionIcon} aria-hidden="true">📞</span>
+                      <span className={styles.phoneText}>Llamar</span>
+                    </a>
+                  )}
+                </div>
+              </article>
+            );
+          })}
+        </div>
       </div>
     </section>
   );
