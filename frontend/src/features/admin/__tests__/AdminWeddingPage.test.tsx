@@ -185,5 +185,39 @@ describe('Feature: Configuración de Boda y Secciones Prácticas (AdminWeddingPa
 
     expect(captionInput).toHaveValue('El día que nos prometimos');
   });
+
+  it('permite añadir y gestionar un hotel recomendado en la configuración de la boda', async () => {
+    const user = userEvent.setup();
+    renderWithRouter(<AdminWeddingPage />);
+
+    await waitFor(() => {
+      expect(screen.getByDisplayValue(mockWeddingAdmin.partner1Name)).toBeInTheDocument();
+    });
+
+    // Debe mostrar la sección de hoteles y el hotel precargado
+    expect(screen.getByText(/Hoteles y Alojamiento Recomendado/i)).toBeInTheDocument();
+    expect(screen.getByText('Parador de Alcalá de Henares')).toBeInTheDocument();
+
+    // Pulsar Añadir Hotel
+    const addHotelBtn = screen.getByRole('button', { name: /\+ Añadir Hotel \/ Alojamiento/i });
+    await user.click(addHotelBtn);
+
+    expect(screen.getByText('➕ Nuevo Alojamiento')).toBeInTheDocument();
+
+    // Rellenar datos
+    const nameInput = screen.getByPlaceholderText('Ej. Parador de Alcalá de Henares');
+    await user.type(nameInput, 'Hotel Boutique Las Rosas');
+
+    const distanceInput = screen.getByPlaceholderText('Ej. A 5 minutos en coche');
+    await user.type(distanceInput, 'A 3 minutos de la iglesia');
+
+    // Guardar hotel en la lista
+    const saveHotelBtn = screen.getByRole('button', { name: /✓ Añadir Alojamiento/i });
+    await user.click(saveHotelBtn);
+
+    // Debe aparecer en la lista
+    expect(screen.getByText('Hotel Boutique Las Rosas')).toBeInTheDocument();
+    expect(screen.getByText('⏱️ A 3 minutos de la iglesia')).toBeInTheDocument();
+  });
 });
 

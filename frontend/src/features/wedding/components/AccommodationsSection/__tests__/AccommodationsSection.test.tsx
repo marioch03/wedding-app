@@ -1,0 +1,81 @@
+import { describe, it, expect } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { AccommodationsSection } from '../AccommodationsSection';
+import type { HotelItem } from '../../../../../types';
+
+describe('Feature: Hoteles y Alojamiento Recomendado (AccommodationsSection)', () => {
+  const sampleHotels: HotelItem[] = [
+    {
+      id: 'hotel-1',
+      name: 'Parador de Alcalá de Henares',
+      accommodationType: 'PARADOR',
+      description: 'Hermoso convento restaurado con spa.',
+      address: 'Calle Colegios 8, 28801 Alcalá de Henares',
+      distance: 'A 5 min de la finca',
+      priceRange: '120€ / noche',
+      phone: '+34 918 880 330',
+      websiteUrl: 'https://www.parador.es',
+    },
+    {
+      id: 'hotel-2',
+      name: 'Casa Rural El Encinar',
+      accommodationType: 'RURAL',
+      description: 'Tranquilidad en plena naturaleza.',
+      address: 'Camino de las Encinas s/n',
+      distance: 'A 10 min de la finca',
+    },
+  ];
+
+  it('no renderiza nada cuando la lista de hoteles es nula o vacía', () => {
+    const { container: emptyContainer } = render(<AccommodationsSection hotels={[]} />);
+    expect(emptyContainer.firstChild).toBeNull();
+
+    const { container: nullContainer } = render(<AccommodationsSection hotels={undefined} />);
+    expect(nullContainer.firstChild).toBeNull();
+  });
+
+  it('renderiza correctamente las tarjetas de alojamiento con su información básica', () => {
+    render(<AccommodationsSection hotels={sampleHotels} />);
+
+    expect(screen.getByText('Dónde Alojarse')).toBeInTheDocument();
+    expect(screen.getByText('Hoteles y Alojamientos Recomendados')).toBeInTheDocument();
+
+    // Hotel 1
+    expect(screen.getByText('Parador de Alcalá de Henares')).toBeInTheDocument();
+    expect(screen.getByText('Hermoso convento restaurado con spa.')).toBeInTheDocument();
+    expect(screen.getByText(/Calle Colegios 8/i)).toBeInTheDocument();
+    expect(screen.getByText('⏱️ A 5 min de la finca')).toBeInTheDocument();
+    expect(screen.getByText('💶 120€ / noche')).toBeInTheDocument();
+
+    // Hotel 2
+    expect(screen.getByText('Casa Rural El Encinar')).toBeInTheDocument();
+    expect(screen.getByText('Tranquilidad en plena naturaleza.')).toBeInTheDocument();
+    expect(screen.getByText('⏱️ A 10 min de la finca')).toBeInTheDocument();
+  });
+
+  it('incluye enlace seguro a Google Maps para navegación (Cómo llegar)', () => {
+    render(<AccommodationsSection hotels={sampleHotels} />);
+
+    const mapLinks = screen.getAllByRole('link', { name: /Cómo llegar/i });
+    expect(mapLinks).toHaveLength(2);
+
+    const firstMapLink = mapLinks[0];
+    expect(firstMapLink).toHaveAttribute('target', '_blank');
+    expect(firstMapLink).toHaveAttribute('rel', 'noopener noreferrer');
+    expect(firstMapLink.getAttribute('href')).toContain('google.com/maps/search');
+  });
+
+  it('incluye enlace al sitio web oficial y enlace telefónico cuando están disponibles', () => {
+    render(<AccommodationsSection hotels={sampleHotels} />);
+
+    // Sitio web del Hotel 1
+    const webLink = screen.getByRole('link', { name: /Sitio Web \/ Reservar/i });
+    expect(webLink).toHaveAttribute('href', 'https://www.parador.es');
+    expect(webLink).toHaveAttribute('target', '_blank');
+    expect(webLink).toHaveAttribute('rel', 'noopener noreferrer');
+
+    // Teléfono del Hotel 1
+    const phoneLink = screen.getByTitle(/Llamar a Parador de Alcalá de Henares/i);
+    expect(phoneLink).toHaveAttribute('href', 'tel:+34918880330');
+  });
+});

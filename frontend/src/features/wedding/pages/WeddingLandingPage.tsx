@@ -5,6 +5,7 @@ import { HeroSection } from '../components/HeroSection/HeroSection';
 import { StorySection } from '../components/StorySection/StorySection';
 import { TimelineSection } from '../../events';
 import { GallerySection } from '../components/GallerySection/GallerySection';
+import { AccommodationsSection } from '../components/AccommodationsSection/AccommodationsSection';
 import { InfoSection } from '../components/InfoSection/InfoSection';
 import { FooterSection } from '../components/FooterSection/FooterSection';
 import { WeddingSkeleton } from '../components/WeddingSkeleton/WeddingSkeleton';
@@ -84,6 +85,10 @@ export const WeddingLandingPage: React.FC = () => {
 
         <GallerySection
           galleryImages={wedding.content?.galleryImages}
+        />
+
+        <AccommodationsSection
+          hotels={wedding.content?.hotels}
         />
 
         <InfoSection

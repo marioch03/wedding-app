@@ -30,7 +30,19 @@ export const mockWeddingPublic: WeddingPublicResponse = {
     galleryImages: ['https://images.unsplash.com/photo-1', 'https://images.unsplash.com/photo-2'],
     dressCode: 'Elegante / Traje y Vestido Cóctel',
     accommodations: 'Hotel Hacienda del Sol',
-    transportInfo: 'Autobuses desde Plaza Mayor a las 16:30h',
+    hotels: [
+      {
+        id: 'hotel-1',
+        name: 'Parador de Alcalá de Henares',
+        accommodationType: 'PARADOR',
+        description: 'Hotel conventual del siglo XVII con spa y restaurante tradicional.',
+        address: 'Calle Colegios 8, 28801 Alcalá de Henares',
+        distance: 'A 8 min de la finca',
+        priceRange: '110€ - 150€ / noche',
+        phone: '+34 918 880 330',
+        websiteUrl: 'https://www.parador.es',
+      },
+    ],
     faqs: [
       { question: '¿Hay aparcamiento?', answer: 'Sí, gratuito en la finca.' },
       { question: '¿Se admiten niños?', answer: 'Sí, contaremos con animación infantil.' },

@@ -10,6 +10,22 @@ export interface GalleryPhotoItem {
   caption?: string;
 }
 
+export type AccommodationType = 'HOTEL' | 'RURAL' | 'PARADOR' | 'BOUTIQUE' | 'HOSTEL';
+
+export interface HotelItem {
+  id: string;
+  name: string;
+  accommodationType?: AccommodationType;
+  description?: string;
+  address?: string;
+  googleMapsUrl?: string;
+  websiteUrl?: string;
+  phone?: string;
+  distance?: string;
+  priceRange?: string;
+  imageUrl?: string;
+}
+
 export interface WeddingContent {
   storyTitle?: string;
   storyText?: string;
@@ -20,6 +36,7 @@ export interface WeddingContent {
   faqs?: Array<{ question: string; answer: string }>;
   dressCode?: string;
   accommodations?: string;
+  hotels?: HotelItem[];
   transportInfo?: string;
   customSections?: PracticalDetailSection[];
   customNotes?: string;

@@ -998,3 +998,138 @@
 .hiddenFileInput {
   display: none;
 }
+
+/* Hoteles y Alojamientos */
+.hotelFormContainer {
+  background: #fdfbfb;
+  border: 1.5px solid var(--color-primary-border, #f0d5d8);
+  border-radius: var(--radius-md, 12px);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+}
+
+.hotelFormHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--color-border, #eaeaea);
+  padding-bottom: 0.75rem;
+}
+
+.hotelFormTitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-text-heading, #2c2c2c);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.hotelItemCard {
+  background: #ffffff;
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: var(--radius-md, 10px);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  transition: all 0.2s ease;
+}
+
+.hotelItemCard:hover {
+  border-color: var(--color-primary, #b76e79);
+  box-shadow: 0 4px 12px rgba(183, 110, 121, 0.08);
+}
+
+.hotelItemHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.hotelItemTitle {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-text-heading, #2c2c2c);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.hotelBadgesRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.25rem;
+}
+
+.hotelBadge {
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  background: #f3f4f6;
+  color: #4b5563;
+}
+
+.hotelMetaText {
+  font-size: 0.88rem;
+  color: var(--color-text-muted, #666);
+  line-height: 1.4;
+}
+
+.hotelActionsGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.editBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm, 6px);
+  border: 1px solid var(--color-border, #e5e7eb);
+  background: #ffffff;
+  color: var(--color-text-heading, #333);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  transition: all 0.15s ease;
+}
+
+.editBtn:hover {
+  border-color: var(--color-primary, #b76e79);
+  color: var(--color-primary, #b76e79);
+  background: #fdf5f5;
+}
+
+.cancelButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 1.25rem;
+  border-radius: var(--radius-full);
+  background: #ffffff;
+  color: var(--color-text-muted, #666);
+  font-size: 0.88rem;
+  font-weight: 600;
+  border: 1.5px solid var(--color-border, #e5e7eb);
+  cursor: pointer;
+  transition: all var(--transition-fast, 0.15s ease);
+}
+
+.cancelButton:hover {
+  background: var(--color-background-subtle, #f9fafb);
+  color: var(--color-text-heading, #1f2937);
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
+}
+
