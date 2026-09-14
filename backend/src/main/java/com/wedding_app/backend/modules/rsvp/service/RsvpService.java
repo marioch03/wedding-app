@@ -211,7 +211,7 @@ public class RsvpService {
       }
     }
 
-    party.setStatus(computePartyStatus(request));
+    party.setStatus(computePartyStatus(party, request, allowedEventIds));
     party.setRespondedAt(now);
     partyRepository.save(party);
   }
@@ -298,7 +298,56 @@ public class RsvpService {
         .orElseThrow(InvalidRsvpTokenException::new);
   }
 
-  private PartyStatus computePartyStatus(RsvpSubmitRequest request) {
+  private PartyStatus computePartyStatus(Party party, RsvpSubmitRequest request, Set<UUID> allowedEventIds) {
+    List<Guest> partyGuests = guestRepository.findByPartyId(party.getId());
+    if (partyGuests.isEmpty()) {
+      return computePartyStatusFromRequest(request);
+    }
+
+    boolean anyResponded = false;
+    boolean allResponded = true;
+    long totalAttendances = 0;
+    long attendingCount = 0;
+
+    for (Guest g : partyGuests) {
+      List<GuestEvent> guestEvents = guestEventRepository.findByGuestId(g.getId()).stream()
+          .filter(ge -> allowedEventIds.contains(ge.getEvent().getId()))
+          .toList();
+
+      boolean guestHasResponse = !guestEvents.isEmpty() && guestEvents.stream().anyMatch(ge -> ge.getAttending() != null);
+      if (guestHasResponse) {
+        anyResponded = true;
+        for (GuestEvent ge : guestEvents) {
+          if (ge.getAttending() != null) {
+            totalAttendances++;
+            if (Boolean.TRUE.equals(ge.getAttending())) {
+              attendingCount++;
+            }
+          }
+        }
+      } else {
+        allResponded = false;
+      }
+    }
+
+    if (!anyResponded || totalAttendances == 0) {
+      return PartyStatus.PENDING;
+    }
+
+    if (!allResponded) {
+      return PartyStatus.PARTIAL;
+    }
+
+    if (attendingCount == 0) {
+      return PartyStatus.DECLINED;
+    }
+    if (attendingCount == totalAttendances) {
+      return PartyStatus.CONFIRMED;
+    }
+    return PartyStatus.PARTIAL;
+  }
+
+  private PartyStatus computePartyStatusFromRequest(RsvpSubmitRequest request) {
     if (request.guests() == null || request.guests().isEmpty()) {
       return PartyStatus.PENDING;
     }

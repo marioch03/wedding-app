@@ -308,4 +308,41 @@ class RsvpServiceTest {
         .isEqualTo(stats.totalGuests());
     assertThat(stats.responseRatePercentage()).isEqualTo(50.0);
   }
+
+  @Test
+  void adminSubmitRsvp_singleGuestInMultiGuestParty_setsStatusToPartialWhenOtherPending() {
+    Guest secondGuest = new Guest();
+    secondGuest.setId(UUID.randomUUID());
+    secondGuest.setParty(party);
+    secondGuest.setFirstName("Pedro");
+
+    PartyEvent pe = new PartyEvent();
+    pe.setParty(party);
+    pe.setEvent(event);
+
+    EventRsvpDto eventDto = new EventRsvpDto(eventId, true, menuId, null);
+    GuestRsvpDto guestDto = new GuestRsvpDto(guestId, "Ana", "Test", null, List.of(eventDto));
+    RsvpSubmitRequest request = new RsvpSubmitRequest(List.of(guestDto));
+
+    when(partyRepository.findById(partyId)).thenReturn(Optional.of(party));
+    when(partyEventRepository.findByPartyIdWithEvent(partyId)).thenReturn(List.of(pe));
+    when(guestRepository.findById(guestId)).thenReturn(Optional.of(guest));
+    when(guestRepository.findByPartyId(partyId)).thenReturn(List.of(guest, secondGuest));
+    when(menuOptionRepository.findById(menuId)).thenReturn(Optional.of(menuOption));
+    when(guestEventRepository.findByGuestIdAndEventId(guestId, eventId)).thenReturn(Optional.empty());
+    when(eventRepository.getReferenceById(eventId)).thenReturn(event);
+
+    GuestEvent ge = new GuestEvent();
+    ge.setGuest(guest);
+    ge.setEvent(event);
+    ge.setAttending(true);
+
+    when(guestEventRepository.findByGuestId(guestId)).thenReturn(List.of(ge));
+    when(guestEventRepository.findByGuestId(secondGuest.getId())).thenReturn(List.of()); // Pedro pendiente
+
+    rsvpService.adminSubmitRsvp(partyId, request);
+
+    assertThat(party.getStatus()).isEqualTo(PartyStatus.PARTIAL);
+    verify(partyRepository).save(party);
+  }
 }

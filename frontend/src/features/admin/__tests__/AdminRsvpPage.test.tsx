@@ -139,4 +139,20 @@ describe('AdminRsvpPage - Control RSVP & Exportación Catering', () => {
     // Marcos Gómez tiene asistencia confirmada
     expect(screen.getByText('Marcos Gómez')).toBeInTheDocument();
   });
+
+  it('abre el modal de gestión manual enfocado en el invitado seleccionado', async () => {
+    const user = userEvent.setup();
+    renderWithRouter(<AdminRsvpPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Marcos Gómez')).toBeInTheDocument();
+    });
+
+    const modifyButtons = screen.getAllByRole('button', { name: /Modificar/i });
+    await user.click(modifyButtons[0]);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Asistencia: Marcos Gómez/i)).toBeInTheDocument();
+    });
+  });
 });

@@ -42,7 +42,12 @@ export const AdminRsvpPage: React.FC = () => {
   const [dietOnly, setDietOnly] = useState(false);
 
   // Manual RSVP Modal
-  const [partyToEdit, setPartyToEdit] = useState<{ id: string; name: string } | null>(null);
+  const [partyToEdit, setPartyToEdit] = useState<{
+    id: string;
+    name: string;
+    guestId?: string;
+    guestName?: string;
+  } | null>(null);
 
   useEffect(() => {
     loadAllData();
@@ -483,6 +488,8 @@ export const AdminRsvpPage: React.FC = () => {
                               setPartyToEdit({
                                 id: guest.partyId,
                                 name: partyName,
+                                guestId: guest.id,
+                                guestName: `${guest.firstName || ''} ${guest.lastName || ''}`.trim(),
                               })
                             }
                             title="Modificar asistencia manualmente"
@@ -674,6 +681,8 @@ export const AdminRsvpPage: React.FC = () => {
         <ManualRsvpModal
           partyId={partyToEdit.id}
           partyName={partyToEdit.name}
+          targetGuestId={partyToEdit.guestId}
+          targetGuestName={partyToEdit.guestName}
           onClose={() => setPartyToEdit(null)}
           onSaved={() => {
             loadAllData();

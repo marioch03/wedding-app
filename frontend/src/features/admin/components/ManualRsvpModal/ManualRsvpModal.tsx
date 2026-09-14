@@ -7,6 +7,8 @@ import styles from './ManualRsvpModal.module.css';
 interface ManualRsvpModalProps {
   partyId: string;
   partyName: string;
+  targetGuestId?: string;
+  targetGuestName?: string;
   onClose: () => void;
   onSaved: () => void;
 }
@@ -28,12 +30,15 @@ interface GuestFormState {
 export const ManualRsvpModal: React.FC<ManualRsvpModalProps> = ({
   partyId,
   partyName,
+  targetGuestId,
+  targetGuestName,
   onClose,
   onSaved,
 }) => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'SINGLE' | 'ALL'>(targetGuestId ? 'SINGLE' : 'ALL');
 
   const [rsvpInfo, setRsvpInfo] = useState<RsvpInfoResponse | null>(null);
   const [guestsState, setGuestsState] = useState<GuestFormState[]>([]);
@@ -68,18 +73,18 @@ export const ManualRsvpModal: React.FC<ManualRsvpModalProps> = ({
               }
             }
           }
-        } catch (detailErr) {
-          console.warn('Could not load detailed guest attendance for', g.id, detailErr);
+        } catch {
+          // Fallback if detail not available
         }
 
         const eventsState = info.allowedEvents.map((ev) => {
-          const prev = currentAttendances[ev.id];
+          const current = currentAttendances[ev.id];
           return {
             eventId: ev.id,
             eventName: ev.name,
-            attending: prev ? prev.attending : null,
-            menuOptionId: prev?.menuOptionId || (ev.menuOptions?.[0]?.id || ''),
-            specialNotes: prev?.specialNotes || '',
+            attending: current !== undefined ? current.attending : null,
+            menuOptionId: current?.menuOptionId || '',
+            specialNotes: current?.specialNotes || '',
           };
         });
 
@@ -103,67 +108,70 @@ export const ManualRsvpModal: React.FC<ManualRsvpModalProps> = ({
     }
   };
 
-  const handleSetAttending = (guestIndex: number, eventIndex: number, attending: boolean) => {
-    setGuestsState((prev) => {
-      const copy = [...prev];
-      const guestCopy = { ...copy[guestIndex] };
-      const eventsCopy = [...guestCopy.events];
-      eventsCopy[eventIndex] = {
-        ...eventsCopy[eventIndex],
-        attending,
-      };
-      guestCopy.events = eventsCopy;
-      copy[guestIndex] = guestCopy;
-      return copy;
-    });
+  const handleSetAttending = (guestId: string, eventIndex: number, attending: boolean) => {
+    setGuestsState((prev) =>
+      prev.map((g) => {
+        if (g.guestId !== guestId) return g;
+        const eventsCopy = [...g.events];
+        eventsCopy[eventIndex] = {
+          ...eventsCopy[eventIndex],
+          attending,
+        };
+        return { ...g, events: eventsCopy };
+      })
+    );
   };
 
-  const handleSetMenuOption = (guestIndex: number, eventIndex: number, menuOptionId: string) => {
-    setGuestsState((prev) => {
-      const copy = [...prev];
-      const guestCopy = { ...copy[guestIndex] };
-      const eventsCopy = [...guestCopy.events];
-      eventsCopy[eventIndex] = {
-        ...eventsCopy[eventIndex],
-        menuOptionId,
-      };
-      guestCopy.events = eventsCopy;
-      copy[guestIndex] = guestCopy;
-      return copy;
-    });
+  const handleSetMenuOption = (guestId: string, eventIndex: number, menuOptionId: string) => {
+    setGuestsState((prev) =>
+      prev.map((g) => {
+        if (g.guestId !== guestId) return g;
+        const eventsCopy = [...g.events];
+        eventsCopy[eventIndex] = {
+          ...eventsCopy[eventIndex],
+          menuOptionId,
+        };
+        return { ...g, events: eventsCopy };
+      })
+    );
   };
 
-  const handleSetSpecialNotes = (guestIndex: number, eventIndex: number, specialNotes: string) => {
-    setGuestsState((prev) => {
-      const copy = [...prev];
-      const guestCopy = { ...copy[guestIndex] };
-      const eventsCopy = [...guestCopy.events];
-      eventsCopy[eventIndex] = {
-        ...eventsCopy[eventIndex],
-        specialNotes,
-      };
-      guestCopy.events = eventsCopy;
-      copy[guestIndex] = guestCopy;
-      return copy;
-    });
+  const handleSetSpecialNotes = (guestId: string, eventIndex: number, specialNotes: string) => {
+    setGuestsState((prev) =>
+      prev.map((g) => {
+        if (g.guestId !== guestId) return g;
+        const eventsCopy = [...g.events];
+        eventsCopy[eventIndex] = {
+          ...eventsCopy[eventIndex],
+          specialNotes,
+        };
+        return { ...g, events: eventsCopy };
+      })
+    );
   };
 
-  const handleSetDiet = (guestIndex: number, dietaryRestrictions: string) => {
-    setGuestsState((prev) => {
-      const copy = [...prev];
-      copy[guestIndex] = {
-        ...copy[guestIndex],
-        dietaryRestrictions,
-      };
-      return copy;
-    });
+  const handleSetDiet = (guestId: string, dietaryRestrictions: string) => {
+    setGuestsState((prev) =>
+      prev.map((g) => {
+        if (g.guestId !== guestId) return g;
+        return {
+          ...g,
+          dietaryRestrictions,
+        };
+      })
+    );
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Verify all attendances are defined
-    for (const g of guestsState) {
+    const guestsToSubmit =
+      viewMode === 'SINGLE' && targetGuestId
+        ? guestsState.filter((g) => g.guestId === targetGuestId)
+        : guestsState;
+
+    // Verify attendances are defined for the guests being submitted
+    for (const g of guestsToSubmit) {
       for (const ev of g.events) {
         if (ev.attending === null) {
           setError(`Por favor marca si "${g.fullName}" asiste o no a "${ev.eventName}".`);
@@ -172,7 +180,7 @@ export const ManualRsvpModal: React.FC<ManualRsvpModalProps> = ({
       }
     }
 
-    const payloadGuests: GuestRsvpDto[] = guestsState.map((g) => {
+    const payloadGuests: GuestRsvpDto[] = guestsToSubmit.map((g) => {
       const eventsDto: EventRsvpDto[] = g.events.map((ev) => ({
         eventId: ev.eventId,
         attending: !!ev.attending,
@@ -205,6 +213,16 @@ export const ManualRsvpModal: React.FC<ManualRsvpModalProps> = ({
     }
   };
 
+  const visibleGuests =
+    viewMode === 'SINGLE' && targetGuestId
+      ? guestsState.filter((g) => g.guestId === targetGuestId)
+      : guestsState;
+
+  const headerTitle =
+    viewMode === 'SINGLE' && targetGuestName
+      ? `Asistencia: ${targetGuestName}`
+      : 'Modificar Asistencia Manual';
+
   return (
     <div className={styles.modalOverlay} onClick={onClose}>
       <div className={styles.modalCard} onClick={(e) => e.stopPropagation()}>
@@ -213,9 +231,9 @@ export const ManualRsvpModal: React.FC<ManualRsvpModalProps> = ({
           <div className={styles.modalTitleWrapper}>
             <div className={styles.modalIcon}>✍️</div>
             <div>
-              <h2 className={styles.modalTitle}>Modificar Asistencia Manual</h2>
+              <h2 className={styles.modalTitle}>{headerTitle}</h2>
               <span className={styles.modalSubtitle}>
-                {partyName} • Confirmación directa por organizador
+                Grupo: {partyName} • Confirmación directa por organizador
               </span>
             </div>
           </div>
@@ -234,7 +252,27 @@ export const ManualRsvpModal: React.FC<ManualRsvpModalProps> = ({
             <div className={styles.loadingBox}>No se encontraron invitados para este grupo.</div>
           ) : (
             <form id="manualRsvpForm" onSubmit={handleSubmit} style={{ display: 'contents' }}>
-              {guestsState.map((guest, gIdx) => (
+              {/* Selector de modo si hay más de 1 invitado en el grupo */}
+              {targetGuestId && guestsState.length > 1 && (
+                <div className={styles.viewModeToggle}>
+                  <button
+                    type="button"
+                    className={`${styles.toggleBtn} ${viewMode === 'SINGLE' ? styles.toggleBtnActive : ''}`}
+                    onClick={() => setViewMode('SINGLE')}
+                  >
+                    👤 Solo {targetGuestName || 'este invitado'}
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.toggleBtn} ${viewMode === 'ALL' ? styles.toggleBtnActive : ''}`}
+                    onClick={() => setViewMode('ALL')}
+                  >
+                    👥 Todo el grupo ({guestsState.length})
+                  </button>
+                </div>
+              )}
+
+              {visibleGuests.map((guest) => (
                 <div key={guest.guestId} className={styles.guestCard}>
                   <div className={styles.guestHeader}>
                     <div className={styles.guestName}>
@@ -271,7 +309,7 @@ export const ManualRsvpModal: React.FC<ManualRsvpModalProps> = ({
                                 className={`${styles.attendingButton} ${
                                   ev.attending === true ? styles.attendingButtonActive : ''
                                 }`}
-                                onClick={() => handleSetAttending(gIdx, evIdx, true)}
+                                onClick={() => handleSetAttending(guest.guestId, evIdx, true)}
                               >
                                 ✓ Asiste
                               </button>
@@ -280,7 +318,7 @@ export const ManualRsvpModal: React.FC<ManualRsvpModalProps> = ({
                                 className={`${styles.declinedButton} ${
                                   ev.attending === false ? styles.declinedButtonActive : ''
                                 }`}
-                                onClick={() => handleSetAttending(gIdx, evIdx, false)}
+                                onClick={() => handleSetAttending(guest.guestId, evIdx, false)}
                               >
                                 ✕ No Asiste
                               </button>
@@ -296,7 +334,7 @@ export const ManualRsvpModal: React.FC<ManualRsvpModalProps> = ({
                                   <select
                                     className={styles.select}
                                     value={ev.menuOptionId}
-                                    onChange={(e) => handleSetMenuOption(gIdx, evIdx, e.target.value)}
+                                    onChange={(e) => handleSetMenuOption(guest.guestId, evIdx, e.target.value)}
                                   >
                                     <option value="">Selecciona una opción...</option>
                                     {eventDef?.menuOptions.map((opt) => (
@@ -314,7 +352,7 @@ export const ManualRsvpModal: React.FC<ManualRsvpModalProps> = ({
                                   type="text"
                                   className={styles.input}
                                   value={ev.specialNotes}
-                                  onChange={(e) => handleSetSpecialNotes(gIdx, evIdx, e.target.value)}
+                                  onChange={(e) => handleSetSpecialNotes(guest.guestId, evIdx, e.target.value)}
                                   placeholder="Ej. Llega en el segundo autobús, trona para bebé..."
                                 />
                               </div>
@@ -332,7 +370,7 @@ export const ManualRsvpModal: React.FC<ManualRsvpModalProps> = ({
                       type="text"
                       className={styles.input}
                       value={guest.dietaryRestrictions}
-                      onChange={(e) => handleSetDiet(gIdx, e.target.value)}
+                      onChange={(e) => handleSetDiet(guest.guestId, e.target.value)}
                       placeholder="Ej. Celíaco, alérgico al marisco, vegetariano..."
                     />
                   </div>
