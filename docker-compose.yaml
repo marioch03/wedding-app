@@ -32,13 +32,13 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_PORT: 5432
-      SCHEDULE: ${BACKUP_SCHEDULE:-@daily}
-      BACKUP_KEEP_DAYS: ${BACKUP_KEEP_DAYS:-7}
-      BACKUP_KEEP_WEEKS: ${BACKUP_KEEP_WEEKS:-4}
-      BACKUP_KEEP_MONTHS: ${BACKUP_KEEP_MONTHS:-6}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      SCHEDULE: ${BACKUP_SCHEDULE}
+      BACKUP_KEEP_DAYS: ${BACKUP_KEEP_DAYS}
+      BACKUP_KEEP_WEEKS: ${BACKUP_KEEP_WEEKS}
+      BACKUP_KEEP_MONTHS: ${BACKUP_KEEP_MONTHS}
       BACKUP_DIR: /backups
-      TZ: ${TZ:-Europe/Madrid}
+      TZ: ${TZ}
     volumes:
       - ./backups/db:/backups
     networks:
@@ -61,6 +61,9 @@ services:
       CLERK_ISSUER_URI: ${CLERK_ISSUER_URI}
       CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
       APP_UPLOAD_DIR: /app/uploads/images
+      RATE_LIMIT_ENABLED: ${RATE_LIMIT_ENABLED}
+      RATE_LIMIT_RSVP_RPM: ${RATE_LIMIT_RSVP_RPM}
+      RATE_LIMIT_MEDIA_RPM: ${RATE_LIMIT_MEDIA_RPM}
     # Expuesto únicamente en localhost (127.0.0.1) para desarrollo; el tráfico web entra vía Nginx (puerto 80)
     ports:
       - "127.0.0.1:${BACKEND_PORT}:8080"

@@ -40,6 +40,8 @@ export interface WeddingContent {
   transportInfo?: string;
   customSections?: PracticalDetailSection[];
   customNotes?: string;
+  primaryColor?: string;
+  accentColor?: string;
   [key: string]: unknown;
 }
 

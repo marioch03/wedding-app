@@ -1528,3 +1528,132 @@
   }
 }
 
+/* ==========================================================================
+   Sección de Personalización de Color Dinámico
+   ========================================================================== */
+.colorThemeRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.colorInputWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  background: var(--color-bg-subtle);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition: border-color var(--transition-fast);
+}
+
+.colorInputWrapper:focus-within {
+  border-color: var(--color-primary);
+}
+
+.nativeColorPicker {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  background: transparent;
+  padding: 0;
+}
+
+.nativeColorPicker::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.nativeColorPicker::-webkit-color-swatch {
+  border: 1.5px solid rgba(0, 0, 0, 0.15);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+}
+
+.colorHexInput {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text-heading);
+  outline: none;
+  text-transform: uppercase;
+}
+
+.colorHexInput::placeholder {
+  color: var(--color-text-muted);
+  text-transform: none;
+}
+
+.colorPreviewCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  padding: 1.25rem 1.5rem;
+  background: var(--color-bg-card);
+  border: 1.5px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  margin-top: 1rem;
+}
+
+.colorPreviewSample {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.sampleButton {
+  padding: 0.65rem 1.4rem;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-gradient);
+  color: var(--color-text-on-primary);
+  font-size: 0.88rem;
+  font-weight: 700;
+  border: none;
+  box-shadow: 0 4px 14px var(--color-primary-glow);
+  pointer-events: none;
+}
+
+.sampleTag {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.35rem 0.9rem;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+  border: 1px solid var(--color-primary-border);
+}
+
+.resetColorButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.6rem 1.15rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  background: var(--color-bg-subtle);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.resetColorButton:hover {
+  background: var(--color-bg);
+  color: var(--color-text-heading);
+  border-color: var(--color-border-strong);
+}
+
+

@@ -13,6 +13,7 @@ import { weddingApi } from '../../../lib/api';
 import { mediaApi } from '../../../lib/api/media';
 import { usePageTitle } from '../../../common/hooks';
 import { getMediaUrl } from '../../../common/utils/media';
+import { applyCustomTheme, resetCustomTheme } from '../../../common/utils/theme';
 import styles from './AdminWeddingPage.module.css';
 
 // Fotos de muestra elegantes de Unsplash para sugerencias rápidas
@@ -36,6 +37,10 @@ export const AdminWeddingPage: React.FC = () => {
   const [partner1Name, setPartner1Name] = useState('');
   const [partner2Name, setPartner2Name] = useState('');
   const [weddingDate, setWeddingDate] = useState('');
+
+  // Color & Theme
+  const [primaryColor, setPrimaryColor] = useState('');
+  const [accentColor, setAccentColor] = useState('');
 
   // Content Fields
   const [heroSubtitle, setHeroSubtitle] = useState('');
@@ -113,6 +118,12 @@ export const AdminWeddingPage: React.FC = () => {
 
       setCustomSections(content.customSections || []);
       setHotels(content.hotels || []);
+
+      const pColor = content.primaryColor || '';
+      const aColor = content.accentColor || '';
+      setPrimaryColor(pColor);
+      setAccentColor(aColor);
+      applyCustomTheme(pColor, aColor);
     } catch (err: unknown) {
       console.error('Error loading wedding configuration:', err);
       const msg = err instanceof Error ? err.message : 'Error al cargar los datos de la boda.';
@@ -374,6 +385,23 @@ export const AdminWeddingPage: React.FC = () => {
     });
   };
 
+  // Theme & Color Handlers
+  const handlePrimaryColorChange = (newColor: string) => {
+    setPrimaryColor(newColor);
+    applyCustomTheme(newColor, accentColor);
+  };
+
+  const handleAccentColorChange = (newColor: string) => {
+    setAccentColor(newColor);
+    applyCustomTheme(primaryColor, newColor);
+  };
+
+  const handleResetColors = () => {
+    setPrimaryColor('');
+    setAccentColor('');
+    resetCustomTheme();
+  };
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -405,6 +433,8 @@ export const AdminWeddingPage: React.FC = () => {
       galleryImages: galleryPhotos.length > 0 ? galleryPhotos : undefined,
       customSections: validSections.length > 0 ? validSections : undefined,
       hotels: hotels.length > 0 ? hotels : undefined,
+      primaryColor: primaryColor.trim() || undefined,
+      accentColor: accentColor.trim() || undefined,
     };
 
     const payload: WeddingRequest = {
@@ -564,6 +594,93 @@ export const AdminWeddingPage: React.FC = () => {
                   </div>
                 )}
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* SECCIÓN: PALETA DE COLOR Y ESTILO VISUAL */}
+        <div className={styles.sectionCard}>
+          <div className={styles.sectionHeader}>
+            <div className={styles.sectionIcon}>🎨</div>
+            <div>
+              <h2 className={styles.sectionTitle}>Color & Estilo Visual de la Boda</h2>
+              <span className={styles.sectionSubtitle}>
+                Personaliza el color principal de botones, títulos, degradados y detalles de la web
+              </span>
+            </div>
+          </div>
+
+          <div className={styles.sectionBody}>
+            <div className={styles.colorThemeRow}>
+              {/* Color Principal */}
+              <div className={styles.formGroup}>
+                <label className={styles.label}>
+                  Color Principal de la Boda
+                  <span className={styles.labelHint}>(Botones, encabezados, monograma y degradados)</span>
+                </label>
+                <div className={styles.colorInputWrapper}>
+                  <input
+                    type="color"
+                    className={styles.nativeColorPicker}
+                    value={primaryColor && primaryColor.startsWith('#') ? primaryColor : '#df6a4f'}
+                    onChange={(e) => handlePrimaryColorChange(e.target.value)}
+                    aria-label="Selector visual de color principal"
+                  />
+                  <input
+                    type="text"
+                    className={styles.colorHexInput}
+                    placeholder="#DF6A4F (Color por defecto)"
+                    value={primaryColor}
+                    maxLength={7}
+                    onChange={(e) => handlePrimaryColorChange(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              {/* Color de Acento (Opcional) */}
+              <div className={styles.formGroup}>
+                <label className={styles.label}>
+                  Color de Acento / Dorado (Opcional)
+                  <span className={styles.labelHint}>(Detalles dorados, iconos y adornos secundarios)</span>
+                </label>
+                <div className={styles.colorInputWrapper}>
+                  <input
+                    type="color"
+                    className={styles.nativeColorPicker}
+                    value={accentColor && accentColor.startsWith('#') ? accentColor : '#cba258'}
+                    onChange={(e) => handleAccentColorChange(e.target.value)}
+                    aria-label="Selector visual de color secundario"
+                  />
+                  <input
+                    type="text"
+                    className={styles.colorHexInput}
+                    placeholder="#CBA258 (Dorado por defecto)"
+                    value={accentColor}
+                    maxLength={7}
+                    onChange={(e) => handleAccentColorChange(e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Tarjeta de Previsualización en Vivo */}
+            <div className={styles.colorPreviewCard}>
+              <div className={styles.colorPreviewSample}>
+                <button type="button" className={styles.sampleButton}>
+                  Botón de Muestra
+                </button>
+                <span className={styles.sampleTag}>Etiqueta Destacada</span>
+              </div>
+
+              {(primaryColor || accentColor) && (
+                <button
+                  type="button"
+                  className={styles.resetColorButton}
+                  onClick={handleResetColors}
+                >
+                  ↺ Restablecer colores originales
+                </button>
+              )}
             </div>
           </div>
         </div>

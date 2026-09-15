@@ -9,7 +9,7 @@ import { AccommodationsSection } from '../components/AccommodationsSection/Accom
 import { InfoSection } from '../components/InfoSection/InfoSection';
 import { FooterSection } from '../components/FooterSection/FooterSection';
 import { WeddingSkeleton } from '../components/WeddingSkeleton/WeddingSkeleton';
-import { usePageTitle } from '../../../common/hooks';
+import { usePageTitle, useWeddingTheme } from '../../../common/hooks';
 import styles from './WeddingLandingPage.module.css';
 
 export const WeddingLandingPage: React.FC = () => {
@@ -21,6 +21,7 @@ export const WeddingLandingPage: React.FC = () => {
     ? `${wedding.partner1Name} & ${wedding.partner2Name} | Nuestra Boda`
     : 'Nuestra Boda | Bienvenidos';
   usePageTitle(pageTitle);
+  useWeddingTheme(wedding?.content?.primaryColor, wedding?.content?.accentColor);
 
   const loadWeddingData = async () => {
     setIsLoading(true);
