@@ -123,3 +123,7 @@ backups/
 *.sql.gz
 *.sql
 
+# Scripts locales de inicialización y seeding
+scripts/seed-*
+scripts/*.local.*
+
