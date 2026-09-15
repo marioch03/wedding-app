@@ -228,6 +228,12 @@ export const RsvpPage: React.FC = () => {
             >
               {isSubmitting ? 'Guardando confirmación...' : 'Enviar Confirmación (RSVP)'}
             </button>
+
+            <div className={styles.privacyNotice} aria-label="Aviso de privacidad">
+              <p className={styles.privacyText}>
+                <strong>Privacidad y protección de datos:</strong> Toda la información facilitada en este formulario (confirmación de asistencia, preferencias de menú, intolerancias y notas adicionales) pertenece de forma exclusiva a los novios para la adecuada organización de la boda. Estos datos serán tratados con total confidencialidad y se borrarán de forma definitiva tras la celebración del evento.
+              </p>
+            </div>
           </div>
         </form>
       </main>

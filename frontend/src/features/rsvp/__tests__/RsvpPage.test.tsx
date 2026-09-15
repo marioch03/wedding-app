@@ -112,6 +112,12 @@ describe('Feature: RSVP Multi-paso e Integración (RsvpPage)', () => {
       // Validar eventos asignados
       expect(screen.getAllByText('Ceremonia Religiosa').length).toBeGreaterThan(0);
       expect(screen.getAllByText('Cóctel y Banquete').length).toBeGreaterThan(0);
+
+      // Validar aviso de política de privacidad
+      expect(screen.getByLabelText(/Aviso de privacidad/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/pertenece de forma exclusiva a los novios/i)
+      ).toBeInTheDocument();
     });
 
     it('muestra mensaje de error amigable en la pantalla de código cuando el token es inválido (404)', async () => {
