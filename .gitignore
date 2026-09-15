@@ -116,3 +116,10 @@ application-dev.yml
 # Archivos subidos / Media local
 uploads/
 **/uploads/
+
+# Backups de Base de Datos
+backups/
+**/backups/
+*.sql.gz
+*.sql
+
