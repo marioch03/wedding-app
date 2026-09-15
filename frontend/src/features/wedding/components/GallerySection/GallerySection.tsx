@@ -12,49 +12,34 @@ interface PhotoItem {
   caption: string;
 }
 
-// Momentos icónicos y elegantes por defecto con respaldo de alta calidad
-const DEFAULT_MOMENTS: PhotoItem[] = [
-  {
-    url: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=900&q=85',
-    caption: 'El día del compromiso',
-  },
-  {
-    url: 'https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&w=900&q=85',
-    caption: 'Preparando nuestro gran día',
-  },
-  {
-    url: 'https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=900&q=85',
-    caption: 'Un paseo al atardecer',
-  },
-  {
-    url: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=900&q=85',
-    caption: 'Celebrando nuestro amor',
-  },
-];
+// Imagen por defecto en caso de error de carga de alguna fotografía
+const DEFAULT_FALLBACK_IMAGE =
+  'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=900&q=85';
 
 export const GallerySection: React.FC<GallerySectionProps> = ({ galleryImages }) => {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
-  const photos: PhotoItem[] =
-    galleryImages && galleryImages.length > 0
-      ? galleryImages.map((item, idx) => {
-          const url = typeof item === 'string' ? item : item.url;
-          const caption =
-            typeof item === 'object' && item.caption?.trim()
-              ? item.caption.trim()
-              : `Momento especial ${idx + 1}`;
-          return {
-            url: getMediaUrl(url),
-            caption,
-          };
-        })
-      : DEFAULT_MOMENTS;
+  const photos: PhotoItem[] = (galleryImages || [])
+    .map((item, idx) => {
+      const rawUrl = typeof item === 'string' ? item : item?.url;
+      const trimmedUrl = rawUrl?.trim();
+      if (!trimmedUrl) return null;
+      const caption =
+        typeof item === 'object' && item?.caption?.trim()
+          ? item.caption.trim()
+          : `Momento especial ${idx + 1}`;
+      return {
+        url: getMediaUrl(trimmedUrl),
+        caption,
+      };
+    })
+    .filter((item): item is PhotoItem => Boolean(item));
 
-  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>, index: number) => {
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     const target = e.currentTarget;
     if (!target.dataset.fallbackApplied) {
       target.dataset.fallbackApplied = 'true';
-      target.src = DEFAULT_MOMENTS[index % DEFAULT_MOMENTS.length]?.url || DEFAULT_MOMENTS[0].url;
+      target.src = DEFAULT_FALLBACK_IMAGE;
     }
   };
 
@@ -82,7 +67,7 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ galleryImages })
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (selectedIndex === null) return;
+      if (selectedIndex === null || photos.length === 0) return;
       if (e.key === 'Escape') closeLightbox();
       if (e.key === 'ArrowLeft') {
         setSelectedIndex((prev) => (prev !== null ? (prev - 1 + photos.length) % photos.length : null));
@@ -95,6 +80,10 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ galleryImages })
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedIndex, photos.length]);
+
+  if (photos.length === 0) {
+    return null;
+  }
 
   return (
     <section className={styles.section} id="recuerdos" aria-label="Galería de recuerdos">
@@ -138,7 +127,7 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ galleryImages })
                   alt={photo.caption}
                   className={styles.photo}
                   loading="lazy"
-                  onError={(e) => handleImageError(e, index)}
+                  onError={handleImageError}
                 />
                 <div className={styles.zoomHint} aria-hidden="true">
                   <span className={styles.zoomIcon}>✦</span>
@@ -186,7 +175,7 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ galleryImages })
                 src={photos[selectedIndex].url}
                 alt={photos[selectedIndex].caption}
                 className={styles.modalImage}
-                onError={(e) => handleImageError(e, selectedIndex)}
+                onError={handleImageError}
               />
             </div>
 
