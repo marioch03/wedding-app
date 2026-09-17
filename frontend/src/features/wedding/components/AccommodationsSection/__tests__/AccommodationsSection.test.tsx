@@ -78,4 +78,31 @@ describe('Feature: Hoteles y Alojamiento Recomendado (AccommodationsSection)', (
     const phoneLink = screen.getByTitle(/Llamar a Parador de Alcalá de Henares/i);
     expect(phoneLink).toHaveAttribute('href', 'tel:+34918880330');
   });
+
+  it('renderiza mini-mapa embed oficial de Google Maps con fallback automático', () => {
+    render(<AccommodationsSection hotels={sampleHotels} />);
+
+    const iframes = screen.getAllByTitle(/Ubicación y ficha de/i);
+    expect(iframes).toHaveLength(2);
+
+    const firstIframe = iframes[0];
+    expect(firstIframe).toHaveAttribute('loading', 'lazy');
+    expect(firstIframe.getAttribute('src')).toContain('output=embed');
+    expect(firstIframe.getAttribute('src')).toContain(encodeURIComponent('Parador de Alcalá de Henares, Calle Colegios 8, 28801 Alcalá de Henares'));
+  });
+
+  it('soporta código iframe pegado por el administrador y extrae limpiamente la URL', () => {
+    const hotelsWithIframe: HotelItem[] = [
+      {
+        id: 'hotel-custom',
+        name: 'Hotel Boutique Romántico',
+        googleMapsUrl: '<iframe src="https://www.google.com/maps/embed?pb=custom-marker-123" width="600" height="450"></iframe>',
+      },
+    ];
+
+    render(<AccommodationsSection hotels={hotelsWithIframe} />);
+
+    const iframe = screen.getByTitle(/Ubicación y ficha de Hotel Boutique Romántico/i);
+    expect(iframe).toHaveAttribute('src', 'https://www.google.com/maps/embed?pb=custom-marker-123');
+  });
 });

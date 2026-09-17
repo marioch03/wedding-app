@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { HotelItem, AccommodationType } from '../../../../types';
 import { getMediaUrl } from '../../../../common/utils/media';
 import styles from './AccommodationsSection.module.css';
@@ -7,12 +7,49 @@ interface AccommodationsSectionProps {
   hotels?: HotelItem[];
 }
 
-const DEFAULT_HOTEL_IMAGES: Record<AccommodationType, string> = {
-  HOTEL: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80',
-  RURAL: 'https://images.unsplash.com/photo-1587061949409-02df41d5e562?auto=format&fit=crop&w=800&q=80',
-  PARADOR: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=800&q=80',
-  BOUTIQUE: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=800&q=80',
-  HOSTEL: 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=800&q=80',
+export const resolveGoogleMapsEmbedUrl = (hotel: {
+  googleMapsUrl?: string;
+  embedMapUrl?: string;
+  name: string;
+  address?: string;
+}): string => {
+  if (hotel.embedMapUrl && hotel.embedMapUrl.trim()) {
+    return hotel.embedMapUrl.trim();
+  }
+
+  const rawUrl = (hotel.googleMapsUrl || '').trim();
+
+  // Si el usuario pegó un iframe HTML completo: <iframe src="...">
+  const iframeMatch = rawUrl.match(/src=["']([^"']+)["']/i);
+  if (iframeMatch && iframeMatch[1]) {
+    return iframeMatch[1];
+  }
+
+  // Si es una URL embed directa de Google
+  if (rawUrl.includes('google.com/maps/embed') || rawUrl.includes('output=embed')) {
+    return rawUrl;
+  }
+
+  // Fallback transparente: autogeneración mediante consulta de Maps con output=embed
+  const query = [hotel.name, hotel.address].filter(Boolean).join(', ');
+  return `https://www.google.com/maps?q=${encodeURIComponent(query)}&output=embed`;
+};
+
+export const getGoogleMapsNavigationUrl = (hotel: HotelItem): string => {
+  const rawUrl = (hotel.googleMapsUrl || '').trim();
+
+  // Si pegó un iframe o una URL con /embed o output=embed, generar navegación estándar
+  if (rawUrl.includes('<iframe') || rawUrl.includes('/embed') || rawUrl.includes('output=embed')) {
+    const searchQuery = [hotel.name, hotel.address].filter(Boolean).join(' ');
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(searchQuery)}`;
+  }
+
+  if (rawUrl) {
+    return rawUrl;
+  }
+
+  const searchQuery = [hotel.name, hotel.address].filter(Boolean).join(' ');
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(searchQuery)}`;
 };
 
 const getAccommodationIcon = (type?: AccommodationType): string => {
@@ -47,18 +84,16 @@ const getAccommodationLabel = (type?: AccommodationType): string => {
   }
 };
 
-const getGoogleMapsUrl = (hotel: HotelItem): string => {
-  if (hotel.googleMapsUrl && hotel.googleMapsUrl.trim()) {
-    return hotel.googleMapsUrl.trim();
-  }
-  const searchQuery = [hotel.name, hotel.address].filter(Boolean).join(' ');
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(searchQuery)}`;
-};
-
 export const AccommodationsSection: React.FC<AccommodationsSectionProps> = ({ hotels }) => {
+  const [activeMediaTab, setActiveMediaTab] = useState<Record<string, 'photo' | 'map'>>({});
+
   if (!hotels || hotels.length === 0) {
     return null;
   }
+
+  const toggleMediaTab = (hotelId: string, tab: 'photo' | 'map') => {
+    setActiveMediaTab((prev) => ({ ...prev, [hotelId]: tab }));
+  };
 
   return (
     <section className={styles.section} id="alojamiento" aria-label="Alojamientos recomendados">
@@ -80,54 +115,89 @@ export const AccommodationsSection: React.FC<AccommodationsSectionProps> = ({ ho
           </p>
         </div>
 
-        <div className={styles.grid}>
+        {/* Listado en columna estilizada */}
+        <div className={styles.columnList}>
           {hotels.map((hotel) => {
-            const mapsUrl = getGoogleMapsUrl(hotel);
+            const embedUrl = resolveGoogleMapsEmbedUrl(hotel);
+            const navUrl = getGoogleMapsNavigationUrl(hotel);
             const icon = getAccommodationIcon(hotel.accommodationType);
             const label = getAccommodationLabel(hotel.accommodationType);
-            const defaultImg = DEFAULT_HOTEL_IMAGES[hotel.accommodationType || 'HOTEL'];
-            const hotelImg = hotel.imageUrl ? getMediaUrl(hotel.imageUrl) : defaultImg;
+            const hasCustomPhoto = Boolean(hotel.imageUrl && hotel.imageUrl.trim());
+            const currentTab = activeMediaTab[hotel.id] || (hasCustomPhoto ? 'photo' : 'map');
 
             return (
               <article key={hotel.id} className={styles.card}>
-                <div className={styles.imageWrapper}>
-                  <img
-                    src={hotelImg}
-                    alt={`Fotografía de ${hotel.name}`}
-                    className={styles.hotelImage}
-                    loading="lazy"
-                    onError={(e) => {
-                      const target = e.currentTarget;
-                      if (!target.dataset.fallbackApplied) {
-                        target.dataset.fallbackApplied = 'true';
-                        target.src = defaultImg;
-                      }
-                    }}
-                  />
-                  <div className={styles.imageOverlayBadge}>
+                {/* Zona Visual Compacta (Mini-mapa o Foto) */}
+                <div className={styles.mediaContainer}>
+                  {hasCustomPhoto && (
+                    <div className={styles.mediaSwitch}>
+                      <button
+                        type="button"
+                        className={`${styles.mediaSwitchBtn} ${currentTab === 'photo' ? styles.activeSwitch : ''}`}
+                        onClick={() => toggleMediaTab(hotel.id, 'photo')}
+                        title="Ver fotografía del alojamiento"
+                      >
+                        📷 Foto
+                      </button>
+                      <button
+                        type="button"
+                        className={`${styles.mediaSwitchBtn} ${currentTab === 'map' ? styles.activeSwitch : ''}`}
+                        onClick={() => toggleMediaTab(hotel.id, 'map')}
+                        title="Ver mapa interactivo oficial de Google Maps"
+                      >
+                        📍 Mapa
+                      </button>
+                    </div>
+                  )}
+
+                  {hasCustomPhoto && currentTab === 'photo' ? (
+                    <div className={styles.imageWrapper}>
+                      <img
+                        src={getMediaUrl(hotel.imageUrl!)}
+                        alt={`Fotografía de ${hotel.name}`}
+                        className={styles.hotelImage}
+                        loading="lazy"
+                      />
+                    </div>
+                  ) : (
+                    <div className={styles.mapWrapper}>
+                      <iframe
+                        src={embedUrl}
+                        title={`Ubicación y ficha de ${hotel.name} en Google Maps`}
+                        className={styles.mapIframe}
+                        loading="lazy"
+                        referrerPolicy="no-referrer-when-downgrade"
+                      />
+                    </div>
+                  )}
+
+                  <div className={styles.typeBadgeWrapper}>
                     <span className={styles.typeBadge}>
                       <span className={styles.typeIcon} aria-hidden="true">{icon}</span> {label}
                     </span>
                   </div>
                 </div>
 
-                <div className={styles.cardContent}>
-                  <h3 className={styles.hotelName}>{hotel.name}</h3>
+                {/* Contenido Editorial del Alojamiento */}
+                <div className={styles.cardBody}>
+                  <div className={styles.cardHeaderRow}>
+                    <h3 className={styles.hotelName}>{hotel.name}</h3>
 
-                  {(hotel.distance || hotel.priceRange) && (
-                    <div className={styles.badgesRow}>
-                      {hotel.distance && (
-                        <span className={styles.metaBadge}>
-                          ⏱️ {hotel.distance}
-                        </span>
-                      )}
-                      {hotel.priceRange && (
-                        <span className={styles.metaBadge}>
-                          💶 {hotel.priceRange}
-                        </span>
-                      )}
-                    </div>
-                  )}
+                    {(hotel.distance || hotel.priceRange) && (
+                      <div className={styles.badgesRow}>
+                        {hotel.distance && (
+                          <span className={styles.metaBadge}>
+                            ⏱️ {hotel.distance}
+                          </span>
+                        )}
+                        {hotel.priceRange && (
+                          <span className={styles.metaBadge}>
+                            💶 {hotel.priceRange}
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
 
                   {hotel.description && (
                     <p className={styles.description}>{hotel.description}</p>
@@ -139,43 +209,44 @@ export const AccommodationsSection: React.FC<AccommodationsSectionProps> = ({ ho
                       <span className={styles.addressText}>{hotel.address}</span>
                     </div>
                   )}
-                </div>
 
-                <div className={styles.cardActions}>
-                  <a
-                    href={mapsUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={styles.mapButton}
-                    title={`Cómo llegar a ${hotel.name} en Google Maps`}
-                  >
-                    <span className={styles.actionIcon} aria-hidden="true">🗺️</span>
-                    <span>Cómo llegar</span>
-                  </a>
-
-                  {hotel.websiteUrl && (
+                  {/* Acciones Rápidas */}
+                  <div className={styles.cardActions}>
                     <a
-                      href={hotel.websiteUrl}
+                      href={navUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={styles.webButton}
-                      title={`Visitar sitio web oficial o reservar en ${hotel.name}`}
+                      className={styles.mapButton}
+                      title={`Cómo llegar a ${hotel.name} en Google Maps`}
                     >
-                      <span className={styles.actionIcon} aria-hidden="true">🌐</span>
-                      <span>Sitio Web / Reservar</span>
+                      <span className={styles.actionIcon} aria-hidden="true">🗺️</span>
+                      <span>Cómo llegar</span>
                     </a>
-                  )}
 
-                  {hotel.phone && (
-                    <a
-                      href={`tel:${hotel.phone.replace(/\s+/g, '')}`}
-                      className={styles.phoneButton}
-                      title={`Llamar a ${hotel.name}: ${hotel.phone}`}
-                    >
-                      <span className={styles.actionIcon} aria-hidden="true">📞</span>
-                      <span className={styles.phoneText}>Llamar</span>
-                    </a>
-                  )}
+                    {hotel.websiteUrl && (
+                      <a
+                        href={hotel.websiteUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.webButton}
+                        title={`Visitar sitio web oficial o reservar en ${hotel.name}`}
+                      >
+                        <span className={styles.actionIcon} aria-hidden="true">🌐</span>
+                        <span>Sitio Web / Reservar</span>
+                      </a>
+                    )}
+
+                    {hotel.phone && (
+                      <a
+                        href={`tel:${hotel.phone.replace(/\s+/g, '')}`}
+                        className={styles.phoneButton}
+                        title={`Llamar a ${hotel.name}: ${hotel.phone}`}
+                      >
+                        <span className={styles.actionIcon} aria-hidden="true">📞</span>
+                        <span className={styles.phoneText}>Llamar</span>
+                      </a>
+                    )}
+                  </div>
                 </div>
               </article>
             );
@@ -185,3 +256,4 @@ export const AccommodationsSection: React.FC<AccommodationsSectionProps> = ({ ho
     </section>
   );
 };
+

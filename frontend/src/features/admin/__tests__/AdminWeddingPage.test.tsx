@@ -218,6 +218,27 @@ describe('Feature: Configuración de Boda y Secciones Prácticas (AdminWeddingPa
     // Debe aparecer en la lista
     expect(screen.getByText('Hotel Boutique Las Rosas')).toBeInTheDocument();
     expect(screen.getByText('⏱️ A 3 minutos de la iglesia')).toBeInTheDocument();
+
+    // Pulsar Editar en el alojamiento recién creado
+    const editHotelBtns = screen.getAllByRole('button', { name: /✏️/i });
+    const lastEditBtn = editHotelBtns[editHotelBtns.length - 1];
+    await user.click(lastEditBtn);
+
+    // Debe mostrar el formulario de edición en la misma posición (in-place)
+    expect(screen.getByText('✏️ Editar Alojamiento')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('Hotel Boutique Las Rosas')).toBeInTheDocument();
+
+    // Modificar datos y guardar
+    const editDistanceInput = screen.getByDisplayValue('A 3 minutos de la iglesia');
+    await user.clear(editDistanceInput);
+    await user.type(editDistanceInput, 'A 2 minutos a pie');
+
+    const updateBtn = screen.getByRole('button', { name: /✓ Actualizar Alojamiento/i });
+    await user.click(updateBtn);
+
+    // Formulario de edición cerrado y valor actualizado
+    expect(screen.queryByText('✏️ Editar Alojamiento')).not.toBeInTheDocument();
+    expect(screen.getByText('⏱️ A 2 minutos a pie')).toBeInTheDocument();
   });
 });
 

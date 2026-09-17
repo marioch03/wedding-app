@@ -19,6 +19,7 @@ export interface HotelItem {
   description?: string;
   address?: string;
   googleMapsUrl?: string;
+  embedMapUrl?: string;
   websiteUrl?: string;
   phone?: string;
   distance?: string;

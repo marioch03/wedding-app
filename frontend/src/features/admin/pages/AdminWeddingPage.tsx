@@ -69,8 +69,18 @@ export const AdminWeddingPage: React.FC = () => {
   const storyInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
 
-  // Practical Details
+  // practical details
   const [customSections, setCustomSections] = useState<PracticalDetailSection[]>([]);
+
+  // Función de saneamiento para enlaces o bloques iframe de Google Maps
+  const sanitizeGoogleMapsInput = (val: string): string => {
+    const trimmed = val.trim();
+    const iframeMatch = trimmed.match(/src=["']([^"']+)["']/i);
+    if (iframeMatch && iframeMatch[1]) {
+      return iframeMatch[1];
+    }
+    return trimmed;
+  };
 
   // Hoteles / Alojamiento Recomendado
   const [hotels, setHotels] = useState<HotelItem[]>([]);
@@ -350,7 +360,7 @@ export const AdminWeddingPage: React.FC = () => {
       accommodationType: hotelType,
       description: hotelDescription.trim() || undefined,
       address: hotelAddress.trim() || undefined,
-      googleMapsUrl: hotelGoogleMapsUrl.trim() || undefined,
+      googleMapsUrl: sanitizeGoogleMapsInput(hotelGoogleMapsUrl) || undefined,
       websiteUrl: hotelWebsiteUrl.trim() || undefined,
       phone: hotelPhone.trim() || undefined,
       distance: hotelDistance.trim() || undefined,
@@ -1291,275 +1301,282 @@ export const AdminWeddingPage: React.FC = () => {
                 )}
               </div>
 
-              {/* Formulario Inline para Añadir / Editar Hotel */}
-              {isAddingHotel && (
-                <div className={styles.hotelFormContainer}>
-                  <div className={styles.hotelFormHeader}>
-                    <span className={styles.hotelFormTitle}>
-                      {editingHotelId ? '✏️ Editar Alojamiento' : '➕ Nuevo Alojamiento'}
-                    </span>
-                    <button
-                      type="button"
-                      className={styles.deleteBtn}
-                      onClick={resetHotelForm}
-                      title="Cerrar formulario"
-                    >
-                      ✕
-                    </button>
-                  </div>
-
-                  <div className={styles.formRow}>
-                    <div className={styles.formGroup} style={{ flex: 2 }}>
-                      <label className={styles.label}>Nombre del Alojamiento *</label>
-                      <input
-                        type="text"
-                        className={styles.input}
-                        value={hotelName}
-                        onChange={(e) => setHotelName(e.target.value)}
-                        placeholder="Ej. Parador de Alcalá de Henares"
-                        required
-                      />
-                    </div>
-                    <div className={styles.formGroup} style={{ flex: 1 }}>
-                      <label className={styles.label}>Tipo de Alojamiento</label>
-                      <select
-                        className={styles.input}
-                        value={hotelType}
-                        onChange={(e) => setHotelType(e.target.value as AccommodationType)}
-                      >
-                        <option value="HOTEL">🏨 Hotel</option>
-                        <option value="RURAL">🏡 Casa Rural</option>
-                        <option value="PARADOR">🏰 Parador / Finca</option>
-                        <option value="BOUTIQUE">✨ Hotel Boutique</option>
-                        <option value="HOSTEL">🛏️ Hostal / Pensión</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className={styles.formRow}>
-                    <div className={styles.formGroup}>
-                      <label className={styles.label}>
-                        Distancia al evento
-                        <span className={styles.labelHint}>(Ej. A 5 min de la finca)</span>
-                      </label>
-                      <input
-                        type="text"
-                        className={styles.input}
-                        value={hotelDistance}
-                        onChange={(e) => setHotelDistance(e.target.value)}
-                        placeholder="Ej. A 5 minutos en coche"
-                      />
-                    </div>
-                    <div className={styles.formGroup}>
-                      <label className={styles.label}>
-                        Rango de Precios
-                        <span className={styles.labelHint}>(Ej. 85€ - 120€ / noche o €€)</span>
-                      </label>
-                      <input
-                        type="text"
-                        className={styles.input}
-                        value={hotelPriceRange}
-                        onChange={(e) => setHotelPriceRange(e.target.value)}
-                        placeholder="Ej. 90€ / noche aprox."
-                      />
-                    </div>
-                  </div>
-
-                  <div className={styles.formRow}>
-                    <div className={styles.formGroup} style={{ flex: 2 }}>
-                      <label className={styles.label}>
-                        Dirección Completa
-                        <span className={styles.labelHint}>(Para el mapa y los invitados)</span>
-                      </label>
-                      <input
-                        type="text"
-                        className={styles.input}
-                        value={hotelAddress}
-                        onChange={(e) => setHotelAddress(e.target.value)}
-                        placeholder="Ej. Calle Colegios 8, 28801 Alcalá de Henares"
-                      />
-                    </div>
-                    <div className={styles.formGroup} style={{ flex: 1 }}>
-                      <label className={styles.label}>Teléfono de Contacto</label>
-                      <input
-                        type="tel"
-                        className={styles.input}
-                        value={hotelPhone}
-                        onChange={(e) => setHotelPhone(e.target.value)}
-                        placeholder="Ej. +34 918 880 330"
-                      />
-                    </div>
-                  </div>
-
-                  <div className={styles.formRow}>
-                    <div className={styles.formGroup}>
-                      <label className={styles.label}>
-                        Enlace a Google Maps
-                        <span className={styles.labelHint}>(Opcional - Se autogenera si se deja vacío)</span>
-                      </label>
-                      <input
-                        type="url"
-                        className={styles.input}
-                        value={hotelGoogleMapsUrl}
-                        onChange={(e) => setHotelGoogleMapsUrl(e.target.value)}
-                        placeholder="https://maps.google.com/?q=..."
-                      />
-                    </div>
-                    <div className={styles.formGroup}>
-                      <label className={styles.label}>
-                        Enlace Sitio Web / Reservas
-                        <span className={styles.labelHint}>(Página oficial o Booking)</span>
-                      </label>
-                      <input
-                        type="url"
-                        className={styles.input}
-                        value={hotelWebsiteUrl}
-                        onChange={(e) => setHotelWebsiteUrl(e.target.value)}
-                        placeholder="https://www.parador.es"
-                      />
-                    </div>
-                  </div>
-
-                  <div className={styles.formGroup}>
-                    <label className={styles.label}>
-                      Fotografía del Alojamiento
-                      <span className={styles.labelHint}>
-                        (Sube un archivo desde tu equipo o pega una URL web. Si se deja en blanco se usará una foto predeterminada)
+              {/* Formulario de Hotel (Reutilizable para Nuevo o Edición In-Place) */}
+              {(() => {
+                const renderHotelForm = () => (
+                  <div className={styles.hotelFormContainer}>
+                    <div className={styles.hotelFormHeader}>
+                      <span className={styles.hotelFormTitle}>
+                        {editingHotelId ? '✏️ Editar Alojamiento' : '➕ Nuevo Alojamiento'}
                       </span>
-                    </label>
-
-                    {/* Botón de subida de archivo y spinner */}
-                    <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap', marginBottom: '0.5rem' }}>
-                      <input
-                        type="file"
-                        ref={hotelFileInputRef}
-                        accept="image/*"
-                        style={{ display: 'none' }}
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) handleUploadHotelImage(file);
-                          e.target.value = '';
-                        }}
-                      />
                       <button
                         type="button"
-                        className={styles.uploadButtonOutline}
-                        onClick={() => hotelFileInputRef.current?.click()}
-                        disabled={uploadingHotelImage}
+                        className={styles.hotelFormCloseBtn}
+                        onClick={resetHotelForm}
+                        title="Cerrar formulario"
+                        aria-label="Cerrar formulario"
                       >
-                        <span>📁</span>
-                        {uploadingHotelImage ? 'Subiendo imagen...' : 'Subir foto desde tu equipo'}
+                        ✕
                       </button>
+                    </div>
 
-                      {uploadingHotelImage && (
-                        <div className={styles.uploadStatusBadge}>
-                          <span className={styles.uploadSpinner} />
-                          Subiendo archivo...
+                    <div className={styles.formRow}>
+                      <div className={styles.formGroup} style={{ flex: 2 }}>
+                        <label className={styles.label}>Nombre del Alojamiento *</label>
+                        <input
+                          type="text"
+                          className={styles.input}
+                          value={hotelName}
+                          onChange={(e) => setHotelName(e.target.value)}
+                          placeholder="Ej. Parador de Alcalá de Henares"
+                          required
+                        />
+                      </div>
+                      <div className={styles.formGroup} style={{ flex: 1 }}>
+                        <label className={styles.label}>Tipo de Alojamiento</label>
+                        <select
+                          className={styles.input}
+                          value={hotelType}
+                          onChange={(e) => setHotelType(e.target.value as AccommodationType)}
+                        >
+                          <option value="HOTEL">🏨 Hotel</option>
+                          <option value="RURAL">🏡 Casa Rural</option>
+                          <option value="PARADOR">🏰 Parador / Finca</option>
+                          <option value="BOUTIQUE">✨ Hotel Boutique</option>
+                          <option value="HOSTEL">🛏️ Hostal / Pensión</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className={styles.formRow}>
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>
+                          Distancia al evento
+                          <span className={styles.labelHint}>(Ej. A 5 min de la finca)</span>
+                        </label>
+                        <input
+                          type="text"
+                          className={styles.input}
+                          value={hotelDistance}
+                          onChange={(e) => setHotelDistance(e.target.value)}
+                          placeholder="Ej. A 5 minutos en coche"
+                        />
+                      </div>
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>
+                          Rango de Precios
+                          <span className={styles.labelHint}>(Ej. 85€ - 120€ / noche o €€)</span>
+                        </label>
+                        <input
+                          type="text"
+                          className={styles.input}
+                          value={hotelPriceRange}
+                          onChange={(e) => setHotelPriceRange(e.target.value)}
+                          placeholder="Ej. 90€ / noche aprox."
+                        />
+                      </div>
+                    </div>
+
+                    <div className={styles.formRow}>
+                      <div className={styles.formGroup} style={{ flex: 2 }}>
+                        <label className={styles.label}>
+                          Dirección Completa
+                          <span className={styles.labelHint}>(Para el mapa y los invitados)</span>
+                        </label>
+                        <input
+                          type="text"
+                          className={styles.input}
+                          value={hotelAddress}
+                          onChange={(e) => setHotelAddress(e.target.value)}
+                          placeholder="Ej. Calle Colegios 8, 28801 Alcalá de Henares"
+                        />
+                      </div>
+                      <div className={styles.formGroup} style={{ flex: 1 }}>
+                        <label className={styles.label}>Teléfono de Contacto</label>
+                        <input
+                          type="tel"
+                          className={styles.input}
+                          value={hotelPhone}
+                          onChange={(e) => setHotelPhone(e.target.value)}
+                          placeholder="Ej. +34 918 880 330"
+                        />
+                      </div>
+                    </div>
+
+                    <div className={styles.formRow}>
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>
+                          Enlace o Embed de Google Maps
+                          <span className={styles.labelHint}>(Enlace oficial o código &lt;iframe&gt;. Se autogenera si se deja vacío)</span>
+                        </label>
+                        <input
+                          type="text"
+                          className={styles.input}
+                          value={hotelGoogleMapsUrl}
+                          onChange={(e) => setHotelGoogleMapsUrl(sanitizeGoogleMapsInput(e.target.value))}
+                          placeholder="Pega el enlace oficial, código <iframe> o déjalo en blanco"
+                        />
+                      </div>
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>
+                          Enlace Sitio Web / Reservas
+                          <span className={styles.labelHint}>(Página oficial o reservas)</span>
+                        </label>
+                        <input
+                          type="url"
+                          className={styles.input}
+                          value={hotelWebsiteUrl}
+                          onChange={(e) => setHotelWebsiteUrl(e.target.value)}
+                          placeholder="https://www.parador.es"
+                        />
+                      </div>
+                    </div>
+
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Fotografía del Alojamiento (Opcional)
+                        <span className={styles.labelHint}>
+                          (Sube una foto desde tu equipo. Si no subes ninguna, se utilizará la vista oficial de Google Maps)
+                        </span>
+                      </label>
+
+                      {/* Botón de subida de archivo y spinner */}
+                      <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap', marginBottom: '0.5rem' }}>
+                        <input
+                          type="file"
+                          ref={hotelFileInputRef}
+                          accept="image/*"
+                          style={{ display: 'none' }}
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) handleUploadHotelImage(file);
+                            e.target.value = '';
+                          }}
+                        />
+                        <button
+                          type="button"
+                          className={styles.uploadButtonOutline}
+                          onClick={() => hotelFileInputRef.current?.click()}
+                          disabled={uploadingHotelImage}
+                        >
+                          <span>📁</span>
+                          {uploadingHotelImage ? 'Subiendo imagen...' : 'Subir foto desde tu equipo'}
+                        </button>
+
+                        {uploadingHotelImage && (
+                          <div className={styles.uploadStatusBadge}>
+                            <span className={styles.uploadSpinner} />
+                            Subiendo archivo...
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Previsualización si hay imagen asignada */}
+                      {hotelImageUrl && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '0.6rem', padding: '0.6rem', background: 'var(--color-bg-subtle)', borderRadius: '8px', border: '1px solid var(--color-border)' }}>
+                          <div style={{ width: '80px', height: '56px', borderRadius: '6px', overflow: 'hidden', flexShrink: 0, background: 'var(--color-surface-hover)' }}>
+                            <img
+                              src={getMediaUrl(hotelImageUrl)}
+                              alt="Vista previa hotel"
+                              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src =
+                                  'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=300&q=80';
+                              }}
+                            />
+                          </div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--color-text-heading)', display: 'block' }}>
+                              Foto seleccionada
+                            </span>
+                            <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>
+                              Archivo subido correctamente
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setHotelImageUrl('')}
+                            style={{ background: 'transparent', border: 'none', color: 'var(--color-error)', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer', padding: '0.3rem 0.6rem', borderRadius: '4px' }}
+                            title="Eliminar foto"
+                          >
+                            ✕ Quitar
+                          </button>
                         </div>
                       )}
                     </div>
 
-                    {/* Campo de URL alternativa */}
-                    <input
-                      type="url"
-                      className={styles.input}
-                      value={hotelImageUrl}
-                      onChange={(e) => setHotelImageUrl(e.target.value)}
-                      placeholder="O pega un enlace de imagen (https://... o foto de Google Maps)"
-                    />
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Descripción o Indicaciones para los Invitados
+                        <span className={styles.labelHint}>(Habitaciones reservadas, desayuno, parking...)</span>
+                      </label>
+                      <textarea
+                        className={styles.textarea}
+                        rows={2}
+                        value={hotelDescription}
+                        onChange={(e) => setHotelDescription(e.target.value)}
+                        placeholder="Ej. Dispone de parking concertado. Indicar al reservar que asistís a nuestra boda."
+                      />
+                    </div>
 
-                    {/* Previsualización si hay imagen asignada */}
-                    {hotelImageUrl && (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '0.6rem', padding: '0.6rem', background: 'var(--color-bg-subtle)', borderRadius: '8px', border: '1px solid var(--color-border)' }}>
-                        <div style={{ width: '80px', height: '56px', borderRadius: '6px', overflow: 'hidden', flexShrink: 0, background: 'var(--color-surface-hover)' }}>
-                          <img
-                            src={getMediaUrl(hotelImageUrl)}
-                            alt="Vista previa hotel"
-                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                            onError={(e) => {
-                              (e.target as HTMLImageElement).src =
-                                'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=300&q=80';
-                            }}
-                          />
-                        </div>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--color-text-heading)', display: 'block' }}>
-                            Foto seleccionada
-                          </span>
-                          <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>
-                            {hotelImageUrl}
-                          </span>
-                        </div>
+                    <div className={styles.hotelFormActions}>
+                      <button
+                        type="button"
+                        className={styles.cancelButton}
+                        onClick={resetHotelForm}
+                      >
+                        Cancelar
+                      </button>
+                      <button
+                        type="button"
+                        className={styles.addSectionBtn}
+                        onClick={handleSaveHotel}
+                      >
+                        {editingHotelId ? '✓ Actualizar Alojamiento' : '✓ Añadir Alojamiento'}
+                      </button>
+                    </div>
+                  </div>
+                );
+
+                return (
+                  <>
+                    {/* Si es NUEVO alojamiento (no edición), se muestra aquí arriba */}
+                    {isAddingHotel && !editingHotelId && renderHotelForm()}
+
+                    {/* Lista de Hoteles Registrados */}
+                    {hotels.length === 0 && !isAddingHotel ? (
+                      <div className={styles.emptyCustomSections}>
+                        <span>No hay hoteles o alojamientos recomendados añadidos todavía.</span>
                         <button
                           type="button"
-                          onClick={() => setHotelImageUrl('')}
-                          style={{ background: 'transparent', border: 'none', color: 'var(--color-error)', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer', padding: '0.3rem 0.6rem', borderRadius: '4px' }}
-                          title="Eliminar foto"
+                          className={styles.addSectionBtn}
+                          onClick={handleStartAddHotel}
                         >
-                          ✕ Quitar
+                          + Añadir el primer alojamiento recomendado
                         </button>
                       </div>
-                    )}
-                  </div>
+                    ) : (
+                      <div className={styles.customSectionsList}>
+                        {hotels.map((h, index) => {
+                          // Si se está editando este alojamiento específico, el formulario se renderiza IN-PLACE en su misma posición
+                          if (editingHotelId === h.id) {
+                            return (
+                              <div key={h.id} id={`hotel-edit-container-${h.id}`}>
+                                {renderHotelForm()}
+                              </div>
+                            );
+                          }
 
-                  <div className={styles.formGroup}>
-                    <label className={styles.label}>
-                      Descripción o Indicaciones para los Invitados
-                      <span className={styles.labelHint}>(Habitaciones reservadas, desayuno, parking...)</span>
-                    </label>
-                    <textarea
-                      className={styles.textarea}
-                      rows={2}
-                      value={hotelDescription}
-                      onChange={(e) => setHotelDescription(e.target.value)}
-                      placeholder="Ej. Dispone de parking concertado. Indicar al reservar que asistís a nuestra boda."
-                    />
-                  </div>
-
-                  <div className={styles.hotelFormActions}>
-                    <button
-                      type="button"
-                      className={styles.cancelButton}
-                      onClick={resetHotelForm}
-                    >
-                      Cancelar
-                    </button>
-                    <button
-                      type="button"
-                      className={styles.addSectionBtn}
-                      onClick={handleSaveHotel}
-                    >
-                      {editingHotelId ? '✓ Actualizar Alojamiento' : '✓ Añadir Alojamiento'}
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* Lista de Hoteles Registrados */}
-              {hotels.length === 0 && !isAddingHotel ? (
-                <div className={styles.emptyCustomSections}>
-                  <span>No hay hoteles o alojamientos recomendados añadidos todavía.</span>
-                  <button
-                    type="button"
-                    className={styles.addSectionBtn}
-                    onClick={handleStartAddHotel}
-                  >
-                    + Añadir el primer alojamiento recomendado
-                  </button>
-                </div>
-              ) : (
-                <div className={styles.customSectionsList}>
-                  {hotels.map((h, index) => {
-                    const defaultImg =
-                      h.accommodationType === 'RURAL'
-                        ? 'https://images.unsplash.com/photo-1587061949409-02df41d5e562?auto=format&fit=crop&w=300&q=80'
-                        : h.accommodationType === 'PARADOR'
-                        ? 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=300&q=80'
-                        : h.accommodationType === 'BOUTIQUE'
-                        ? 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=300&q=80'
-                        : h.accommodationType === 'HOSTEL'
-                        ? 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=300&q=80'
-                        : 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=300&q=80';
+                          const defaultImg =
+                            h.accommodationType === 'RURAL'
+                              ? 'https://images.unsplash.com/photo-1587061949409-02df41d5e562?auto=format&fit=crop&w=300&q=80'
+                              : h.accommodationType === 'PARADOR'
+                              ? 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=300&q=80'
+                              : h.accommodationType === 'BOUTIQUE'
+                              ? 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=300&q=80'
+                              : h.accommodationType === 'HOSTEL'
+                              ? 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=300&q=80'
+                              : 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=300&q=80';
 
                     return (
                       <div key={h.id} className={styles.hotelItemCard}>
@@ -1667,11 +1684,14 @@ export const AdminWeddingPage: React.FC = () => {
                           </a>
                         </div>
                       )}
-                    </div>
-                  );
-                })}
-                </div>
-              )}
+                      </div>
+                    );
+                  })}
+                  </div>
+                )}
+              </>
+            );
+          })()}
             </div>
           </div>
         </div>

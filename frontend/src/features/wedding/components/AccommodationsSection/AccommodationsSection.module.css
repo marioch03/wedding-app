@@ -1,5 +1,5 @@
 /* ==========================================================================
-   AccommodationsSection — Alojamientos Recomendados (Diseño Editorial & Tokens)
+   AccommodationsSection — Alojamientos Recomendados (Diseño en Columna Estilizada)
    ========================================================================== */
 
 .section {
@@ -50,9 +50,9 @@
    -------------------------------------------------------------------------- */
 
 .container {
-  max-width: 1150px;
+  max-width: 960px;
   margin: 0 auto;
-  padding: 6rem 1.5rem 6.5rem;
+  padding: 5rem 1.5rem 6rem;
   position: relative;
   z-index: 1;
 }
@@ -63,7 +63,7 @@
 
 .header {
   text-align: center;
-  margin-bottom: 4rem;
+  margin-bottom: 3.5rem;
 }
 
 .tag {
@@ -83,11 +83,11 @@
 
 .title {
   font-family: var(--font-serif);
-  font-size: clamp(2.3rem, 4.5vw, 3.2rem);
+  font-size: clamp(2.2rem, 4.2vw, 3rem);
   font-weight: 600;
   color: var(--color-text-heading);
   margin-bottom: 0.75rem;
-  line-height: 1.15;
+  line-height: 1.18;
 }
 
 .headerDivider {
@@ -114,46 +114,60 @@
 .subtitle {
   font-size: 1.05rem;
   color: var(--color-text-muted);
-  max-width: 600px;
+  max-width: 620px;
   margin: 0 auto;
   line-height: 1.65;
 }
 
 /* --------------------------------------------------------------------------
-   Grid de Tarjetas de Hotel
+   Listado en Columna Estilizada (Vertical)
    -------------------------------------------------------------------------- */
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 2.25rem;
+.columnList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.85rem;
 }
 
-/* Tarjeta de Alojamiento (Sólida & Elevada) */
+/* Tarjeta de Alojamiento Estilizada (Compacta & Refinada) */
 .card {
   background: var(--color-bg-elevated);
   border-radius: var(--radius-lg);
   border: 1.5px solid var(--color-border);
   box-shadow: inset 0 1px 0 var(--color-border-glass), var(--shadow-md);
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   overflow: hidden;
   transition: transform var(--transition-normal), box-shadow var(--transition-normal), border-color var(--transition-normal);
 }
 
 .card:hover {
-  transform: translateY(-5px);
-  box-shadow: inset 0 1px 0 var(--color-border-glass), var(--shadow-lg), 0 20px 40px var(--color-primary-glow);
+  transform: translateY(-3px);
+  box-shadow: inset 0 1px 0 var(--color-border-glass), var(--shadow-lg), 0 12px 30px var(--color-primary-glow);
   border-color: var(--color-primary-border);
 }
 
-/* Imagen y Badge Flotante */
-.imageWrapper {
+/* --------------------------------------------------------------------------
+   Zona Visual Compacta (Mapa Embed / Fotografía)
+   -------------------------------------------------------------------------- */
+
+.mediaContainer {
   position: relative;
-  width: 100%;
-  aspect-ratio: 16 / 10;
-  overflow: hidden;
+  width: 280px;
+  min-width: 280px;
   background: linear-gradient(135deg, var(--color-bg-secondary) 0%, var(--color-bg-subtle) 100%);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-right: 1.5px solid var(--color-border);
+}
+
+.imageWrapper,
+.mapWrapper {
+  width: 100%;
+  height: 100%;
+  min-height: 200px;
+  position: relative;
 }
 
 .hotelImage {
@@ -161,56 +175,103 @@
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.card:hover .hotelImage {
-  transform: scale(1.06);
+.mapIframe {
+  width: 100%;
+  height: 100%;
+  min-height: 200px;
+  border: 0;
+  display: block;
 }
 
-.imageOverlayBadge {
+/* Switch sutil para alternar Foto y Mapa cuando hay foto personalizada */
+.mediaSwitch {
   position: absolute;
-  top: 1rem;
-  left: 1rem;
+  top: 0.65rem;
+  right: 0.65rem;
+  z-index: 3;
+  display: flex;
+  gap: 0.25rem;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 0.2rem;
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.mediaSwitchBtn {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.activeSwitch {
+  background: #fff;
+  color: #1a1a1a;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Badge de Tipo de Alojamiento */
+.typeBadgeWrapper {
+  position: absolute;
+  bottom: 0.75rem;
+  left: 0.75rem;
   z-index: 2;
+  pointer-events: none;
 }
 
 .typeBadge {
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
-  font-size: 0.8rem;
+  gap: 0.35rem;
+  font-size: 0.75rem;
   font-weight: 700;
   color: var(--color-text-heading);
   background: var(--color-bg-glass);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  padding: 0.38rem 0.85rem;
+  padding: 0.3rem 0.7rem;
   border-radius: var(--radius-full);
   border: 1px solid var(--color-border-glass);
   box-shadow: var(--shadow-sm);
 }
 
 .typeIcon {
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   line-height: 1;
 }
 
 /* --------------------------------------------------------------------------
-   Cuerpo de la Tarjeta (Nombre, Badges, Descripción, Dirección)
+   Cuerpo de la Tarjeta (Datos editoriales y Botones)
    -------------------------------------------------------------------------- */
 
-.cardContent {
-  padding: 1.75rem 1.75rem 1.5rem;
+.cardBody {
+  padding: 1.5rem 1.65rem;
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  gap: 0.95rem;
+  gap: 0.75rem;
+}
+
+.cardHeaderRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .hotelName {
   font-family: var(--font-serif);
-  font-size: clamp(1.4rem, 2.5vw, 1.65rem);
+  font-size: clamp(1.25rem, 2.2vw, 1.5rem);
   font-weight: 600;
   color: var(--color-text-heading);
   margin: 0;
@@ -220,26 +281,26 @@
 .badgesRow {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.45rem;
 }
 
 .metaBadge {
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   font-weight: 600;
   color: var(--color-text-body);
   background: var(--color-bg-subtle);
   border: 1px solid var(--color-border);
-  padding: 0.28rem 0.72rem;
+  padding: 0.22rem 0.6rem;
   border-radius: var(--radius-sm);
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.3rem;
   box-shadow: var(--shadow-sm);
 }
 
 .description {
-  font-size: 0.95rem;
-  line-height: 1.65;
+  font-size: 0.92rem;
+  line-height: 1.55;
   color: var(--color-text-body);
   margin: 0;
   flex-grow: 1;
@@ -249,14 +310,14 @@
   display: flex;
   align-items: baseline;
   gap: 0.45rem;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   color: var(--color-text-muted);
-  line-height: 1.45;
+  line-height: 1.4;
 }
 
 .addressIcon {
   flex-shrink: 0;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   line-height: 1;
 }
 
@@ -265,50 +326,45 @@
 }
 
 /* --------------------------------------------------------------------------
-   Botonera de Acciones (Integrada y con Alto Contraste)
+   Botonera de Acciones Rápidas
    -------------------------------------------------------------------------- */
 
 .cardActions {
-  padding: 1.25rem 1.75rem;
-  background: var(--color-bg-elevated);
-  border-top: 1.5px solid var(--color-border);
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--color-border-subtle);
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: 0.65rem;
   align-items: center;
 }
 
 .actionIcon {
-  font-size: 1rem;
+  font-size: 0.95rem;
   line-height: 1;
 }
 
 .mapButton {
-  flex: 1;
-  min-width: 130px;
-  min-height: 44px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.45rem;
+  gap: 0.4rem;
   background: var(--color-accent-gold-light);
   color: var(--color-accent-gold-dark);
   border: 1.5px solid var(--color-accent-gold-border);
-  padding: 0.6rem 1.1rem;
+  padding: 0.5rem 0.95rem;
   border-radius: var(--radius-md);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 700;
   text-decoration: none;
   box-shadow: var(--shadow-sm);
-  transition: transform var(--transition-normal), background-color var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast), color var(--transition-fast);
+  transition: transform var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
 }
 
 .mapButton:hover {
   background: var(--color-accent-gold-border);
   color: var(--color-text-heading);
   border-color: var(--color-accent-gold);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
 }
 
 .mapButton:focus-visible {
@@ -317,29 +373,25 @@
 }
 
 .webButton {
-  flex: 1.2;
-  min-width: 150px;
-  min-height: 44px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.45rem;
+  gap: 0.4rem;
   background: var(--color-primary-gradient);
   color: var(--color-text-on-primary);
   border: 1.5px solid var(--color-primary-dark);
-  padding: 0.6rem 1.1rem;
+  padding: 0.5rem 0.95rem;
   border-radius: var(--radius-md);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 700;
   text-decoration: none;
-  box-shadow: 0 4px 14px var(--color-primary-glow);
-  transition: transform var(--transition-normal), box-shadow var(--transition-fast), filter var(--transition-fast);
+  box-shadow: 0 2px 8px var(--color-primary-glow);
+  transition: transform var(--transition-fast), filter var(--transition-fast);
 }
 
 .webButton:hover {
-  transform: translateY(-2px);
+  transform: translateY(-1px);
   filter: brightness(1.08);
-  box-shadow: var(--shadow-primary-hover);
 }
 
 .webButton:focus-visible {
@@ -351,30 +403,23 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.45rem;
-  min-height: 44px;
-  padding: 0.6rem 1.15rem;
+  gap: 0.4rem;
+  padding: 0.5rem 0.85rem;
   background: var(--color-primary-light);
   color: var(--color-primary-dark);
   border: 1.5px solid var(--color-primary-border);
   border-radius: var(--radius-md);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 700;
   text-decoration: none;
   box-shadow: var(--shadow-sm);
-  transition: transform var(--transition-normal), background-color var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast), color var(--transition-fast);
-}
-
-.phoneText {
-  display: none;
+  transition: transform var(--transition-fast), background-color var(--transition-fast), color var(--transition-fast);
 }
 
 .phoneButton:hover {
   background: var(--color-primary);
   color: var(--color-text-on-primary);
-  border-color: var(--color-primary-dark);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
 }
 
 .phoneButton:focus-visible {
@@ -382,92 +427,93 @@
   outline-offset: 2px;
 }
 
+.phoneText {
+  display: inline;
+}
+
 /* --------------------------------------------------------------------------
-   Adaptabilidad Móvil & Breakpoints (Mobile-First de Alta Precisión)
+   Adaptabilidad Móvil (Disposición Vertical Compacta)
    -------------------------------------------------------------------------- */
 
 @media (max-width: 768px) {
   .container {
-    padding: 4.5rem 1.25rem 5rem;
+    padding: 3.5rem 1rem 4.5rem;
   }
 
   .header {
-    margin-bottom: 3rem;
+    margin-bottom: 2.5rem;
   }
 
   .title {
-    font-size: clamp(1.9rem, 6vw, 2.4rem);
+    font-size: clamp(1.8rem, 5.5vw, 2.3rem);
   }
 
-  .grid {
-    grid-template-columns: 1fr;
-    gap: 1.75rem;
+  .columnList {
+    gap: 1.4rem;
   }
 
-  .cardContent {
-    padding: 1.4rem 1.4rem 1.25rem;
+  .card {
+    flex-direction: column;
+  }
+
+  .mediaContainer {
+    width: 100%;
+    min-width: 100%;
+    height: 160px;
+    min-height: 160px;
+    border-right: none;
+    border-bottom: 1.5px solid var(--color-border);
+  }
+
+  .imageWrapper,
+  .mapWrapper,
+  .mapIframe {
+    height: 160px;
+    min-height: 160px;
+  }
+
+  .cardBody {
+    padding: 1.25rem 1.25rem 1.15rem;
+    gap: 0.65rem;
   }
 
   .cardActions {
-    padding: 1.15rem 1.4rem;
     flex-direction: column;
-    gap: 0.65rem;
+    gap: 0.55rem;
   }
 
   .mapButton,
   .webButton,
   .phoneButton {
     width: 100%;
-    min-height: 44px;
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  .mapButton:active,
-  .webButton:active,
-  .phoneButton:active {
-    transform: scale(0.98);
-  }
-
-  /* En móvil, mostrar texto claro "Llamar" junto al icono de teléfono */
-  .phoneText {
-    display: inline;
+    min-height: 40px;
+    font-size: 0.88rem;
   }
 }
 
 @media (max-width: 420px) {
-  .bgGlowWarm,
-  .bgGlowGold {
-    width: 240px;
-    height: 240px;
-    filter: blur(45px);
-  }
-
   .container {
-    padding: 3.5rem 0.85rem 4rem;
+    padding: 3rem 0.75rem 4rem;
   }
 
   .card {
     border-radius: var(--radius-md);
   }
 
-  .imageWrapper {
-    aspect-ratio: 16 / 9;
+  .mediaContainer,
+  .imageWrapper,
+  .mapWrapper,
+  .mapIframe {
+    height: 150px;
+    min-height: 150px;
   }
 
-  .cardContent {
-    padding: 1.2rem 1rem 1rem;
-    gap: 0.75rem;
-  }
-
-  .cardActions {
-    padding: 1rem 1rem;
+  .cardBody {
+    padding: 1rem;
   }
 
   .hotelName {
-    font-size: 1.35rem;
-  }
-
-  .description {
-    font-size: 0.92rem;
+    font-size: 1.2rem;
   }
 }
+
