@@ -155,32 +155,36 @@
   position: relative;
   width: 280px;
   min-width: 280px;
+  max-width: 280px;
   background: linear-gradient(135deg, var(--color-bg-secondary) 0%, var(--color-bg-subtle) 100%);
   display: flex;
   flex-direction: column;
   overflow: hidden;
   border-right: 1.5px solid var(--color-border);
+  min-height: 220px;
+  align-self: stretch;
 }
 
 .imageWrapper,
 .mapWrapper {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
-  min-height: 200px;
-  position: relative;
+  overflow: hidden;
 }
 
 .hotelImage {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
   display: block;
 }
 
 .mapIframe {
   width: 100%;
   height: 100%;
-  min-height: 200px;
   border: 0;
   display: block;
 }
@@ -459,17 +463,26 @@
   .mediaContainer {
     width: 100%;
     min-width: 100%;
-    height: 160px;
-    min-height: 160px;
+    max-width: 100%;
+    height: 180px;
+    min-height: 180px;
+    max-height: 180px;
     border-right: none;
     border-bottom: 1.5px solid var(--color-border);
   }
 
   .imageWrapper,
-  .mapWrapper,
+  .mapWrapper {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .hotelImage,
   .mapIframe {
-    height: 160px;
-    min-height: 160px;
+    width: 100%;
+    height: 100%;
   }
 
   .cardBody {
@@ -500,12 +513,10 @@
     border-radius: var(--radius-md);
   }
 
-  .mediaContainer,
-  .imageWrapper,
-  .mapWrapper,
-  .mapIframe {
-    height: 150px;
-    min-height: 150px;
+  .mediaContainer {
+    height: 160px;
+    min-height: 160px;
+    max-height: 160px;
   }
 
   .cardBody {

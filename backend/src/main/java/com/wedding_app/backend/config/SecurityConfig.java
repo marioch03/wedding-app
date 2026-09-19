@@ -14,7 +14,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-
 import org.springframework.web.filter.CorsFilter;
 
 import com.wedding_app.backend.common.security.RateLimitFilter;
@@ -49,8 +48,6 @@ public class SecurityConfig {
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/api/v1/public/**").permitAll()
             .requestMatchers("/media/**").permitAll()
-
-
             .requestMatchers("/actuator/health/**", "/actuator/health").permitAll()
             .requestMatchers("/actuator/**").hasRole("ADMIN")
             .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")

@@ -1,20 +1,20 @@
 import { ClerkProvider, useAuth } from "@clerk/clerk-react";
 import React, { useEffect } from "react";
 import { BrowserRouter, Route, Routes, useNavigate } from "react-router-dom";
-import { WeddingLandingPage } from "./features/wedding/pages/WeddingLandingPage";
-import { RsvpPage } from "./features/rsvp/pages/RsvpPage";
-import { AdminLoginPage } from "./features/admin/pages/AdminLoginPage";
-import { AdminProtectedRoute } from "./features/admin/components/AdminProtectedRoute/AdminProtectedRoute";
+import { ErrorFallback } from "./common/components/ErrorFallback/ErrorFallback";
+import { NotFoundPage } from "./common/pages/NotFoundPage";
 import { AdminLayout } from "./features/admin/components/AdminLayout/AdminLayout";
+import { AdminProtectedRoute } from "./features/admin/components/AdminProtectedRoute/AdminProtectedRoute";
 import { AdminDashboardPage } from "./features/admin/pages/AdminDashboardPage";
-import { AdminPartiesPage } from "./features/admin/pages/AdminPartiesPage";
 import { AdminEventsPage } from "./features/admin/pages/AdminEventsPage";
+import { AdminLoginPage } from "./features/admin/pages/AdminLoginPage";
+import { AdminPartiesPage } from "./features/admin/pages/AdminPartiesPage";
 import { AdminRsvpPage } from "./features/admin/pages/AdminRsvpPage";
 import { AdminWeddingPage } from "./features/admin/pages/AdminWeddingPage";
-import { NotFoundPage } from "./common/pages/NotFoundPage";
+import { RsvpPage } from "./features/rsvp/pages/RsvpPage";
+import { WeddingLandingPage } from "./features/wedding/pages/WeddingLandingPage";
 import { setAuthTokenGetter } from "./lib/api/client";
 import { Sentry } from "./lib/monitoring/sentry";
-import { ErrorFallback } from "./common/components/ErrorFallback/ErrorFallback";
 
 const CLERK_PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
@@ -47,8 +47,6 @@ const AppRoutes: React.FC = () => {
           <Route path="/" element={<WeddingLandingPage />} />
           <Route path="/rsvp" element={<RsvpPage />} />
           <Route path="/rsvp/:token" element={<RsvpPage />} />
-
-
 
           {/* Login de Administración */}
           <Route path="/admin/login" element={<AdminLoginPage />} />
@@ -85,13 +83,16 @@ export const App: React.FC = () => {
   }
 
   return (
-    <Sentry.ErrorBoundary fallback={({ error, resetError }) => <ErrorFallback error={error} resetError={resetError} />}>
+    <Sentry.ErrorBoundary
+      fallback={({ error, resetError }) => (
+        <ErrorFallback error={error} resetError={resetError} />
+      )}
+    >
       <BrowserRouter>
         <AppRoutes />
       </BrowserRouter>
     </Sentry.ErrorBoundary>
   );
 };
-
 
 export default App;
