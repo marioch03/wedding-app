@@ -1,7 +1,7 @@
-import React, { useState, useRef } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { rsvpApi } from '../../../../lib/api';
-import styles from './RsvpTokenPrompt.module.css';
+import React, { useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { rsvpApi } from "../../../../lib/api";
+import styles from "./RsvpTokenPrompt.module.css";
 
 export interface RsvpTokenPromptProps {
   initialError?: string | null;
@@ -11,7 +11,7 @@ export interface RsvpTokenPromptProps {
 
 export const RsvpTokenPrompt: React.FC<RsvpTokenPromptProps> = ({
   initialError = null,
-  initialToken = '',
+  initialToken = "",
   onSuccess,
 }) => {
   const [tokenInput, setTokenInput] = useState(initialToken);
@@ -22,17 +22,17 @@ export const RsvpTokenPrompt: React.FC<RsvpTokenPromptProps> = ({
 
   const extractToken = (raw: string): string => {
     let cleaned = raw.trim();
-    const rsvpIndex = cleaned.toLowerCase().indexOf('/rsvp/');
+    const rsvpIndex = cleaned.toLowerCase().indexOf("/rsvp/");
     if (rsvpIndex !== -1) {
       cleaned = cleaned.substring(rsvpIndex + 6);
-      cleaned = cleaned.split('?')[0].replace(/\/+$/, '');
+      cleaned = cleaned.split("?")[0].replace(/\/+$/, "");
     }
     return cleaned.toUpperCase();
   };
 
   const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
-    const pasted = e.clipboardData.getData('text');
-    if (pasted && (pasted.includes('/rsvp/') || pasted.includes('http'))) {
+    const pasted = e.clipboardData.getData("text");
+    if (pasted && (pasted.includes("/rsvp/") || pasted.includes("http"))) {
       e.preventDefault();
       setTokenInput(extractToken(pasted));
       setError(null);
@@ -63,14 +63,15 @@ export const RsvpTokenPrompt: React.FC<RsvpTokenPromptProps> = ({
         navigate(`/rsvp/${cleanToken}`);
       }
     } catch (err: any) {
-      console.error('Error al validar código de invitación:', err);
+      console.error("Error al validar código de invitación:", err);
       setError(
-        err?.status === 404 || err?.message?.includes('No se encontró')
-          ? 'El código de invitación no es válido o ha expirado.'
-          : err?.message || 'El código de invitación no es válido o ha expirado.'
+        err?.status === 404 || err?.message?.includes("No se encontró")
+          ? "El código de invitación no es válido o ha expirado."
+          : err?.message ||
+              "El código de invitación no es válido o ha expirado.",
       );
       // Limpiar el campo y mantener al usuario en la misma ventana para reintentar (TC-RSVP-002)
-      setTokenInput('');
+      setTokenInput("");
       inputRef.current?.focus();
     } finally {
       setIsVerifying(false);
@@ -86,7 +87,8 @@ export const RsvpTokenPrompt: React.FC<RsvpTokenPromptProps> = ({
         <span className={styles.tag}>Confirmación de Asistencia</span>
         <h1 className={styles.title}>Tu Invitación</h1>
         <p className={styles.description}>
-          Introduce el código personal de 6 caracteres que aparece en tu tarjeta de invitación para acceder a tus eventos y selección de menús.
+          Introduce el código personal de 6 caracteres que aparece en tu tarjeta
+          de invitación para acceder a tus eventos y selección de menús.
         </p>
 
         {error && (
@@ -95,7 +97,8 @@ export const RsvpTokenPrompt: React.FC<RsvpTokenPromptProps> = ({
             <div className={styles.errorTextWrapper}>
               <p className={styles.errorMessage}>{error}</p>
               <span className={styles.errorSubtext}>
-                Por favor, comprueba que has introducido el código correctamente e inténtalo de nuevo.
+                Por favor, comprueba que has introducido el código correctamente
+                e inténtalo de nuevo.
               </span>
             </div>
           </div>
@@ -110,7 +113,7 @@ export const RsvpTokenPrompt: React.FC<RsvpTokenPromptProps> = ({
               ref={inputRef}
               id="rsvp-code"
               type="text"
-              className={`${styles.input} ${error ? styles.inputError : ''}`}
+              className={`${styles.input} ${error ? styles.inputError : ""}`}
               placeholder="Ej: K7M4XP"
               value={tokenInput}
               maxLength={120}
@@ -121,7 +124,8 @@ export const RsvpTokenPrompt: React.FC<RsvpTokenPromptProps> = ({
               disabled={isVerifying}
             />
             <span className={styles.hintText}>
-              💡 También puedes pegar el enlace completo si lo recibiste por mensaje.
+              💡 También puedes pegar el enlace completo si lo recibiste por
+              mensaje.
             </span>
           </div>
 
@@ -133,7 +137,7 @@ export const RsvpTokenPrompt: React.FC<RsvpTokenPromptProps> = ({
             {isVerifying ? (
               <span className={styles.buttonLoadingText}>Comprobando...</span>
             ) : (
-              'Continuar / Acceder al Formulario →'
+              "Continuar al formulario →"
             )}
           </button>
         </form>
