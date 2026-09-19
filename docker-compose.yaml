@@ -64,6 +64,7 @@ services:
       RATE_LIMIT_ENABLED: ${RATE_LIMIT_ENABLED}
       RATE_LIMIT_RSVP_RPM: ${RATE_LIMIT_RSVP_RPM}
       RATE_LIMIT_MEDIA_RPM: ${RATE_LIMIT_MEDIA_RPM}
+      SENTRY_DSN: ${SENTRY_DSN:-}
     # Expuesto únicamente en localhost (127.0.0.1) para desarrollo; el tráfico web entra vía Nginx (puerto 80)
     ports:
       - "127.0.0.1:${BACKEND_PORT}:8080"
@@ -85,6 +86,7 @@ services:
       args:
         VITE_API_BASE_URL: ${VITE_API_BASE_URL}
         VITE_CLERK_PUBLISHABLE_KEY: ${VITE_CLERK_PUBLISHABLE_KEY}
+        VITE_SENTRY_DSN: ${VITE_SENTRY_DSN:-}
     container_name: wedding-frontend
     restart: unless-stopped
     depends_on:

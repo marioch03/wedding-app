@@ -13,6 +13,8 @@ import { AdminRsvpPage } from "./features/admin/pages/AdminRsvpPage";
 import { AdminWeddingPage } from "./features/admin/pages/AdminWeddingPage";
 import { NotFoundPage } from "./common/pages/NotFoundPage";
 import { setAuthTokenGetter } from "./lib/api/client";
+import { Sentry } from "./lib/monitoring/sentry";
+import { ErrorFallback } from "./common/components/ErrorFallback/ErrorFallback";
 
 const CLERK_PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
@@ -45,6 +47,8 @@ const AppRoutes: React.FC = () => {
           <Route path="/" element={<WeddingLandingPage />} />
           <Route path="/rsvp" element={<RsvpPage />} />
           <Route path="/rsvp/:token" element={<RsvpPage />} />
+
+
 
           {/* Login de Administración */}
           <Route path="/admin/login" element={<AdminLoginPage />} />
@@ -81,10 +85,13 @@ export const App: React.FC = () => {
   }
 
   return (
-    <BrowserRouter>
-      <AppRoutes />
-    </BrowserRouter>
+    <Sentry.ErrorBoundary fallback={({ error, resetError }) => <ErrorFallback error={error} resetError={resetError} />}>
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
+    </Sentry.ErrorBoundary>
   );
 };
+
 
 export default App;

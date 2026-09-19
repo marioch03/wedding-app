@@ -98,8 +98,22 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
     </dependency>
-    
+
+    <!-- Monitorización con Sentry -->
+    <dependency>
+        <groupId>io.sentry</groupId>
+        <artifactId>sentry</artifactId>
+        <version>8.16.0</version>
+    </dependency>
+    <dependency>
+        <groupId>io.sentry</groupId>
+        <artifactId>sentry-logback</artifactId>
+        <version>8.16.0</version>
+    </dependency>
+
    </dependencies>
+
+
 
 	<build>
 		<finalName>app</finalName>

@@ -12,9 +12,11 @@ RUN npm ci
 # Variables de entorno necesarias durante la compilación del bundle Vite
 ARG VITE_API_BASE_URL=""
 ARG VITE_CLERK_PUBLISHABLE_KEY=""
+ARG VITE_SENTRY_DSN=""
 
 ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 ENV VITE_CLERK_PUBLISHABLE_KEY=$VITE_CLERK_PUBLISHABLE_KEY
+ENV VITE_SENTRY_DSN=$VITE_SENTRY_DSN
 
 # Copia del código fuente y compilación optimizada para producción
 COPY . .

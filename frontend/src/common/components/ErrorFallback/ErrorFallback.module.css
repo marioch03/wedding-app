@@ -1,0 +1,97 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background-color: var(--color-bg, #faf7f2);
+}
+
+.card {
+  max-width: 520px;
+  width: 100%;
+  padding: 3rem 2.5rem;
+  text-align: center;
+  border-radius: 20px;
+  border: 1px solid var(--color-border, #ebdcd2);
+  background: var(--color-bg-card, rgba(254, 250, 245, 0.94));
+  box-shadow: 0 16px 36px rgba(44, 26, 22, 0.08);
+  backdrop-filter: blur(8px);
+}
+
+.iconWrapper {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 1.5rem auto;
+  border-radius: 50%;
+  background: var(--color-primary-light, #fceed8);
+  color: var(--color-primary, #df6a4f);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+}
+
+.title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  color: var(--color-text-heading, #2c1a16);
+  font-family: var(--font-heading, inherit);
+}
+
+.description {
+  font-size: 1rem;
+  color: var(--color-text-body, #5c4741);
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.primaryButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.75rem;
+  border-radius: 9999px;
+  background: var(--color-primary-gradient, linear-gradient(135deg, #e3765c 0%, #be4930 100%));
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 12px var(--color-primary-glow, rgba(223, 106, 79, 0.28));
+}
+
+.primaryButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px var(--color-primary-glow, rgba(223, 106, 79, 0.38));
+}
+
+.secondaryButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.75rem;
+  border-radius: 9999px;
+  background: transparent;
+  color: var(--color-text-heading, #2c1a16);
+  border: 1px solid var(--color-border-strong, #dfc3b5);
+  font-weight: 500;
+  font-size: 0.95rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.secondaryButton:hover {
+  background-color: var(--color-surface-hover, #f7eee4);
+  transform: translateY(-2px);
+}

@@ -22,6 +22,8 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import com.wedding_app.backend.common.error.ErrorResponse;
 
+import io.sentry.Sentry;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 
@@ -107,18 +109,21 @@ public class GlobalExceptionHandler {
   public ResponseEntity<ErrorResponse> handleDataAccessException(DataAccessException ex, HttpServletRequest request) {
     // Protege contra la fuga de esquemas, consultas SQL o sintaxis de BBDD
     log.error("Error de acceso a base de datos en {}: {}", request.getRequestURI(), ex.getMessage(), ex);
+    Sentry.captureException(ex);
     return build(HttpStatus.INTERNAL_SERVER_ERROR, "Error en el acceso o persistencia de datos", request, null);
   }
 
   @ExceptionHandler(IllegalStateException.class)
   public ResponseEntity<ErrorResponse> handleIllegalState(IllegalStateException ex, HttpServletRequest request) {
     log.error("Error de estado interno en {}: {}", request.getRequestURI(), ex.getMessage(), ex);
+    Sentry.captureException(ex);
     return build(HttpStatus.INTERNAL_SERVER_ERROR, "Error interno del servidor", request, null);
   }
 
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ErrorResponse> handleUnexpected(Exception ex, HttpServletRequest request) {
     log.error("Error no controlado en {}", request.getRequestURI(), ex);
+    Sentry.captureException(ex);
     return build(HttpStatus.INTERNAL_SERVER_ERROR, "Error interno del servidor", request, null);
   }
 
