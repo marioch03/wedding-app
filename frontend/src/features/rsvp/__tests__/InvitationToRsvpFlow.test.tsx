@@ -107,7 +107,7 @@ describe('Flujo de Punta a Punta: Panel de Invitaciones -> Enlace / QR -> Confir
 
     // Introduce el código corto incluso en minúsculas (ej: gom824)
     await user.type(codeInput, mockParties[0].rsvpToken.toLowerCase());
-    const accessBtn = screen.getByRole('button', { name: /Acceder al Formulario/i });
+    const accessBtn = screen.getByRole('button', { name: /Continuar al formulario/i });
     await user.click(accessBtn);
 
     // Esperar a que la página RSVP cargue los datos de la invitación correspondiente

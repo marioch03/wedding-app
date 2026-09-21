@@ -34,7 +34,7 @@ describe('Feature: RSVP Multi-paso e Integración (RsvpPage)', () => {
         screen.getByLabelText(/Código de Invitación/i)
       ).toBeInTheDocument();
       expect(
-        screen.getByRole('button', { name: /Acceder al Formulario/i })
+        screen.getByRole('button', { name: /Continuar al formulario/i })
       ).toBeInTheDocument();
     });
 
@@ -45,7 +45,7 @@ describe('Feature: RSVP Multi-paso e Integración (RsvpPage)', () => {
       const input = screen.getByLabelText(/Código de Invitación/i);
       await user.type(input, 'TOKEN123');
 
-      const submitButton = screen.getByRole('button', { name: /Acceder al Formulario/i });
+      const submitButton = screen.getByRole('button', { name: /Continuar al formulario/i });
       await user.click(submitButton);
 
       // Al navegar a /rsvp/TOKEN123, cargará la información de la invitación
@@ -61,7 +61,7 @@ describe('Feature: RSVP Multi-paso e Integración (RsvpPage)', () => {
       const input = screen.getByLabelText(/Código de Invitación/i) as HTMLInputElement;
       await user.type(input, 'INVALID_TOKEN');
 
-      const submitButton = screen.getByRole('button', { name: /Acceder al Formulario/i });
+      const submitButton = screen.getByRole('button', { name: /Continuar al formulario/i });
       await user.click(submitButton);
 
       // Esperar a que se procese el error sin haber redirigido de ventana
