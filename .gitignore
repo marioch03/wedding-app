@@ -122,6 +122,7 @@ backups/
 **/backups/
 *.sql.gz
 *.sql
+!backend/src/main/resources/db/migration/*.sql
 
 # Scripts locales de inicialización y seeding
 scripts/seed-*
