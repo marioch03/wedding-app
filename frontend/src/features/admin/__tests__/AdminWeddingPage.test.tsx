@@ -240,5 +240,52 @@ describe('Feature: Configuración de Boda y Secciones Prácticas (AdminWeddingPa
     expect(screen.queryByText('✏️ Editar Alojamiento')).not.toBeInTheDocument();
     expect(screen.getByText('⏱️ A 2 minutos a pie')).toBeInTheDocument();
   });
+
+  it('permite configurar y actualizar código de descuento para los invitados en un hotel', async () => {
+    const user = userEvent.setup();
+    renderWithRouter(<AdminWeddingPage />);
+
+    await waitFor(() => {
+      expect(screen.getByDisplayValue(mockWeddingAdmin.partner1Name)).toBeInTheDocument();
+    });
+
+    // Abrir formulario nuevo hotel
+    const addHotelBtn = screen.getByRole('button', { name: /\+ Añadir Hotel \/ Alojamiento/i });
+    await user.click(addHotelBtn);
+
+    const nameInput = screen.getByPlaceholderText('Ej. Parador de Alcalá de Henares');
+    await user.type(nameInput, 'Hotel NH Colección');
+
+    const promoInput = screen.getByPlaceholderText('Ej. BODA2026');
+    await user.type(promoInput, 'BODANH20');
+
+    const detailsInput = screen.getByPlaceholderText('Ej. 15% de dto. sobre tarifa oficial');
+    await user.type(detailsInput, '20% de descuento directo');
+
+    const instructionsInput = screen.getByPlaceholderText(/Indicar por teléfono o en el campo/i);
+    await user.type(instructionsInput, 'Canjear en recepción o por teléfono');
+
+    const expiresInput = screen.getByPlaceholderText('Ej. 15/06/2026');
+    await user.type(expiresInput, '01/09/2026');
+
+    // Guardar
+    const saveHotelBtn = screen.getByRole('button', { name: /✓ Añadir Alojamiento/i });
+    await user.click(saveHotelBtn);
+
+    // Debe mostrar la tarjeta con el badge de descuento
+    expect(screen.getByText('Hotel NH Colección')).toBeInTheDocument();
+    expect(screen.getByText('🏷️ BODANH20')).toBeInTheDocument();
+
+    // Editar este hotel
+    const editHotelBtns = screen.getAllByRole('button', { name: /✏️/i });
+    const lastEditBtn = editHotelBtns[editHotelBtns.length - 1];
+    await user.click(lastEditBtn);
+
+    // Verificar que los campos se cargan correctamente en el formulario in-place
+    expect(screen.getByDisplayValue('BODANH20')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('20% de descuento directo')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('Canjear en recepción o por teléfono')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('01/09/2026')).toBeInTheDocument();
+  });
 });
 

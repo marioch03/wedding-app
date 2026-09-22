@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { AccommodationsSection } from '../AccommodationsSection';
 import type { HotelItem } from '../../../../../types';
@@ -104,5 +104,41 @@ describe('Feature: Hoteles y Alojamiento Recomendado (AccommodationsSection)', (
 
     const iframe = screen.getByTitle(/Ubicación y ficha de Hotel Boutique Romántico/i);
     expect(iframe).toHaveAttribute('src', 'https://www.google.com/maps/embed?pb=custom-marker-123');
+  });
+
+  it('muestra el código de descuento, detalles, instrucciones y permite copiar el código al portapapeles', async () => {
+    const hotelsWithDiscount: HotelItem[] = [
+      {
+        id: 'hotel-discount',
+        name: 'Hotel Plaza Mayor',
+        discountCode: 'BODA2026',
+        discountDetails: '15% de dto.',
+        discountInstructions: 'Indicar el código al reservar por teléfono o en su web',
+        discountExpiresAt: '31/12/2026',
+      },
+    ];
+
+    // Mock navigator.clipboard
+    const writeTextMock = vi.fn().mockResolvedValue(undefined);
+    Object.assign(navigator, {
+      clipboard: {
+        writeText: writeTextMock,
+      },
+    });
+
+    render(<AccommodationsSection hotels={hotelsWithDiscount} />);
+
+    expect(screen.getByText('BODA2026')).toBeInTheDocument();
+    expect(screen.getByText('15% de dto.')).toBeInTheDocument();
+    expect(screen.getByText(/Indicar el código al reservar por teléfono/i)).toBeInTheDocument();
+    expect(screen.getByText(/Válido hasta: 31\/12\/2026/i)).toBeInTheDocument();
+
+    const copyBtn = screen.getByRole('button', { name: /Copiar código de descuento BODA2026/i });
+    expect(copyBtn).toHaveTextContent(/Copiar/i);
+
+    copyBtn.click();
+
+    expect(writeTextMock).toHaveBeenCalledWith('BODA2026');
+    expect(await screen.findByText('¡Copiado!')).toBeInTheDocument();
   });
 });

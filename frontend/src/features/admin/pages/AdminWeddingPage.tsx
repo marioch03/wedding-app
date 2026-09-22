@@ -98,6 +98,10 @@ export const AdminWeddingPage: React.FC = () => {
   const [hotelDistance, setHotelDistance] = useState('');
   const [hotelPriceRange, setHotelPriceRange] = useState('');
   const [hotelImageUrl, setHotelImageUrl] = useState('');
+  const [hotelDiscountCode, setHotelDiscountCode] = useState('');
+  const [hotelDiscountDetails, setHotelDiscountDetails] = useState('');
+  const [hotelDiscountInstructions, setHotelDiscountInstructions] = useState('');
+  const [hotelDiscountExpiresAt, setHotelDiscountExpiresAt] = useState('');
   const [uploadingHotelImage, setUploadingHotelImage] = useState(false);
   const hotelFileInputRef = useRef<HTMLInputElement>(null);
 
@@ -323,6 +327,10 @@ export const AdminWeddingPage: React.FC = () => {
     setHotelDistance('');
     setHotelPriceRange('');
     setHotelImageUrl('');
+    setHotelDiscountCode('');
+    setHotelDiscountDetails('');
+    setHotelDiscountInstructions('');
+    setHotelDiscountExpiresAt('');
     setEditingHotelId(null);
     setIsAddingHotel(false);
   };
@@ -343,6 +351,10 @@ export const AdminWeddingPage: React.FC = () => {
     setHotelDistance(h.distance || '');
     setHotelPriceRange(h.priceRange || '');
     setHotelImageUrl(h.imageUrl || '');
+    setHotelDiscountCode(h.discountCode || '');
+    setHotelDiscountDetails(h.discountDetails || '');
+    setHotelDiscountInstructions(h.discountInstructions || '');
+    setHotelDiscountExpiresAt(h.discountExpiresAt || '');
     setEditingHotelId(h.id);
     setIsAddingHotel(true);
   };
@@ -366,6 +378,10 @@ export const AdminWeddingPage: React.FC = () => {
       distance: hotelDistance.trim() || undefined,
       priceRange: hotelPriceRange.trim() || undefined,
       imageUrl: hotelImageUrl.trim() || undefined,
+      discountCode: hotelDiscountCode.trim() || undefined,
+      discountDetails: hotelDiscountDetails.trim() || undefined,
+      discountInstructions: hotelDiscountInstructions.trim() || undefined,
+      discountExpiresAt: hotelDiscountExpiresAt.trim() || undefined,
     };
 
     if (editingHotelId) {
@@ -1505,6 +1521,69 @@ export const AdminWeddingPage: React.FC = () => {
                       )}
                     </div>
 
+                    {/* Bloque de Código de Descuento / Oferta para Invitados */}
+                    <div style={{ padding: '0.85rem', background: 'var(--color-bg-subtle)', borderRadius: '8px', border: '1px dashed var(--color-border)', marginBottom: '0.75rem' }}>
+                      <div style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--color-text-heading)', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                        <span>🏷️</span> Código Promocional o Descuento para Invitados (Opcional)
+                      </div>
+                      <div className={styles.formRow}>
+                        <div className={styles.formGroup} style={{ flex: 1 }}>
+                          <label className={styles.label}>
+                            Código Promocional / Cupón
+                            <span className={styles.labelHint}>(Ej. BODA-MARIO-ANA)</span>
+                          </label>
+                          <input
+                            type="text"
+                            className={styles.input}
+                            value={hotelDiscountCode}
+                            onChange={(e) => setHotelDiscountCode(e.target.value.toUpperCase())}
+                            placeholder="Ej. BODA2026"
+                          />
+                        </div>
+                        <div className={styles.formGroup} style={{ flex: 1 }}>
+                          <label className={styles.label}>
+                            Detalle del Descuento
+                            <span className={styles.labelHint}>(Ej. 15% dto. o 20€ menos)</span>
+                          </label>
+                          <input
+                            type="text"
+                            className={styles.input}
+                            value={hotelDiscountDetails}
+                            onChange={(e) => setHotelDiscountDetails(e.target.value)}
+                            placeholder="Ej. 15% de dto. sobre tarifa oficial"
+                          />
+                        </div>
+                      </div>
+                      <div className={styles.formRow}>
+                        <div className={styles.formGroup} style={{ flex: 2 }}>
+                          <label className={styles.label}>
+                            Instrucciones para los Invitados
+                            <span className={styles.labelHint}>(Dónde indicarlo o condiciones)</span>
+                          </label>
+                          <input
+                            type="text"
+                            className={styles.input}
+                            value={hotelDiscountInstructions}
+                            onChange={(e) => setHotelDiscountInstructions(e.target.value)}
+                            placeholder="Ej. Indicar por teléfono o en el campo 'Código Promocional' en su web"
+                          />
+                        </div>
+                        <div className={styles.formGroup} style={{ flex: 1 }}>
+                          <label className={styles.label}>
+                            Válido hasta
+                            <span className={styles.labelHint}>(Fecha límite opcional)</span>
+                          </label>
+                          <input
+                            type="text"
+                            className={styles.input}
+                            value={hotelDiscountExpiresAt}
+                            onChange={(e) => setHotelDiscountExpiresAt(e.target.value)}
+                            placeholder="Ej. 15/06/2026"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
                     <div className={styles.formGroup}>
                       <label className={styles.label}>
                         Descripción o Indicaciones para los Invitados
@@ -1616,6 +1695,11 @@ export const AdminWeddingPage: React.FC = () => {
                                 )}
                                 {h.phone && (
                                   <span className={styles.hotelBadge}>📞 {h.phone}</span>
+                                )}
+                                {h.discountCode && (
+                                  <span className={styles.hotelBadge} style={{ borderColor: 'var(--color-accent-gold-border, #d4af37)', color: 'var(--color-accent-gold-dark, #8c6d23)', background: 'var(--color-accent-gold-light, #fef9e7)', fontWeight: 600 }}>
+                                    🏷️ {h.discountCode}
+                                  </span>
                                 )}
                               </div>
                             </div>

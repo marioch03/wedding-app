@@ -330,6 +330,132 @@
 }
 
 /* --------------------------------------------------------------------------
+   Bloque de Cupón / Descuento para Invitados
+   -------------------------------------------------------------------------- */
+
+.discountContainer {
+  margin-top: 0.25rem;
+  padding: 0.85rem 1rem;
+  border: 1.5px dashed var(--color-accent-gold-border, rgba(197, 160, 89, 0.45));
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, rgba(254, 252, 248, 0.9) 0%, rgba(250, 246, 238, 0.95) 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+}
+
+.discountHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.discountBadgeGroup {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.discountIcon {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.discountCodeBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: #ffffff;
+  border: 1px solid var(--color-accent-gold-border, #d4af37);
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  color: var(--color-text-body);
+  box-shadow: var(--shadow-sm);
+}
+
+.discountCodeText {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+  color: var(--color-accent-gold-dark, #8c6d23);
+  font-weight: 700;
+}
+
+.discountDetailsBadge {
+  display: inline-flex;
+  align-items: center;
+  background: var(--color-accent-gold-light, #fef9e7);
+  color: var(--color-accent-gold-dark, #8c6d23);
+  border: 1px solid var(--color-accent-gold-border, rgba(197, 160, 89, 0.4));
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 0.22rem 0.6rem;
+  border-radius: var(--radius-full);
+}
+
+.copyCodeButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: #ffffff;
+  color: var(--color-accent-gold-dark, #8c6d23);
+  border: 1.5px solid var(--color-accent-gold-border, #d4af37);
+  border-radius: var(--radius-sm);
+  padding: 0.3rem 0.65rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.copyCodeButton:hover {
+  background: var(--color-accent-gold-light, #fef9e7);
+  border-color: var(--color-accent-gold, #c5a059);
+  transform: translateY(-1px);
+}
+
+.copyCodeButton:focus-visible {
+  outline: 2px solid var(--color-accent-gold-dark);
+  outline-offset: 2px;
+}
+
+.copiedSuccess {
+  background: #2e7d32 !important;
+  color: #ffffff !important;
+  border-color: #2e7d32 !important;
+}
+
+.copyIcon {
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+.discountMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding-top: 0.45rem;
+  border-top: 1px dashed rgba(197, 160, 89, 0.3);
+}
+
+.discountInstructions {
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--color-text-body);
+}
+
+.discountExpiry {
+  font-size: 0.76rem;
+  color: var(--color-text-muted);
+}
+
+/* --------------------------------------------------------------------------
    Botonera de Acciones Rápidas
    -------------------------------------------------------------------------- */
 
@@ -431,42 +557,52 @@
   outline-offset: 2px;
 }
 
+.webTextFull {
+  display: inline;
+}
+
+.webTextShort {
+  display: none;
+}
+
 .phoneText {
   display: inline;
 }
 
 /* --------------------------------------------------------------------------
-   Adaptabilidad Móvil (Disposición Vertical Compacta)
+   Adaptabilidad Móvil (Disposición Vertical Compacta y Ergonómica)
    -------------------------------------------------------------------------- */
 
 @media (max-width: 768px) {
   .container {
-    padding: 3.5rem 1rem 4.5rem;
+    padding: 3rem 1rem 4rem;
   }
 
   .header {
-    margin-bottom: 2.5rem;
+    margin-bottom: 2rem;
   }
 
   .title {
-    font-size: clamp(1.8rem, 5.5vw, 2.3rem);
+    font-size: clamp(1.6rem, 5vw, 2.1rem);
   }
 
   .columnList {
-    gap: 1.4rem;
+    gap: 1rem;
   }
 
   .card {
     flex-direction: column;
+    border-radius: var(--radius-md);
   }
 
+  /* Ratio panorámico estilizado para no monopolizar la pantalla en móvil */
   .mediaContainer {
     width: 100%;
     min-width: 100%;
     max-width: 100%;
-    height: 180px;
-    min-height: 180px;
-    max-height: 180px;
+    height: 125px;
+    min-height: 125px;
+    max-height: 125px;
     border-right: none;
     border-bottom: 1.5px solid var(--color-border);
   }
@@ -485,46 +621,189 @@
     height: 100%;
   }
 
-  .cardBody {
-    padding: 1.25rem 1.25rem 1.15rem;
-    gap: 0.65rem;
+  .mediaSwitch {
+    top: 0.45rem;
+    right: 0.45rem;
+    padding: 0.15rem;
   }
 
+  .mediaSwitchBtn {
+    font-size: 0.68rem;
+    padding: 0.15rem 0.45rem;
+  }
+
+  .typeBadgeWrapper {
+    bottom: 0.45rem;
+    left: 0.45rem;
+  }
+
+  .typeBadge {
+    font-size: 0.68rem;
+    padding: 0.2rem 0.55rem;
+  }
+
+  .typeIcon {
+    font-size: 0.78rem;
+  }
+
+  /* Cuerpo de tarjeta compacto */
+  .cardBody {
+    padding: 0.85rem 1rem;
+    gap: 0.45rem;
+  }
+
+  .cardHeaderRow {
+    gap: 0.4rem;
+  }
+
+  .hotelName {
+    font-size: 1.15rem;
+    line-height: 1.25;
+  }
+
+  .badgesRow {
+    gap: 0.35rem;
+  }
+
+  .metaBadge {
+    font-size: 0.72rem;
+    padding: 0.18rem 0.45rem;
+  }
+
+  /* Limitar a 2 líneas para que descripciones largas no desborden */
+  .description {
+    font-size: 0.84rem;
+    line-height: 1.42;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .addressRow {
+    font-size: 0.8rem;
+    gap: 0.35rem;
+  }
+
+  /* Bloque de Cupón / Descuento Compacto */
+  .discountContainer {
+    margin-top: 0.1rem;
+    padding: 0.55rem 0.75rem;
+    gap: 0.35rem;
+  }
+
+  .discountHeader {
+    gap: 0.45rem;
+  }
+
+  .discountBadgeGroup {
+    gap: 0.35rem;
+  }
+
+  .discountCodeBadge {
+    font-size: 0.75rem;
+    padding: 0.18rem 0.5rem;
+  }
+
+  .discountCodeText {
+    font-size: 0.84rem;
+  }
+
+  .discountDetailsBadge {
+    font-size: 0.72rem;
+    padding: 0.16rem 0.5rem;
+  }
+
+  .copyCodeButton {
+    font-size: 0.72rem;
+    padding: 0.22rem 0.5rem;
+  }
+
+  .discountMeta {
+    padding-top: 0.3rem;
+    gap: 0.2rem;
+  }
+
+  .discountInstructions {
+    font-size: 0.76rem;
+    line-height: 1.35;
+  }
+
+  .discountExpiry {
+    font-size: 0.7rem;
+  }
+
+  /* Botonera Horizontal Ergonómica (Ahorra ~110px de altura frente a la vertical) */
   .cardActions {
-    flex-direction: column;
-    gap: 0.55rem;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 0.45rem;
+    padding-top: 0.6rem;
+    align-items: stretch;
   }
 
   .mapButton,
-  .webButton,
+  .webButton {
+    flex: 1;
+    min-width: 0;
+    min-height: 38px;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.78rem;
+    white-space: nowrap;
+    justify-content: center;
+  }
+
   .phoneButton {
-    width: 100%;
-    min-height: 40px;
-    font-size: 0.88rem;
+    flex: 0 0 38px;
+    width: 38px;
+    min-width: 38px;
+    height: 38px;
+    min-height: 38px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .phoneText {
+    display: none;
+  }
+
+  .webTextFull {
+    display: none;
+  }
+
+  .webTextShort {
+    display: inline;
   }
 }
 
 @media (max-width: 420px) {
   .container {
-    padding: 3rem 0.75rem 4rem;
-  }
-
-  .card {
-    border-radius: var(--radius-md);
+    padding: 2.5rem 0.65rem 3.5rem;
   }
 
   .mediaContainer {
-    height: 160px;
-    min-height: 160px;
-    max-height: 160px;
+    height: 115px;
+    min-height: 115px;
+    max-height: 115px;
   }
 
   .cardBody {
-    padding: 1rem;
+    padding: 0.75rem 0.85rem;
   }
 
   .hotelName {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
+  }
+
+  .mapButton,
+  .webButton {
+    font-size: 0.74rem;
+    padding: 0.35rem 0.45rem;
+    gap: 0.25rem;
+  }
+
+  .actionIcon {
+    font-size: 0.85rem;
   }
 }
 

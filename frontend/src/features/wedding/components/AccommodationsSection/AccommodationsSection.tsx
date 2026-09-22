@@ -86,6 +86,7 @@ const getAccommodationLabel = (type?: AccommodationType): string => {
 
 export const AccommodationsSection: React.FC<AccommodationsSectionProps> = ({ hotels }) => {
   const [activeMediaTab, setActiveMediaTab] = useState<Record<string, 'photo' | 'map'>>({});
+  const [copiedHotelId, setCopiedHotelId] = useState<string | null>(null);
 
   if (!hotels || hotels.length === 0) {
     return null;
@@ -93,6 +94,29 @@ export const AccommodationsSection: React.FC<AccommodationsSectionProps> = ({ ho
 
   const toggleMediaTab = (hotelId: string, tab: 'photo' | 'map') => {
     setActiveMediaTab((prev) => ({ ...prev, [hotelId]: tab }));
+  };
+
+  const handleCopyDiscountCode = async (hotelId: string, code: string) => {
+    try {
+      if (navigator?.clipboard?.writeText) {
+        await navigator.clipboard.writeText(code);
+      } else {
+        const textArea = document.createElement('textarea');
+        textArea.value = code;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-9999px';
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+      }
+      setCopiedHotelId(hotelId);
+      setTimeout(() => {
+        setCopiedHotelId((current) => (current === hotelId ? null : current));
+      }, 2000);
+    } catch {
+      // Fallback silencioso
+    }
   };
 
   return (
@@ -210,6 +234,62 @@ export const AccommodationsSection: React.FC<AccommodationsSectionProps> = ({ ho
                     </div>
                   )}
 
+                  {/* Bloque de Cupón / Descuento para Invitados */}
+                  {(hotel.discountCode || hotel.discountDetails) && (
+                    <div className={styles.discountContainer}>
+                      <div className={styles.discountHeader}>
+                        <div className={styles.discountBadgeGroup}>
+                          <span className={styles.discountIcon} aria-hidden="true">🏷️</span>
+                          {hotel.discountCode && (
+                            <span className={styles.discountCodeBadge}>
+                              Código: <strong className={styles.discountCodeText}>{hotel.discountCode}</strong>
+                            </span>
+                          )}
+                          {hotel.discountDetails && (
+                            <span className={styles.discountDetailsBadge}>{hotel.discountDetails}</span>
+                          )}
+                        </div>
+
+                        {hotel.discountCode && (
+                          <button
+                            type="button"
+                            className={`${styles.copyCodeButton} ${copiedHotelId === hotel.id ? styles.copiedSuccess : ''}`}
+                            onClick={() => handleCopyDiscountCode(hotel.id, hotel.discountCode!)}
+                            title="Copiar código al portapapeles"
+                            aria-label={`Copiar código de descuento ${hotel.discountCode}`}
+                          >
+                            {copiedHotelId === hotel.id ? (
+                              <>
+                                <span className={styles.copyIcon} aria-hidden="true">✓</span>
+                                <span>¡Copiado!</span>
+                              </>
+                            ) : (
+                              <>
+                                <span className={styles.copyIcon} aria-hidden="true">📋</span>
+                                <span>Copiar</span>
+                              </>
+                            )}
+                          </button>
+                        )}
+                      </div>
+
+                      {(hotel.discountInstructions || hotel.discountExpiresAt) && (
+                        <div className={styles.discountMeta}>
+                          {hotel.discountInstructions && (
+                            <span className={styles.discountInstructions}>
+                              💡 {hotel.discountInstructions}
+                            </span>
+                          )}
+                          {hotel.discountExpiresAt && (
+                            <span className={styles.discountExpiry}>
+                              ⏳ Válido hasta: {hotel.discountExpiresAt}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   {/* Acciones Rápidas */}
                   <div className={styles.cardActions}>
                     <a
@@ -230,9 +310,11 @@ export const AccommodationsSection: React.FC<AccommodationsSectionProps> = ({ ho
                         rel="noopener noreferrer"
                         className={styles.webButton}
                         title={`Visitar sitio web oficial o reservar en ${hotel.name}`}
+                        aria-label={`Sitio Web / Reservar en ${hotel.name}`}
                       >
                         <span className={styles.actionIcon} aria-hidden="true">🌐</span>
-                        <span>Sitio Web / Reservar</span>
+                        <span className={styles.webTextFull}>Sitio Web / Reservar</span>
+                        <span className={styles.webTextShort}>Reservar</span>
                       </a>
                     )}
 
@@ -241,6 +323,7 @@ export const AccommodationsSection: React.FC<AccommodationsSectionProps> = ({ ho
                         href={`tel:${hotel.phone.replace(/\s+/g, '')}`}
                         className={styles.phoneButton}
                         title={`Llamar a ${hotel.name}: ${hotel.phone}`}
+                        aria-label={`Llamar a ${hotel.name}: ${hotel.phone}`}
                       >
                         <span className={styles.actionIcon} aria-hidden="true">📞</span>
                         <span className={styles.phoneText}>Llamar</span>

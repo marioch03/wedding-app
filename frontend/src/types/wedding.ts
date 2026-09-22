@@ -25,6 +25,10 @@ export interface HotelItem {
   distance?: string;
   priceRange?: string;
   imageUrl?: string;
+  discountCode?: string;
+  discountDetails?: string;
+  discountInstructions?: string;
+  discountExpiresAt?: string;
 }
 
 export interface WeddingContent {
