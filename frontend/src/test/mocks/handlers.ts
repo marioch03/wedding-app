@@ -14,6 +14,7 @@ import type {
   GuestRequest,
   RsvpStatsResponse,
   CateringReportResponse,
+  GuestPhoto,
 } from '../../types';
 
 export const mockWeddingPublic: WeddingPublicResponse = {
@@ -55,6 +56,23 @@ export const mockWeddingAdmin: WeddingResponse = {
   createdAt: '2026-01-01T10:00:00Z',
   updatedAt: '2026-01-02T12:00:00Z',
 };
+
+export const mockGuestPhotos: GuestPhoto[] = [
+  {
+    id: 'guest-photo-1',
+    imageUrl: '/media/mock-guest-1.jpg',
+    uploaderName: 'Tía Carmen',
+    caption: '¡Vivan los novios!',
+    createdAt: '2026-10-18T18:00:00Z',
+  },
+  {
+    id: 'guest-photo-2',
+    imageUrl: '/media/mock-guest-2.jpg',
+    uploaderName: 'Pablo y Laura',
+    caption: 'El mejor baile',
+    createdAt: '2026-10-18T19:30:00Z',
+  },
+];
 
 export const mockMenuOptionsEv2: MenuOptionResponse[] = [
   {
@@ -770,5 +788,53 @@ export const handlers = [
       ],
       { status: 201 }
     );
+  }),
+
+  // Guest Photos Mocks
+  http.get('*/api/v1/public/guest-photos', () => {
+    return HttpResponse.json(mockGuestPhotos);
+  }),
+  http.post('*/api/v1/public/guest-photos/upload', () => {
+    return HttpResponse.json(
+      [
+        {
+          id: 'guest-photo-new',
+          imageUrl: '/media/mock-uploaded.jpg',
+          uploaderName: 'Amigo de la fiesta',
+          caption: 'Momento top',
+          createdAt: new Date().toISOString(),
+        },
+      ],
+      { status: 201 }
+    );
+  }),
+  http.get('*/api/v1/admin/guest-photos', () => {
+    return HttpResponse.json([
+      {
+        id: 'guest-photo-1',
+        imageUrl: '/media/mock-guest-1.jpg',
+        uploaderName: 'Tía Carmen',
+        caption: '¡Vivan los novios!',
+        createdAt: '2026-10-18T18:00:00Z',
+      },
+      {
+        id: 'guest-photo-2',
+        imageUrl: '/media/mock-guest-2.jpg',
+        uploaderName: 'Pablo y Laura',
+        caption: 'El mejor baile',
+        createdAt: '2026-10-18T19:30:00Z',
+      },
+    ]);
+  }),
+  http.delete('*/api/v1/admin/guest-photos/:id', () => {
+    return new HttpResponse(null, { status: 204 });
+  }),
+  http.get('*/api/v1/admin/guest-photos/download-zip', () => {
+    return new HttpResponse(new Blob(['fake-zip-data']), {
+      headers: {
+        'Content-Type': 'application/zip',
+        'Content-Disposition': 'attachment; filename="fotos-invitados-boda.zip"',
+      },
+    });
   }),
 ];

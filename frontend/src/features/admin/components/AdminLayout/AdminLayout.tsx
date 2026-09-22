@@ -121,6 +121,11 @@ export const AdminLayout: React.FC = () => {
             <span className={styles.navIcon}>✓</span>
             <span className={styles.navLabel}>Control RSVP</span>
           </NavLink>
+
+          <NavLink to="/admin/guest-photos" className={navLinkClass} title="Fotos Invitados">
+            <span className={styles.navIcon}>📸</span>
+            <span className={styles.navLabel}>Fotos Invitados</span>
+          </NavLink>
         </nav>
 
         <div className={styles.sidebarFooter}>

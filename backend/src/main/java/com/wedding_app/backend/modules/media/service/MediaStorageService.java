@@ -138,4 +138,34 @@ public class MediaStorageService {
     }
     return sanitized.isEmpty() ? "imagen" : sanitized;
   }
+
+  public Path resolvePath(String fileUrlOrName) {
+    if (!StringUtils.hasText(fileUrlOrName)) {
+      return null;
+    }
+    String filename = fileUrlOrName.startsWith("/media/")
+        ? fileUrlOrName.substring("/media/".length())
+        : fileUrlOrName;
+
+    // Protección básica Path Traversal
+    Path target = this.rootLocation.resolve(filename).normalize().toAbsolutePath();
+    if (!target.startsWith(this.rootLocation)) {
+      return null;
+    }
+    return target;
+  }
+
+  public boolean delete(String fileUrlOrName) {
+    try {
+      Path target = resolvePath(fileUrlOrName);
+      if (target != null && Files.exists(target)) {
+        Files.delete(target);
+        log.info("Archivo eliminado del almacenamiento: {}", target.getFileName());
+        return true;
+      }
+    } catch (IOException e) {
+      log.warn("No se pudo eliminar el archivo: {}", fileUrlOrName, e);
+    }
+    return false;
+  }
 }

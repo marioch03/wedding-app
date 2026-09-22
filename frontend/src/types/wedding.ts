@@ -10,6 +10,14 @@ export interface GalleryPhotoItem {
   caption?: string;
 }
 
+export interface GuestPhoto {
+  id: string;
+  imageUrl: string;
+  uploaderName: string;
+  caption?: string;
+  createdAt: string;
+}
+
 export type AccommodationType = 'HOTEL' | 'RURAL' | 'PARADOR' | 'BOUTIQUE' | 'HOSTEL';
 
 export interface HotelItem {
