@@ -5,18 +5,17 @@
   flex-direction: column;
   color: var(--color-text-body);
   overflow-x: hidden;
-  background-color: #2e1d1a;
+  background-color: var(--color-rsvp-bg);
 }
 
-/* Fondo Atmosférico con Fotografía Difuminada y Overlay */
+/* Fondo Atmosférico con Degradados Nativos */
 .pageBackground {
   position: fixed;
   inset: 0;
-  background-image: url('https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1600&q=80');
-  background-size: cover;
-  background-position: center 30%;
-  filter: blur(10px) brightness(0.85);
-  transform: scale(1.06);
+  background:
+    radial-gradient(ellipse at 25% 15%, var(--color-atmospheric-glow-terracotta) 0%, transparent 60%),
+    radial-gradient(ellipse at 75% 85%, var(--color-atmospheric-glow-gold) 0%, transparent 55%),
+    linear-gradient(135deg, var(--color-rsvp-bg) 0%, var(--color-dark-surface-mid) 50%, var(--color-dark-surface-deep) 100%);
   z-index: 0;
   pointer-events: none;
 }
@@ -26,9 +25,9 @@
   inset: 0;
   background: linear-gradient(
     180deg,
-    rgba(46, 29, 26, 0.7) 0%,
-    rgba(226, 125, 96, 0.45) 45%,
-    rgba(255, 251, 247, 0.94) 100%
+    var(--color-rsvp-gradient-start) 0%,
+    var(--color-rsvp-gradient-mid) 45%,
+    var(--color-rsvp-gradient-end) 100%
   );
   z-index: 1;
   pointer-events: none;

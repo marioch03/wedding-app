@@ -123,13 +123,13 @@ describe('Flujo de Punta a Punta: Panel de Invitaciones -> Enlace / QR -> Confir
     const plusOneNameInput = screen.getByPlaceholderText('Nombre');
     await user.type(plusOneNameInput, 'Lucía');
 
-    // Asignar restricciones dietéticas a Marcos
-    const dietInputs = screen.getAllByPlaceholderText(/Ej: Celíaco, alérgico/i);
-    await user.type(dietInputs[0], 'Sin gluten');
-
-    // Marcar asistencia a Cóctel y Banquete para Marcos
+    // Marcar asistencia a Cóctel y Banquete para Marcos (evento con menú)
     const asistirButtons = screen.getAllByRole('button', { name: /Asistiré/i });
     await user.click(asistirButtons[1]);
+
+    // Asignar restricciones dietéticas a Marcos (visible al asistir a evento con menú)
+    const dietInputs = screen.getAllByPlaceholderText(/Ej: Celíaco, alérgico/i);
+    await user.type(dietInputs[0], 'Sin gluten');
 
     // Cambiar opción de menú en Cóctel y Banquete seleccionando la tarjeta de Risotto
     const risottoOption = screen.getAllByText('Risotto de Setas Silvestres y Espárragos')[0];

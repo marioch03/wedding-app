@@ -332,7 +332,14 @@ describe('Feature: RSVP Multi-paso e Integración (RsvpPage)', () => {
       expect(plusOneNameInput).toHaveValue('Lucía');
       expect(plusOneLastNameInput).toHaveValue('Fernández');
 
-      // Localizar campo de alergias/restricciones
+      // Inicialmente no se muestra el campo de alergias porque no hay asistencia a eventos con menú
+      expect(screen.queryByPlaceholderText(/Celíaco, alérgico a los frutos secos/i)).not.toBeInTheDocument();
+
+      // Al marcar asistencia al Cóctel y Banquete (evento con menú, botón 1 para el primer invitado)
+      const asistirButtons = screen.getAllByRole('button', { name: /Asistiré/i });
+      await user.click(asistirButtons[1]);
+
+      // Localizar campo de alergias/restricciones que ahora se muestra
       const dietaryTextareas = screen.getAllByPlaceholderText(/Celíaco, alérgico a los frutos secos/i);
       await user.type(dietaryTextareas[0], 'Sin gluten');
       expect(dietaryTextareas[0]).toHaveValue('Sin gluten');

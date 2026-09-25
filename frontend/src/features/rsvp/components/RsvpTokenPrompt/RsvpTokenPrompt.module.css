@@ -5,18 +5,17 @@
   align-items: center;
   justify-content: center;
   padding: 3rem 1.5rem;
-  background-color: #2e1d1a;
+  background-color: var(--color-rsvp-bg);
   overflow: hidden;
 }
 
 .background {
   position: absolute;
   inset: 0;
-  background-image: url('https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1600&q=80');
-  background-size: cover;
-  background-position: center 30%;
-  filter: blur(10px) brightness(0.85);
-  transform: scale(1.06);
+  background:
+    radial-gradient(ellipse at 30% 20%, var(--color-atmospheric-glow-terracotta) 0%, transparent 55%),
+    radial-gradient(ellipse at 70% 80%, var(--color-atmospheric-glow-gold) 0%, transparent 60%),
+    linear-gradient(135deg, var(--color-rsvp-bg) 0%, var(--color-dark-surface-mid) 50%, var(--color-dark-surface-deep) 100%);
   z-index: 0;
 }
 
@@ -25,9 +24,9 @@
   inset: 0;
   background: linear-gradient(
     180deg,
-    rgba(46, 29, 26, 0.7) 0%,
-    rgba(226, 125, 96, 0.45) 50%,
-    rgba(46, 29, 26, 0.8) 100%
+    var(--color-rsvp-gradient-start) 0%,
+    var(--color-rsvp-gradient-mid) 50%,
+    var(--color-rsvp-gradient-start) 100%
   );
   z-index: 1;
 }

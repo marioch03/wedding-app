@@ -2,13 +2,6 @@ import React from 'react';
 import { getMediaUrl } from '../../../../common/utils/media';
 import styles from '../AdminWeddingPage.module.css';
 
-// Fotos de muestra elegantes de Unsplash para sugerencias rápidas
-export const SAMPLE_COVER_PHOTOS = [
-  'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1600&q=85',
-  'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1600&q=85',
-  'https://images.unsplash.com/photo-1469371670807-013ccf25f16a?auto=format&fit=crop&w=1600&q=85',
-];
-
 interface WeddingHeroSectionProps {
   heroSubtitle: string;
   setHeroSubtitle: (value: string) => void;
@@ -104,7 +97,11 @@ export const WeddingHeroSection: React.FC<WeddingHeroSectionProps> = ({
             />
             <div className={styles.uploadIcon}>🖼️</div>
             <div className={styles.uploadTitle}>
-              {uploadingCover ? 'Subiendo fotografía...' : 'Arrastra una foto aquí o haz clic para subir desde tu equipo'}
+              {uploadingCover
+                ? 'Subiendo fotografía...'
+                : coverImageUrl
+                ? 'Cambiar fotografía de portada'
+                : 'Arrastra una foto aquí o haz clic para subir desde tu equipo'}
             </div>
             <div className={styles.uploadSubtitle}>
               Formatos recomendados: JPG, PNG, WebP (máx. 10MB)
@@ -118,31 +115,32 @@ export const WeddingHeroSection: React.FC<WeddingHeroSectionProps> = ({
             )}
           </div>
 
+          {/* Barra de imagen asignada */}
+          {coverImageUrl && (
+            <div className={styles.assignedImageBar} style={{ marginTop: '0.6rem' }}>
+              <span className={styles.assignedImageText}>
+                ✓ Imagen asignada: {coverImageUrl.split('/').pop()}
+              </span>
+              <button
+                type="button"
+                onClick={() => setCoverImageUrl('')}
+                className={styles.removePhotoBtn}
+              >
+                Quitar foto
+              </button>
+            </div>
+          )}
+
           {/* Opción alternativa: URL externa directa */}
           <div style={{ marginTop: '0.6rem' }}>
             <input
-              type="url"
+              type="text"
               className={styles.input}
               value={coverImageUrl}
               onChange={(e) => setCoverImageUrl(e.target.value)}
               placeholder="O introduce una URL web externa (https://...)"
             />
           </div>
-        </div>
-
-        {/* Presets rápidos */}
-        <div className={styles.presetPicker}>
-          <span className={styles.presetLabel}>Presets románticos:</span>
-          {SAMPLE_COVER_PHOTOS.map((url, idx) => (
-            <img
-              key={idx}
-              src={getMediaUrl(url)}
-              alt={`Preset ${idx + 1}`}
-              className={styles.presetThumb}
-              onClick={() => setCoverImageUrl(url)}
-              title="Usar esta foto"
-            />
-          ))}
         </div>
 
         {/* Live Preview */}

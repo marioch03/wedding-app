@@ -76,8 +76,17 @@
   --color-hero-overlay-mid: rgba(70, 28, 14, 0.42);
   --color-hero-overlay-warm: rgba(205, 105, 70, 0.18);
 
-  /* --- Login / Dark Overlay --- */
+  /* --- Login / Dark / RSVP Atmospheric Overlays --- */
   --color-login-bg: #2c1a16;
+  --color-dark-surface: #2c1a16;
+  --color-dark-surface-deep: #1a0f0d;
+  --color-dark-surface-mid: #351f1c;
+  --color-rsvp-bg: #2e1d1a;
+  --color-rsvp-gradient-start: rgba(46, 29, 26, 0.7);
+  --color-rsvp-gradient-mid: rgba(226, 125, 96, 0.45);
+  --color-rsvp-gradient-end: rgba(255, 251, 247, 0.94);
+  --color-atmospheric-glow-terracotta: rgba(226, 125, 96, 0.35);
+  --color-atmospheric-glow-gold: rgba(212, 175, 55, 0.2);
   --color-login-overlay-start: rgba(44, 26, 22, 0.78);
   --color-login-overlay-mid: rgba(223, 106, 79, 0.42);
   --color-login-overlay-end: rgba(44, 26, 22, 0.88);

@@ -14,11 +14,10 @@
 .background {
   position: fixed;
   inset: 0;
-  background-image: url('https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1600&q=80');
-  background-size: cover;
-  background-position: center 30%;
-  filter: blur(12px) brightness(0.8);
-  transform: scale(1.06);
+  background:
+    radial-gradient(ellipse at 20% 20%, var(--color-atmospheric-glow-terracotta) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 80%, var(--color-atmospheric-glow-gold) 0%, transparent 55%),
+    radial-gradient(circle at center, var(--color-dark-surface-mid) 0%, var(--color-dark-surface-deep) 100%);
   z-index: 0;
   pointer-events: none;
 }

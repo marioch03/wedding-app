@@ -363,17 +363,29 @@ export const ManualRsvpModal: React.FC<ManualRsvpModalProps> = ({
                     })}
                   </div>
 
-                  {/* Dietary Restrictions */}
-                  <div className={styles.dietRow}>
-                    <label className={styles.fieldLabel}>Alergias o Restricciones Dietéticas</label>
-                    <input
-                      type="text"
-                      className={styles.input}
-                      value={guest.dietaryRestrictions}
-                      onChange={(e) => handleSetDiet(guest.guestId, e.target.value)}
-                      placeholder="Ej. Celíaco, alérgico al marisco, vegetariano..."
-                    />
-                  </div>
+                  {/* Dietary Restrictions (Solo visible si asiste a eventos con menú gastronómico) */}
+                  {(() => {
+                    const isAttendingMenuEvent = guest.events.some((ev) => {
+                      if (ev.attending !== true) return false;
+                      const eventDef = rsvpInfo.allowedEvents.find((e) => e.id === ev.eventId);
+                      return Boolean(eventDef?.menuOptions && eventDef.menuOptions.length > 0);
+                    });
+
+                    if (!isAttendingMenuEvent) return null;
+
+                    return (
+                      <div className={styles.dietRow}>
+                        <label className={styles.fieldLabel}>Alergias o Restricciones Dietéticas (para el menú)</label>
+                        <input
+                          type="text"
+                          className={styles.input}
+                          value={guest.dietaryRestrictions}
+                          onChange={(e) => handleSetDiet(guest.guestId, e.target.value)}
+                          placeholder="Ej. Celíaco, alérgico al marisco, vegetariano..."
+                        />
+                      </div>
+                    );
+                  })()}
                 </div>
               ))}
             </form>
