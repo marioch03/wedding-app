@@ -65,9 +65,9 @@ services:
       RATE_LIMIT_RSVP_RPM: ${RATE_LIMIT_RSVP_RPM}
       RATE_LIMIT_MEDIA_RPM: ${RATE_LIMIT_MEDIA_RPM}
       SENTRY_DSN: ${SENTRY_DSN:-}
-    # Expuesto únicamente en localhost (127.0.0.1) para desarrollo; el tráfico web entra vía Nginx (puerto 80)
+    # Expuesto directamente en el host para atender las peticiones de Cloudflare Pages
     ports:
-      - "127.0.0.1:${BACKEND_PORT}:8080"
+      - "${BACKEND_PORT:-80}:8080"
     volumes:
       - backend_uploads:/app/uploads
     healthcheck:
@@ -76,30 +76,6 @@ services:
       timeout: 5s
       retries: 5
       start_period: 35s
-    networks:
-      - wedding-network
-
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-      args:
-        VITE_API_BASE_URL: ${VITE_API_BASE_URL}
-        VITE_CLERK_PUBLISHABLE_KEY: ${VITE_CLERK_PUBLISHABLE_KEY}
-        VITE_SENTRY_DSN: ${VITE_SENTRY_DSN:-}
-    container_name: wedding-frontend
-    restart: unless-stopped
-    depends_on:
-      backend:
-        condition: service_healthy
-    ports:
-      - "${FRONTEND_PORT}:80"
-    healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:80/ || exit 1"]
-      interval: 15s
-      timeout: 3s
-      retries: 3
-      start_period: 10s
     networks:
       - wedding-network
 
