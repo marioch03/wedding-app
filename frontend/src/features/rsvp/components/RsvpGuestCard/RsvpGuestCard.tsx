@@ -81,6 +81,12 @@ export const RsvpGuestCard: React.FC<RsvpGuestCardProps> = ({
   const hasLastName = Boolean(guestState.lastName && guestState.lastName.trim());
   const isNameRequired = isAttendingAny || hasLastName;
 
+  const isAttendingMenuEvent = guestState.events.some((ev) => {
+    if (ev.attending !== true) return false;
+    const eventDef = allowedEvents.find((e) => e.id === ev.eventId);
+    return Boolean(eventDef?.menuOptions && eventDef.menuOptions.length > 0);
+  });
+
   return (
     <div className={styles.guestCard}>
       <div className={styles.guestHeader}>
@@ -183,18 +189,20 @@ export const RsvpGuestCard: React.FC<RsvpGuestCardProps> = ({
         })}
       </div>
 
-      {/* Restricciones alimentarias y alergias */}
-      <div className={styles.dietarySection}>
-        <div className={styles.inputGroup}>
-          <label className={styles.label}>Alergias, Intolerancias o Restricciones Alimentarias:</label>
-          <textarea
-            className={styles.textarea}
-            placeholder="Ej: Celíaco, alérgico a los frutos secos, vegetariano, etc."
-            value={guestState.dietaryRequirements || ''}
-            onChange={(e) => handleDietaryChange(e.target.value)}
-          />
+      {/* Restricciones alimentarias y alergias (Solo visible si asiste a eventos con menú gastronómico) */}
+      {isAttendingMenuEvent && (
+        <div className={styles.dietarySection}>
+          <div className={styles.inputGroup}>
+            <label className={styles.label}>Alergias, Intolerancias o Restricciones Alimentarias (para el menú):</label>
+            <textarea
+              className={styles.textarea}
+              placeholder="Ej: Celíaco, alérgico a los frutos secos, vegetariano, etc."
+              value={guestState.dietaryRequirements || ''}
+              onChange={(e) => handleDietaryChange(e.target.value)}
+            />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

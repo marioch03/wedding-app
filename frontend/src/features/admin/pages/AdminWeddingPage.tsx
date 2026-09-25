@@ -20,7 +20,6 @@ import {
   WeddingGallerySection,
   WeddingCustomSections,
   WeddingHotelsSection,
-  SAMPLE_COVER_PHOTOS,
 } from './wedding-sections';
 import styles from './AdminWeddingPage.module.css';
 
@@ -82,7 +81,7 @@ export const AdminWeddingPage: React.FC = () => {
 
       const content = data.content || {};
       setHeroSubtitle(content.heroSubtitle || '¡Nos casamos!');
-      setCoverImageUrl(content.coverImageUrl || SAMPLE_COVER_PHOTOS[0]);
+      setCoverImageUrl(content.coverImageUrl || '');
       setStoryTitle(content.storyTitle || 'Cómo empezó todo');
       setStoryText(content.storyText || '');
       setStoryImageUrl(content.storyImageUrl || '');
