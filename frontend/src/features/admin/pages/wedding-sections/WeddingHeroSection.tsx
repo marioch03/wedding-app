@@ -119,7 +119,7 @@ export const WeddingHeroSection: React.FC<WeddingHeroSectionProps> = ({
           {coverImageUrl && (
             <div className={styles.assignedImageBar} style={{ marginTop: '0.6rem' }}>
               <span className={styles.assignedImageText}>
-                ✓ Imagen asignada: {coverImageUrl.split('/').pop()}
+                ✓ Imagen asignada
               </span>
               <button
                 type="button"
@@ -130,17 +130,6 @@ export const WeddingHeroSection: React.FC<WeddingHeroSectionProps> = ({
               </button>
             </div>
           )}
-
-          {/* Opción alternativa: URL externa directa */}
-          <div style={{ marginTop: '0.6rem' }}>
-            <input
-              type="text"
-              className={styles.input}
-              value={coverImageUrl}
-              onChange={(e) => setCoverImageUrl(e.target.value)}
-              placeholder="O introduce una URL web externa (https://...)"
-            />
-          </div>
         </div>
 
         {/* Live Preview */}

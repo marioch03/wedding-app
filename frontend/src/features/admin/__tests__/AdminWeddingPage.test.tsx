@@ -142,7 +142,8 @@ describe('Feature: Configuración de Boda y Secciones Prácticas (AdminWeddingPa
     await user.upload(coverFileInput, file);
 
     await waitFor(() => {
-      expect(screen.getByDisplayValue('/media/mock-image.webp')).toBeInTheDocument();
+      const previewImg = screen.getByAltText('Vista previa de portada');
+      expect(previewImg.getAttribute('src')).toContain('/media/mock-image.webp');
     });
   });
 
