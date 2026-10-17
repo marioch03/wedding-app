@@ -65,9 +65,9 @@ services:
       RATE_LIMIT_RSVP_RPM: ${RATE_LIMIT_RSVP_RPM}
       RATE_LIMIT_MEDIA_RPM: ${RATE_LIMIT_MEDIA_RPM}
       SENTRY_DSN: ${SENTRY_DSN:-}
-    # Expuesto únicamente en localhost (127.0.0.1) para desarrollo; el tráfico web entra vía Nginx (puerto 80)
+    # Expuesto en el host según BACKEND_PORT (por defecto 80 en producción, 8080 en local)
     ports:
-      - "127.0.0.1:${BACKEND_PORT}:8080"
+      - "${BACKEND_PORT:-80}:8080"
     volumes:
       - backend_uploads:/app/uploads
     healthcheck:
