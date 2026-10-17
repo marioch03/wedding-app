@@ -288,5 +288,102 @@ describe('Feature: Configuración de Boda y Secciones Prácticas (AdminWeddingPa
     expect(screen.getByDisplayValue('Canjear en recepción o por teléfono')).toBeInTheDocument();
     expect(screen.getByDisplayValue('01/09/2026')).toBeInTheDocument();
   });
+
+  it('permite alternar la visibilidad de secciones y enviarlo en el payload al guardar', async () => {
+    let capturedPayload: WeddingRequest | null = null;
+    server.use(
+      http.put('*/api/v1/admin/weddings/current', async ({ request }) => {
+        capturedPayload = (await request.json()) as WeddingRequest;
+        return HttpResponse.json({
+          ...mockWeddingAdmin,
+          ...capturedPayload,
+          updatedAt: new Date().toISOString(),
+        });
+      })
+    );
+
+    const user = userEvent.setup();
+    renderWithRouter(<AdminWeddingPage />);
+
+    await waitFor(() => {
+      expect(screen.getByDisplayValue(mockWeddingAdmin.partner1Name)).toBeInTheDocument();
+    });
+
+    // Verificar que la sección de visibilidad está presente
+    expect(screen.getByText('Organizador y Visibilidad de Secciones')).toBeInTheDocument();
+
+    // Obtener los switches de visibilidad
+    const storySwitch = screen.getByRole('switch', { name: /Mostrar sección Nuestra Historia/i });
+    const musicSwitch = screen.getByRole('switch', { name: /Mostrar sección Buzón de Canciones/i });
+
+    expect(storySwitch).toHaveAttribute('aria-checked', 'true');
+    expect(musicSwitch).toHaveAttribute('aria-checked', 'true');
+
+    // Desactivar Nuestra Historia y Buzón de Canciones
+    await user.click(storySwitch);
+    expect(storySwitch).toHaveAttribute('aria-checked', 'false');
+
+    await user.click(musicSwitch);
+    expect(musicSwitch).toHaveAttribute('aria-checked', 'false');
+
+    // Guardar configuración
+    const saveButtons = screen.getAllByRole('button', { name: /Guardar Configuración/i });
+    await user.click(saveButtons[0]);
+
+    await waitFor(() => {
+      expect(capturedPayload).not.toBeNull();
+    });
+
+    const payload = capturedPayload as WeddingRequest | null;
+    expect(payload?.content.sectionVisibility).toEqual({
+      story: false,
+      gallery: true,
+      guestPhotos: true,
+      timeline: true,
+      accommodations: true,
+      music: false,
+      info: true,
+    });
+  });
+
+  it('permite reordenar las secciones con los botones subir/bajar y enviarlo en el payload al guardar', async () => {
+    let capturedPayload: WeddingRequest | null = null;
+    server.use(
+      http.put('*/api/v1/admin/weddings/current', async ({ request }) => {
+        capturedPayload = (await request.json()) as WeddingRequest;
+        return HttpResponse.json({
+          ...mockWeddingAdmin,
+          ...capturedPayload,
+          updatedAt: new Date().toISOString(),
+        });
+      })
+    );
+
+    const user = userEvent.setup();
+    renderWithRouter(<AdminWeddingPage />);
+
+    await waitFor(() => {
+      expect(screen.getByDisplayValue(mockWeddingAdmin.partner1Name)).toBeInTheDocument();
+    });
+
+    // Subir sección Galería de Fotos (inicialmente en posición 2, sube a posición 1)
+    const moveUpGalleryBtn = screen.getByRole('button', { name: /Subir sección Galería de Fotos/i });
+    expect(moveUpGalleryBtn).not.toBeDisabled();
+    await user.click(moveUpGalleryBtn);
+
+    // Guardar configuración
+    const saveButtons = screen.getAllByRole('button', { name: /Guardar Configuración/i });
+    await user.click(saveButtons[0]);
+
+    await waitFor(() => {
+      expect(capturedPayload).not.toBeNull();
+    });
+
+    const payload = capturedPayload as WeddingRequest | null;
+    // La galería ahora debe estar en el índice 0, e historia en el 1
+    expect(payload?.content.sectionOrder?.[0]).toBe('gallery');
+    expect(payload?.content.sectionOrder?.[1]).toBe('story');
+  });
 });
+
 

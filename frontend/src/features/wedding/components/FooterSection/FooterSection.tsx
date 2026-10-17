@@ -16,6 +16,7 @@ export const FooterSection: React.FC<FooterSectionProps> = ({ partner1Name, part
     <footer className={styles.footer} role="contentinfo" aria-label="Pie de página">
       {/* Resplandor ambiental de fondo */}
       <div className={styles.bgGlowCenter} aria-hidden="true" />
+      <div className={styles.topAccentGlow} aria-hidden="true" />
 
       <div className={styles.container}>
         {/* Botón flotante suave para volver arriba */}

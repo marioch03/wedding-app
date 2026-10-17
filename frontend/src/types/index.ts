@@ -5,3 +5,4 @@ export * from './party';
 export * from './guest';
 export * from './menu';
 export * from './rsvp';
+export * from './songSuggestion';
