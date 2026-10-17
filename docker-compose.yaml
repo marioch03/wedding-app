@@ -65,7 +65,7 @@ services:
       RATE_LIMIT_RSVP_RPM: ${RATE_LIMIT_RSVP_RPM}
       RATE_LIMIT_MEDIA_RPM: ${RATE_LIMIT_MEDIA_RPM}
       SENTRY_DSN: ${SENTRY_DSN:-}
-    # Expuesto directamente en el host para atender las peticiones de Cloudflare Pages
+    # Expuesto en el host según BACKEND_PORT (por defecto 80 en producción, 8080 en local)
     ports:
       - "${BACKEND_PORT:-80}:8080"
     volumes:
