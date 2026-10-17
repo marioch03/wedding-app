@@ -288,6 +288,17 @@ export const AdminDashboardPage: React.FC = () => {
               </div>
               <span className={styles.actionRowArrow}>→</span>
             </Link>
+
+            <Link to="/admin/song-suggestions" className={styles.actionRow}>
+              <div className={styles.actionRowIcon}>🎵</div>
+              <div className={styles.actionRowContent}>
+                <div className={styles.actionRowTitle}>Música &amp; Canciones</div>
+                <div className={styles.actionRowDesc}>
+                  Ver peticiones de los invitados y descargar la lista en CSV para el DJ.
+                </div>
+              </div>
+              <span className={styles.actionRowArrow}>→</span>
+            </Link>
           </div>
         </div>
       </div>

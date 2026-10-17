@@ -126,6 +126,11 @@ export const AdminLayout: React.FC = () => {
             <span className={styles.navIcon}>📸</span>
             <span className={styles.navLabel}>Fotos Invitados</span>
           </NavLink>
+
+          <NavLink to="/admin/song-suggestions" className={navLinkClass} title="Música & Canciones">
+            <span className={styles.navIcon}>🎵</span>
+            <span className={styles.navLabel}>Música &amp; Canciones</span>
+          </NavLink>
         </nav>
 
         <div className={styles.sidebarFooter}>

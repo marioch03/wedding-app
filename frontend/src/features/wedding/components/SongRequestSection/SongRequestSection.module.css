@@ -1,0 +1,175 @@
+/* ==========================================================================
+   SongRequestSection — Buzón de Sugerencias de Canciones para la Fiesta
+   ========================================================================== */
+
+.section {
+  position: relative;
+  padding: 5rem 1.5rem;
+  overflow: hidden;
+  background: linear-gradient(
+    180deg,
+    var(--color-bg, #faf7f2) 0%,
+    var(--color-bg-subtle, #fbf5ee) 50%,
+    var(--color-bg, #faf7f2) 100%
+  );
+}
+
+.container {
+  max-width: 860px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.card {
+  background: var(--color-bg-card, rgba(254, 250, 245, 0.94));
+  border: 1px solid var(--color-border-subtle, rgba(223, 106, 79, 0.15));
+  border-radius: var(--radius-lg, 20px);
+  padding: 3rem 2rem;
+  box-shadow: 0 12px 32px rgba(44, 26, 22, 0.06);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* Decoración vinilo giratorio sutil */
+.vinylGlow {
+  position: absolute;
+  top: -60px;
+  right: -60px;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--color-primary-glow, rgba(223, 106, 79, 0.2)) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 1rem;
+  border-radius: var(--radius-full, 9999px);
+  background: var(--color-primary-light, #fceed8);
+  color: var(--color-primary-dark, #b84a32);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 1.25rem;
+}
+
+.badgeIcon {
+  font-size: 1rem;
+}
+
+.title {
+  font-family: var(--font-serif, serif);
+  font-size: 2.2rem;
+  font-weight: 600;
+  color: var(--color-text-heading, #2c1a16);
+  margin: 0 0 1rem;
+  line-height: 1.25;
+}
+
+.description {
+  font-size: 1.1rem;
+  color: var(--color-text-body, #5c4741);
+  line-height: 1.6;
+  max-width: 600px;
+  margin: 0 0 2rem;
+}
+
+.ctaWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.requestButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.95rem 2.2rem;
+  border-radius: var(--radius-full, 9999px);
+  border: none;
+  background: var(--color-primary-gradient, linear-gradient(135deg, #df6a4f 0%, #b84a32 100%));
+  color: #ffffff;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 6px 20px var(--color-primary-glow, rgba(223, 106, 79, 0.35));
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.requestButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px var(--color-primary-glow, rgba(223, 106, 79, 0.45));
+}
+
+.requestButton:active {
+  transform: translateY(0);
+}
+
+.buttonIcon {
+  font-size: 1.25rem;
+  transition: transform 0.3s ease;
+}
+
+.requestButton:hover .buttonIcon {
+  transform: rotate(20deg) scale(1.1);
+}
+
+/* Pill de última canción añadida en la sesión */
+.recentBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--color-bg-secondary, #f4ede4);
+  border: 1px solid var(--color-border, #ebdcd2);
+  border-radius: var(--radius-full, 9999px);
+  padding: 0.4rem 1rem;
+  font-size: 0.85rem;
+  color: var(--color-text-heading, #2c1a16);
+  animation: fadeIn 0.3s ease-out;
+}
+
+.recentBadgeStrong {
+  color: var(--color-primary-dark, #b84a32);
+  font-weight: 600;
+}
+
+/* Responsividad */
+@media (max-width: 640px) {
+  .section {
+    padding: 3.5rem 1rem;
+  }
+
+  .card {
+    padding: 2.25rem 1.25rem;
+  }
+
+  .title {
+    font-size: 1.65rem;
+  }
+
+  .description {
+    font-size: 0.98rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .requestButton {
+    width: 100%;
+    justify-content: center;
+    padding: 0.85rem 1.5rem;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}

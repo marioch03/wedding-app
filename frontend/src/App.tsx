@@ -12,6 +12,7 @@ import { AdminPartiesPage } from "./features/admin/pages/AdminPartiesPage";
 import { AdminRsvpPage } from "./features/admin/pages/AdminRsvpPage";
 import { AdminWeddingPage } from "./features/admin/pages/AdminWeddingPage";
 import { AdminGuestPhotosPage } from "./features/admin/pages/AdminGuestPhotosPage";
+import { AdminSongSuggestionsPage } from "./features/admin/pages/AdminSongSuggestionsPage";
 import { RsvpPage } from "./features/rsvp/pages/RsvpPage";
 import { WeddingLandingPage } from "./features/wedding/pages/WeddingLandingPage";
 import { setAuthTokenGetter } from "./lib/api/client";
@@ -67,6 +68,7 @@ const AppRoutes: React.FC = () => {
             <Route path="events" element={<AdminEventsPage />} />
             <Route path="rsvp" element={<AdminRsvpPage />} />
             <Route path="guest-photos" element={<AdminGuestPhotosPage />} />
+            <Route path="song-suggestions" element={<AdminSongSuggestionsPage />} />
           </Route>
 
           {/* 404 Not Found */}

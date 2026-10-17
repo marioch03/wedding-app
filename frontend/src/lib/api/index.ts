@@ -6,3 +6,4 @@ export * from './guests';
 export * from './menus';
 export * from './rsvp';
 export * from './guestPhotos';
+export * from './songSuggestions';
