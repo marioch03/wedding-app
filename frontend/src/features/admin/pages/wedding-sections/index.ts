@@ -5,3 +5,4 @@ export * from './WeddingStorySection';
 export * from './WeddingGallerySection';
 export * from './WeddingCustomSections';
 export * from './WeddingHotelsSection';
+export * from './WeddingSectionsVisibility';

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { weddingApi } from '../../../lib/api';
-import type { WeddingPublicResponse } from '../../../types';
+import type { SectionId, WeddingPublicResponse } from '../../../types';
+import { resolveSectionOrder } from '../utils/sectionOrder';
 import { HeroSection } from '../components/HeroSection/HeroSection';
 import { StorySection } from '../components/StorySection/StorySection';
 import { TimelineSection } from '../../events';
@@ -67,6 +68,56 @@ export const WeddingLandingPage: React.FC = () => {
     );
   }
 
+  const sectionOrder = resolveSectionOrder(wedding.content?.sectionOrder);
+
+  const renderSection = (sectionId: SectionId) => {
+    if (wedding.content?.sectionVisibility?.[sectionId] === false) {
+      return null;
+    }
+
+    switch (sectionId) {
+      case 'story':
+        return (
+          <StorySection
+            key={sectionId}
+            storyTitle={wedding.content?.storyTitle}
+            storyText={wedding.content?.storyText}
+            storyImageUrl={wedding.content?.storyImageUrl}
+          />
+        );
+      case 'gallery':
+        return (
+          <GallerySection
+            key={sectionId}
+            galleryImages={wedding.content?.galleryImages}
+          />
+        );
+      case 'guestPhotos':
+        return <GuestPhotosSection key={sectionId} />;
+      case 'timeline':
+        return <TimelineSection key={sectionId} />;
+      case 'accommodations':
+        return (
+          <AccommodationsSection
+            key={sectionId}
+            hotels={wedding.content?.hotels}
+          />
+        );
+      case 'music':
+        return <SongRequestSection key={sectionId} />;
+      case 'info':
+        return (
+          <InfoSection
+            key={sectionId}
+            customSections={wedding.content?.customSections}
+            faqs={wedding.content?.faqs}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className={styles.pageWrapper}>
       <main className={styles.mainContent}>
@@ -78,30 +129,7 @@ export const WeddingLandingPage: React.FC = () => {
           coverImageUrl={wedding.content?.coverImageUrl}
         />
 
-        <StorySection
-          storyTitle={wedding.content?.storyTitle}
-          storyText={wedding.content?.storyText}
-          storyImageUrl={wedding.content?.storyImageUrl}
-        />
-
-        <GallerySection
-          galleryImages={wedding.content?.galleryImages}
-        />
-
-        <GuestPhotosSection />
-
-        <TimelineSection />
-
-        <AccommodationsSection
-          hotels={wedding.content?.hotels}
-        />
-
-        <SongRequestSection />
-
-        <InfoSection
-          customSections={wedding.content?.customSections}
-          faqs={wedding.content?.faqs}
-        />
+        {sectionOrder.map(renderSection)}
       </main>
 
       <FooterSection

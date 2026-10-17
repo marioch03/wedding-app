@@ -39,6 +39,35 @@ export interface HotelItem {
   discountExpiresAt?: string;
 }
 
+export type SectionId =
+  | 'story'
+  | 'gallery'
+  | 'guestPhotos'
+  | 'timeline'
+  | 'accommodations'
+  | 'music'
+  | 'info';
+
+export const DEFAULT_SECTION_ORDER: SectionId[] = [
+  'story',
+  'gallery',
+  'guestPhotos',
+  'timeline',
+  'accommodations',
+  'music',
+  'info',
+];
+
+export interface SectionVisibility {
+  story?: boolean;
+  gallery?: boolean;
+  guestPhotos?: boolean;
+  timeline?: boolean;
+  accommodations?: boolean;
+  music?: boolean;
+  info?: boolean;
+}
+
 export interface WeddingContent {
   storyTitle?: string;
   storyText?: string;
@@ -55,6 +84,8 @@ export interface WeddingContent {
   customNotes?: string;
   primaryColor?: string;
   accentColor?: string;
+  sectionVisibility?: SectionVisibility;
+  sectionOrder?: SectionId[];
   [key: string]: unknown;
 }
 

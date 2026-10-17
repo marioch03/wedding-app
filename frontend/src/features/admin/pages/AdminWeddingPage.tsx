@@ -7,7 +7,11 @@ import type {
   PracticalDetailSection,
   GalleryPhotoItem,
   HotelItem,
+  SectionVisibility,
+  SectionId,
 } from '../../../types';
+import { DEFAULT_SECTION_ORDER } from '../../../types';
+import { resolveSectionOrder } from '../../wedding/utils/sectionOrder';
 import { weddingApi } from '../../../lib/api';
 import { mediaApi } from '../../../lib/api/media';
 import { usePageTitle } from '../../../common/hooks';
@@ -15,6 +19,7 @@ import { applyCustomTheme, resetCustomTheme } from '../../../common/utils/theme'
 import {
   WeddingCoupleSection,
   WeddingThemeSection,
+  WeddingSectionsVisibility,
   WeddingHeroSection,
   WeddingStorySection,
   WeddingGallerySection,
@@ -69,6 +74,20 @@ export const AdminWeddingPage: React.FC = () => {
   // Hoteles / Alojamientos
   const [hotels, setHotels] = useState<HotelItem[]>([]);
 
+  // Visibilidad de Secciones
+  const [sectionVisibility, setSectionVisibility] = useState<SectionVisibility>({
+    story: true,
+    gallery: true,
+    guestPhotos: true,
+    timeline: true,
+    accommodations: true,
+    music: true,
+    info: true,
+  });
+
+  // Orden de Secciones
+  const [sectionOrder, setSectionOrder] = useState<SectionId[]>([...DEFAULT_SECTION_ORDER]);
+
   const loadWeddingData = async () => {
     try {
       setLoading(true);
@@ -96,6 +115,19 @@ export const AdminWeddingPage: React.FC = () => {
 
       setCustomSections(content.customSections || []);
       setHotels(content.hotels || []);
+
+      const visibility = content.sectionVisibility || {};
+      setSectionVisibility({
+        story: visibility.story !== false,
+        gallery: visibility.gallery !== false,
+        guestPhotos: visibility.guestPhotos !== false,
+        timeline: visibility.timeline !== false,
+        accommodations: visibility.accommodations !== false,
+        music: visibility.music !== false,
+        info: visibility.info !== false,
+      });
+
+      setSectionOrder(resolveSectionOrder(content.sectionOrder));
 
       const pColor = content.primaryColor || '';
       const aColor = content.accentColor || '';
@@ -245,6 +277,17 @@ export const AdminWeddingPage: React.FC = () => {
     });
   };
 
+  const handleVisibilityChange = (key: keyof SectionVisibility, value: boolean) => {
+    setSectionVisibility((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
+
+  const handleResetSectionOrder = () => {
+    setSectionOrder([...DEFAULT_SECTION_ORDER]);
+  };
+
   // Theme & Color Handlers
   const handlePrimaryColorChange = (newColor: string) => {
     setPrimaryColor(newColor);
@@ -296,6 +339,8 @@ export const AdminWeddingPage: React.FC = () => {
       hotels: hotels.length > 0 ? hotels : undefined,
       primaryColor: primaryColor.trim() || undefined,
       accentColor: accentColor.trim() || undefined,
+      sectionVisibility,
+      sectionOrder,
     };
 
     const payload: WeddingRequest = {
@@ -397,6 +442,15 @@ export const AdminWeddingPage: React.FC = () => {
           onPrimaryColorChange={handlePrimaryColorChange}
           onAccentColorChange={handleAccentColorChange}
           onResetColors={handleResetColors}
+        />
+
+        {/* SECCIÓN: VISIBILIDAD Y ORGANIZADOR DE MÓDULOS EN LA WEB PÚBLICA */}
+        <WeddingSectionsVisibility
+          sectionOrder={sectionOrder}
+          onOrderChange={setSectionOrder}
+          visibility={sectionVisibility}
+          onVisibilityChange={handleVisibilityChange}
+          onResetOrder={handleResetSectionOrder}
         />
 
         {/* SECCIÓN 2: PORTADA PRINCIPAL (HERO) */}
