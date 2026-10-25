@@ -81,7 +81,7 @@ public class RsvpService {
                   ge.getRespondedAt()))
               .toList();
           return new GuestDto(g.getId(), g.getFirstName(), g.getLastName(),
-              g.getIsPlusOne(), g.getDietaryRestrictions(), eventSummaries);
+              g.getIsPlusOne(), g.getDietaryRestrictions(), g.getHasOwnTransport(), eventSummaries);
         })
         .toList();
 
@@ -162,7 +162,8 @@ public class RsvpService {
               "El invitado con ID " + guestDto.guestId() + " no pertenece a este grupo de invitación"));
 
       // Si es +1, permitir actualizar o resetear nombre y apellidos a null si se han borrado
-      if (Boolean.TRUE.equals(guest.getIsPlusOne())) {
+      boolean isPlusOne = Boolean.TRUE.equals(guest.getIsPlusOne());
+      if (isPlusOne) {
         String sanitizedFirstName = InputSanitizer.sanitize(guestDto.firstName());
         String sanitizedLastName = InputSanitizer.sanitize(guestDto.lastName());
 
@@ -183,7 +184,12 @@ public class RsvpService {
         guest.setDietaryRestrictions(InputSanitizer.sanitize(guestDto.dietaryRequirements()));
       }
 
+      // Transporte disponible
+      guest.setHasOwnTransport(guestDto.hasOwnTransport());
+      guestRepository.save(guest);
+
       if (guestDto.events() != null) {
+        boolean isUnusedPlusOne = isPlusOne && (guest.getFirstName() == null || guest.getFirstName().isBlank());
         for (EventRsvpDto eventDto : guestDto.events()) {
           // Validar que el evento está permitido para esta party
           if (!allowedEventIds.contains(eventDto.eventId())) {
@@ -191,9 +197,14 @@ public class RsvpService {
                 "El evento " + eventDto.eventId() + " no está autorizado para este grupo de invitación");
           }
 
+          Boolean attending = eventDto.attending();
+          if (isUnusedPlusOne && attending == null) {
+            attending = false;
+          }
+
           // Validar opción de menú si asiste
           MenuOption menuOption = null;
-          if (Boolean.TRUE.equals(eventDto.attending()) && eventDto.menuOptionId() != null) {
+          if (Boolean.TRUE.equals(attending) && eventDto.menuOptionId() != null) {
             menuOption = menuOptionRepository.findById(eventDto.menuOptionId())
                 .filter(m -> m.getEvent().getId().equals(eventDto.eventId()))
                 .orElseThrow(() -> new IllegalArgumentException(
@@ -210,10 +221,10 @@ public class RsvpService {
                 return newGe;
               });
 
-          ge.setAttending(eventDto.attending());
-          ge.setMenuOption(Boolean.TRUE.equals(eventDto.attending()) ? menuOption : null);
+          ge.setAttending(attending);
+          ge.setMenuOption(Boolean.TRUE.equals(attending) ? menuOption : null);
           ge.setSpecialNotes(InputSanitizer.sanitize(eventDto.specialNotes()));
-          ge.setRespondedAt(eventDto.attending() != null ? now : null);
+          ge.setRespondedAt(attending != null ? now : null);
 
           guestEventRepository.save(ge);
         }
@@ -388,12 +399,16 @@ public class RsvpService {
     long attendingCount = 0;
 
     for (Guest g : partyGuests) {
+      boolean isPlusOne = Boolean.TRUE.equals(g.getIsPlusOne());
+      boolean isPlusOneUnused = isPlusOne && (g.getFirstName() == null || g.getFirstName().isBlank());
+
       List<GuestEvent> guestEvents = guestEventRepository.findByGuestId(g.getId()).stream()
           .filter(ge -> allowedEventIds.contains(ge.getEvent().getId()))
           .toList();
 
-      boolean guestHasResponse = !guestEvents.isEmpty() && guestEvents.stream().anyMatch(ge -> ge.getAttending() != null);
-      if (guestHasResponse) {
+      long decidedEventsCount = guestEvents.stream().filter(ge -> ge.getAttending() != null).count();
+
+      if (decidedEventsCount > 0) {
         anyResponded = true;
         for (GuestEvent ge : guestEvents) {
           if (ge.getAttending() != null) {
@@ -403,8 +418,13 @@ public class RsvpService {
             }
           }
         }
+        if (decidedEventsCount < allowedEventIds.size()) {
+          allResponded = false;
+        }
       } else {
-        allResponded = false;
+        if (!isPlusOneUnused) {
+          allResponded = false;
+        }
       }
     }
 
@@ -419,10 +439,8 @@ public class RsvpService {
     if (attendingCount == 0) {
       return PartyStatus.DECLINED;
     }
-    if (attendingCount == totalAttendances) {
-      return PartyStatus.CONFIRMED;
-    }
-    return PartyStatus.PARTIAL;
+
+    return PartyStatus.CONFIRMED;
   }
 
   private PartyStatus computePartyStatusFromRequest(RsvpSubmitRequest request) {
@@ -444,13 +462,14 @@ public class RsvpService {
       return PartyStatus.PENDING;
     }
 
+    if (decidedCount < allEvents.size()) {
+      return PartyStatus.PARTIAL;
+    }
+
     long attendingCount = allEvents.stream().filter(e -> Boolean.TRUE.equals(e.attending())).count();
-    if (attendingCount == 0 && decidedCount == allEvents.size()) {
+    if (attendingCount == 0) {
       return PartyStatus.DECLINED;
     }
-    if (attendingCount == allEvents.size()) {
-      return PartyStatus.CONFIRMED;
-    }
-    return PartyStatus.PARTIAL;
+    return PartyStatus.CONFIRMED;
   }
 }

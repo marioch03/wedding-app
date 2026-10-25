@@ -37,6 +37,12 @@ function formatGuestType(type?: string): string {
   }
 }
 
+function formatTransport(hasOwnTransport?: boolean | null): string {
+  if (hasOwnTransport === true) return 'Vehículo propio';
+  if (hasOwnTransport === false) return 'Necesita transporte / autobús';
+  return 'No especificado';
+}
+
 export async function exportRsvpGuestsToExcel(
   guests: GuestDetailResponse[],
   parties: PartyResponse[],
@@ -61,6 +67,7 @@ export async function exportRsvpGuestsToExcel(
     'Acompañante (+1)',
     'Teléfono',
     'Email',
+    'Transporte',
     'Restricciones Dietéticas',
     'Asistencia a Eventos & Menús',
   ]);
@@ -96,6 +103,7 @@ export async function exportRsvpGuestsToExcel(
       g.isPlusOne ? 'Sí' : 'No',
       g.phone || '',
       g.email || '',
+      formatTransport(g.hasOwnTransport),
       g.dietaryRestrictions || '',
       eventsSummary || 'Sin asignaciones',
     ]);
@@ -126,6 +134,7 @@ export function exportRsvpGuestsToCsv(
       'Acompañante (+1)',
       'Teléfono',
       'Email',
+      'Transporte',
       'Restricciones Dietéticas',
       'Asistencia a Eventos & Menús',
     ],
@@ -162,6 +171,7 @@ export function exportRsvpGuestsToCsv(
       g.isPlusOne ? 'Sí' : 'No',
       g.phone || '',
       g.email || '',
+      formatTransport(g.hasOwnTransport),
       g.dietaryRestrictions || '',
       eventsSummary || 'Sin asignaciones',
     ]);

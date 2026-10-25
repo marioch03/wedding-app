@@ -47,4 +47,7 @@ public class Guest extends BaseEntity {
 
   @Column(name = "dietary_restrictions")
   private String dietaryRestrictions;
+
+  @Column(name = "has_own_transport")
+  private Boolean hasOwnTransport;
 }

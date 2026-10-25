@@ -43,6 +43,7 @@ export const RsvpPage: React.FC = () => {
           firstName: g.firstName || '',
           lastName: g.lastName || '',
           dietaryRequirements: g.dietaryRestrictions || '',
+          hasOwnTransport: g.hasOwnTransport ?? null,
           events: data.allowedEvents.map((ev) => {
             const existingAttendance = g.eventAttendances?.find(
               (ea) => ea.eventId === ev.id && ea.respondedAt != null

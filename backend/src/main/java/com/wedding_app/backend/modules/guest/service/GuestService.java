@@ -92,6 +92,7 @@ public class GuestService {
         guest.getEmail(),
         guest.getPhone(),
         guest.getDietaryRestrictions(),
+        guest.getHasOwnTransport(),
         eventSummaries,
         guest.getCreatedAt(),
         guest.getUpdatedAt());
@@ -166,6 +167,9 @@ public class GuestService {
     guest.setEmail(request.email() != null ? request.email().trim() : null);
     guest.setPhone(request.phone() != null ? request.phone().trim() : null);
     guest.setDietaryRestrictions(request.dietaryRestrictions() != null ? request.dietaryRestrictions().trim() : null);
+    if (request.hasOwnTransport() != null) {
+      guest.setHasOwnTransport(request.hasOwnTransport());
+    }
   }
 
   private GuestResponse toResponse(Guest guest) {
@@ -179,6 +183,7 @@ public class GuestService {
         guest.getEmail(),
         guest.getPhone(),
         guest.getDietaryRestrictions(),
+        guest.getHasOwnTransport(),
         guest.getCreatedAt(),
         guest.getUpdatedAt());
   }

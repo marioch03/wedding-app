@@ -9,9 +9,14 @@ public record GuestDto(
     String lastName,
     Boolean isPlusOne,
     String dietaryRestrictions,
+    Boolean hasOwnTransport,
     List<GuestEventSummaryDto> eventAttendances
 ) {
   public GuestDto(UUID id, String firstName, String lastName, Boolean isPlusOne, String dietaryRestrictions) {
-    this(id, firstName, lastName, Boolean.TRUE.equals(isPlusOne), dietaryRestrictions, List.of());
+    this(id, firstName, lastName, Boolean.TRUE.equals(isPlusOne), dietaryRestrictions, null, List.of());
+  }
+
+  public GuestDto(UUID id, String firstName, String lastName, Boolean isPlusOne, String dietaryRestrictions, List<GuestEventSummaryDto> eventAttendances) {
+    this(id, firstName, lastName, isPlusOne, dietaryRestrictions, null, eventAttendances);
   }
 }

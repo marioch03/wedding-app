@@ -76,6 +76,18 @@ export const AdminLoginPage: React.FC = () => {
                     boxShadow: '0 0 0 3px var(--color-primary-light)',
                   },
                 },
+                socialButtons: {
+                  display: 'none',
+                },
+                socialButtonsRoot: {
+                  display: 'none',
+                },
+                socialButtonsBlockButton: {
+                  display: 'none',
+                },
+                dividerRow: {
+                  display: 'none',
+                },
                 footerAction: {
                   display: 'none',
                 },

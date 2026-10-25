@@ -80,7 +80,8 @@ export const AdminPartiesPage: React.FC = () => {
     const confirmed = parties.filter((p) => p.status === 'CONFIRMED').length;
     const pending = parties.filter((p) => p.status === 'PENDING').length;
     const declined = parties.filter((p) => p.status === 'DECLINED').length;
-    return { total, confirmed, pending, declined };
+    const partial = parties.filter((p) => p.status === 'PARTIAL').length;
+    return { total, confirmed, pending, declined, partial };
   }, [parties]);
 
   const handleCopyCode = (party: PartyResponse) => {
@@ -200,6 +201,14 @@ export const AdminPartiesPage: React.FC = () => {
             <div className={styles.statLabel}>Grupos Declinados</div>
           </div>
         </div>
+
+        <div className={styles.statCard}>
+          <div className={`${styles.statIconWrapper} ${styles.statIconPartial}`}>◐</div>
+          <div>
+            <div className={styles.statValue}>{stats.partial}</div>
+            <div className={styles.statLabel}>Grupos Parciales</div>
+          </div>
+        </div>
       </div>
 
       {/* Filter & Search Toolbar */}
@@ -243,6 +252,13 @@ export const AdminPartiesPage: React.FC = () => {
             onClick={() => setSelectedStatus('DECLINED')}
           >
             Declinados ({stats.declined})
+          </button>
+          <button
+            type="button"
+            className={`${styles.filterPill} ${selectedStatus === 'PARTIAL' ? styles.filterPillActive : ''}`}
+            onClick={() => setSelectedStatus('PARTIAL')}
+          >
+            Parciales ({stats.partial})
           </button>
         </div>
       </div>

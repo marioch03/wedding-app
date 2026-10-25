@@ -6,6 +6,7 @@ export interface GuestDto {
   lastName?: string;
   isPlusOne: boolean;
   dietaryRestrictions?: string;
+  hasOwnTransport?: boolean | null;
   eventAttendances?: GuestEventSummaryDto[];
 }
 
@@ -29,6 +30,7 @@ export interface GuestResponse {
   email?: string;
   phone?: string;
   dietaryRestrictions?: string;
+  hasOwnTransport?: boolean | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -44,6 +46,7 @@ export interface GuestDetailResponse {
   email?: string;
   phone?: string;
   dietaryRestrictions?: string;
+  hasOwnTransport?: boolean | null;
   eventAttendances: GuestEventSummaryDto[];
   createdAt: string;
   updatedAt: string;
@@ -58,4 +61,5 @@ export interface GuestRequest {
   email?: string;
   phone?: string;
   dietaryRestrictions?: string;
+  hasOwnTransport?: boolean | null;
 }

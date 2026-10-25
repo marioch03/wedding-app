@@ -14,6 +14,7 @@ export interface GuestRsvpDto {
   firstName?: string;
   lastName?: string;
   dietaryRequirements?: string;
+  hasOwnTransport?: boolean | null;
   events: EventRsvpDto[];
 }
 

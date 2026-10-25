@@ -18,6 +18,7 @@ interface GuestFormState {
   fullName: string;
   isPlusOne: boolean;
   dietaryRestrictions: string;
+  hasOwnTransport: boolean | null;
   events: {
     eventId: string;
     eventName: string;
@@ -54,14 +55,18 @@ export const ManualRsvpModal: React.FC<ManualRsvpModalProps> = ({
       const info = await rsvpApi.getByPartyIdAdmin(partyId);
       setRsvpInfo(info);
 
-      // Load each guest's current attendances from guest detail API
+      // Load each guest's current attendances and transport from guest detail API
       const loadedGuests: GuestFormState[] = [];
 
       for (const g of info.guests) {
         let currentAttendances: Record<string, { attending: boolean; menuOptionId?: string; specialNotes?: string }> = {};
+        let transportVal: boolean | null = g.hasOwnTransport ?? null;
 
         try {
           const detail = await guestsApi.getById(g.id);
+          if (detail.hasOwnTransport !== undefined) {
+            transportVal = detail.hasOwnTransport;
+          }
           if (detail.eventAttendances) {
             for (const att of detail.eventAttendances) {
               if (att.attending !== undefined && att.attending !== null) {
@@ -95,6 +100,7 @@ export const ManualRsvpModal: React.FC<ManualRsvpModalProps> = ({
           fullName: name,
           isPlusOne: !!g.isPlusOne,
           dietaryRestrictions: g.dietaryRestrictions || '',
+          hasOwnTransport: transportVal,
           events: eventsState,
         });
       }
@@ -162,6 +168,18 @@ export const ManualRsvpModal: React.FC<ManualRsvpModalProps> = ({
     );
   };
 
+  const handleSetTransport = (guestId: string, hasOwnTransport: boolean | null) => {
+    setGuestsState((prev) =>
+      prev.map((g) => {
+        if (g.guestId !== guestId) return g;
+        return {
+          ...g,
+          hasOwnTransport,
+        };
+      })
+    );
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -191,6 +209,7 @@ export const ManualRsvpModal: React.FC<ManualRsvpModalProps> = ({
       return {
         guestId: g.guestId,
         dietaryRequirements: g.dietaryRestrictions.trim() || undefined,
+        hasOwnTransport: g.hasOwnTransport,
         events: eventsDto,
       };
     });
@@ -386,6 +405,45 @@ export const ManualRsvpModal: React.FC<ManualRsvpModalProps> = ({
                       </div>
                     );
                   })()}
+
+                  {/* Disponibilidad de Transporte (Visible si asiste a algún evento) */}
+                  {guest.events.some((ev) => ev.attending === true) && (
+                    <div className={styles.transportRow}>
+                      <label className={styles.fieldLabel}>🚗 Disponibilidad de transporte</label>
+                      <div className={styles.transportButtons}>
+                        <button
+                          type="button"
+                          className={`${styles.transportBtn} ${
+                            guest.hasOwnTransport === true ? styles.transportBtnActiveYes : ''
+                          }`}
+                          onClick={() =>
+                            handleSetTransport(
+                              guest.guestId,
+                              guest.hasOwnTransport === true ? null : true
+                            )
+                          }
+                          aria-pressed={guest.hasOwnTransport === true}
+                        >
+                          🚗 Vehículo propio
+                        </button>
+                        <button
+                          type="button"
+                          className={`${styles.transportBtn} ${
+                            guest.hasOwnTransport === false ? styles.transportBtnActiveNo : ''
+                          }`}
+                          onClick={() =>
+                            handleSetTransport(
+                              guest.guestId,
+                              guest.hasOwnTransport === false ? null : false
+                            )
+                          }
+                          aria-pressed={guest.hasOwnTransport === false}
+                        >
+                          🚌 Necesita transporte / autobús
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
             </form>

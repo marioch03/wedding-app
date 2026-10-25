@@ -160,6 +160,54 @@ class RsvpServiceTest {
   }
 
   @Test
+  void submitRsvp_savesHasOwnTransport_success() {
+    PartyEvent pe = new PartyEvent();
+    pe.setParty(party);
+    pe.setEvent(event);
+
+    EventRsvpDto eventDto = new EventRsvpDto(eventId, true, menuId, null);
+    GuestRsvpDto guestDto = new GuestRsvpDto(guestId, "Ana", "Test", "Sin sal", true, List.of(eventDto));
+    RsvpSubmitRequest request = new RsvpSubmitRequest(List.of(guestDto));
+
+    when(partyRepository.findByRsvpTokenIgnoreCase(token)).thenReturn(Optional.of(party));
+    when(partyEventRepository.findByPartyIdWithEvent(partyId)).thenReturn(List.of(pe));
+    when(guestRepository.findById(guestId)).thenReturn(Optional.of(guest));
+    when(menuOptionRepository.findById(menuId)).thenReturn(Optional.of(menuOption));
+    when(guestEventRepository.findByGuestIdAndEventId(guestId, eventId)).thenReturn(Optional.empty());
+    when(eventRepository.getReferenceById(eventId)).thenReturn(event);
+
+    rsvpService.submitRsvp(token, request);
+
+    assertThat(guest.getHasOwnTransport()).isTrue();
+    verify(guestRepository).save(guest);
+  }
+
+  @Test
+  void submitRsvp_clearsHasOwnTransport_whenNull() {
+    guest.setHasOwnTransport(true); // Previamente tenía vehículo propio
+
+    PartyEvent pe = new PartyEvent();
+    pe.setParty(party);
+    pe.setEvent(event);
+
+    EventRsvpDto eventDto = new EventRsvpDto(eventId, true, menuId, null);
+    GuestRsvpDto guestDto = new GuestRsvpDto(guestId, "Ana", "Test", "Sin sal", null, List.of(eventDto));
+    RsvpSubmitRequest request = new RsvpSubmitRequest(List.of(guestDto));
+
+    when(partyRepository.findByRsvpTokenIgnoreCase(token)).thenReturn(Optional.of(party));
+    when(partyEventRepository.findByPartyIdWithEvent(partyId)).thenReturn(List.of(pe));
+    when(guestRepository.findById(guestId)).thenReturn(Optional.of(guest));
+    when(menuOptionRepository.findById(menuId)).thenReturn(Optional.of(menuOption));
+    when(guestEventRepository.findByGuestIdAndEventId(guestId, eventId)).thenReturn(Optional.empty());
+    when(eventRepository.getReferenceById(eventId)).thenReturn(event);
+
+    rsvpService.submitRsvp(token, request);
+
+    assertThat(guest.getHasOwnTransport()).isNull();
+    verify(guestRepository).save(guest);
+  }
+
+  @Test
   void submitRsvp_sanitizesXssInputs_success() {
     PartyEvent pe = new PartyEvent();
     pe.setParty(party);
@@ -499,6 +547,92 @@ class RsvpServiceTest {
     rsvpService.adminSubmitRsvp(partyId, request);
 
     assertThat(party.getStatus()).isEqualTo(PartyStatus.PARTIAL);
+    verify(partyRepository).save(party);
+  }
+
+  @Test
+  void adminSubmitRsvp_allGuestsResponded_oneAttendingOneDeclined_setsStatusToConfirmed() {
+    Guest secondGuest = new Guest();
+    secondGuest.setId(UUID.randomUUID());
+    secondGuest.setParty(party);
+    secondGuest.setFirstName("Pedro");
+
+    PartyEvent pe = new PartyEvent();
+    pe.setParty(party);
+    pe.setEvent(event);
+
+    EventRsvpDto eventDto1 = new EventRsvpDto(eventId, true, menuId, null);
+    GuestRsvpDto guestDto1 = new GuestRsvpDto(guestId, "Ana", "Test", null, List.of(eventDto1));
+
+    EventRsvpDto eventDto2 = new EventRsvpDto(eventId, false, null, null);
+    GuestRsvpDto guestDto2 = new GuestRsvpDto(secondGuest.getId(), "Pedro", "Test", null, List.of(eventDto2));
+
+    RsvpSubmitRequest request = new RsvpSubmitRequest(List.of(guestDto1, guestDto2));
+
+    when(partyRepository.findById(partyId)).thenReturn(Optional.of(party));
+    when(partyEventRepository.findByPartyIdWithEvent(partyId)).thenReturn(List.of(pe));
+    when(guestRepository.findById(guestId)).thenReturn(Optional.of(guest));
+    when(guestRepository.findById(secondGuest.getId())).thenReturn(Optional.of(secondGuest));
+    when(guestRepository.findByPartyId(partyId)).thenReturn(List.of(guest, secondGuest));
+    when(menuOptionRepository.findById(menuId)).thenReturn(Optional.of(menuOption));
+    when(guestEventRepository.findByGuestIdAndEventId(guestId, eventId)).thenReturn(Optional.empty());
+    when(guestEventRepository.findByGuestIdAndEventId(secondGuest.getId(), eventId)).thenReturn(Optional.empty());
+    when(eventRepository.getReferenceById(eventId)).thenReturn(event);
+
+    GuestEvent ge1 = new GuestEvent();
+    ge1.setGuest(guest);
+    ge1.setEvent(event);
+    ge1.setAttending(true);
+
+    GuestEvent ge2 = new GuestEvent();
+    ge2.setGuest(secondGuest);
+    ge2.setEvent(event);
+    ge2.setAttending(false);
+
+    when(guestEventRepository.findByGuestId(guestId)).thenReturn(List.of(ge1));
+    when(guestEventRepository.findByGuestId(secondGuest.getId())).thenReturn(List.of(ge2));
+
+    rsvpService.adminSubmitRsvp(partyId, request);
+
+    assertThat(party.getStatus()).isEqualTo(PartyStatus.CONFIRMED);
+    verify(partyRepository).save(party);
+  }
+
+  @Test
+  void adminSubmitRsvp_withUnusedPlusOne_setsStatusToConfirmed() {
+    Guest plusOne = new Guest();
+    plusOne.setId(UUID.randomUUID());
+    plusOne.setParty(party);
+    plusOne.setIsPlusOne(true);
+    plusOne.setFirstName(null);
+
+    PartyEvent pe = new PartyEvent();
+    pe.setParty(party);
+    pe.setEvent(event);
+
+    EventRsvpDto eventDto = new EventRsvpDto(eventId, true, menuId, null);
+    GuestRsvpDto guestDto = new GuestRsvpDto(guestId, "Ana", "Test", null, List.of(eventDto));
+    RsvpSubmitRequest request = new RsvpSubmitRequest(List.of(guestDto));
+
+    when(partyRepository.findById(partyId)).thenReturn(Optional.of(party));
+    when(partyEventRepository.findByPartyIdWithEvent(partyId)).thenReturn(List.of(pe));
+    when(guestRepository.findById(guestId)).thenReturn(Optional.of(guest));
+    when(guestRepository.findByPartyId(partyId)).thenReturn(List.of(guest, plusOne));
+    when(menuOptionRepository.findById(menuId)).thenReturn(Optional.of(menuOption));
+    when(guestEventRepository.findByGuestIdAndEventId(guestId, eventId)).thenReturn(Optional.empty());
+    when(eventRepository.getReferenceById(eventId)).thenReturn(event);
+
+    GuestEvent ge = new GuestEvent();
+    ge.setGuest(guest);
+    ge.setEvent(event);
+    ge.setAttending(true);
+
+    when(guestEventRepository.findByGuestId(guestId)).thenReturn(List.of(ge));
+    when(guestEventRepository.findByGuestId(plusOne.getId())).thenReturn(List.of());
+
+    rsvpService.adminSubmitRsvp(partyId, request);
+
+    assertThat(party.getStatus()).isEqualTo(PartyStatus.CONFIRMED);
     verify(partyRepository).save(party);
   }
 }

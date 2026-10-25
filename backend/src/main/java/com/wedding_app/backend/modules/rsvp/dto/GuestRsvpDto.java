@@ -20,5 +20,11 @@ public record GuestRsvpDto(
     @Size(max = 500, message = "Las restricciones dietéticas no pueden superar los 500 caracteres")
     String dietaryRequirements,
 
+    Boolean hasOwnTransport,
+
     List<@Valid EventRsvpDto> events
-) {}
+) {
+  public GuestRsvpDto(UUID guestId, String firstName, String lastName, String dietaryRequirements, List<EventRsvpDto> events) {
+    this(guestId, firstName, lastName, dietaryRequirements, null, events);
+  }
+}

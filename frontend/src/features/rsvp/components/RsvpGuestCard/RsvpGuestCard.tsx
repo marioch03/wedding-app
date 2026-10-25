@@ -29,6 +29,13 @@ export const RsvpGuestCard: React.FC<RsvpGuestCardProps> = ({
     });
   };
 
+  const handleTransportChange = (hasTransport: boolean | null) => {
+    onChange({
+      ...guestState,
+      hasOwnTransport: hasTransport,
+    });
+  };
+
   const handleEventAttendance = (eventId: string, attending: boolean) => {
     const updatedEvents = guestState.events.map((ev) => {
       if (ev.eventId === eventId) {
@@ -200,6 +207,52 @@ export const RsvpGuestCard: React.FC<RsvpGuestCardProps> = ({
               value={guestState.dietaryRequirements || ''}
               onChange={(e) => handleDietaryChange(e.target.value)}
             />
+          </div>
+        </div>
+      )}
+
+      {/* Disponibilidad de Transporte (Visible si asiste a algún evento) */}
+      {isAttendingAny && (
+        <div className={styles.transportSection}>
+          <label className={styles.label}>
+            🚗 ¿Dispones de transporte propio para el evento?
+          </label>
+          <p className={styles.transportHint}>
+            Indícanos si tienes vehículo para desplazarte o si necesitarías servicio de autobús / transporte.
+          </p>
+          <div className={styles.transportToggle}>
+            <button
+              type="button"
+              className={`${styles.transportButton} ${
+                guestState.hasOwnTransport === true ? styles.transportActiveYes : ''
+              }`}
+              onClick={() =>
+                handleTransportChange(guestState.hasOwnTransport === true ? null : true)
+              }
+              aria-pressed={guestState.hasOwnTransport === true}
+            >
+              <span className={styles.transportIcon} aria-hidden="true">🚗</span>
+              <div className={styles.transportBtnText}>
+                <span className={styles.transportBtnTitle}>Sí, vehículo propio</span>
+                <span className={styles.transportBtnSub}>Dispongo de transporte</span>
+              </div>
+            </button>
+            <button
+              type="button"
+              className={`${styles.transportButton} ${
+                guestState.hasOwnTransport === false ? styles.transportActiveNo : ''
+              }`}
+              onClick={() =>
+                handleTransportChange(guestState.hasOwnTransport === false ? null : false)
+              }
+              aria-pressed={guestState.hasOwnTransport === false}
+            >
+              <span className={styles.transportIcon} aria-hidden="true">🚌</span>
+              <div className={styles.transportBtnText}>
+                <span className={styles.transportBtnTitle}>No, necesito transporte</span>
+                <span className={styles.transportBtnSub}>Requeriría autobús o plaza</span>
+              </div>
+            </button>
           </div>
         </div>
       )}

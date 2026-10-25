@@ -39,6 +39,7 @@ export const AdminRsvpPage: React.FC = () => {
   // Filters for Attendance Table
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'CONFIRMED' | 'PENDING' | 'DECLINED' | 'PARTIAL'>('ALL');
+  const [transportFilter, setTransportFilter] = useState<'ALL' | 'OWN' | 'NEED' | 'UNSPECIFIED'>('ALL');
   const [dietOnly, setDietOnly] = useState(false);
 
   // Manual RSVP Modal
@@ -87,6 +88,7 @@ export const AdminRsvpPage: React.FC = () => {
             email: g.email,
             phone: g.phone,
             dietaryRestrictions: g.dietaryRestrictions,
+            hasOwnTransport: g.hasOwnTransport,
             eventAttendances: [],
             createdAt: g.createdAt,
             updatedAt: g.updatedAt,
@@ -138,6 +140,26 @@ export const AdminRsvpPage: React.FC = () => {
     return 'PENDING';
   };
 
+  // Logística de transporte calculada a partir de los invitados confirmados
+  const transportStats = useMemo(() => {
+    let own = 0;
+    let need = 0;
+    let unspecified = 0;
+
+    guestDetails.forEach((g) => {
+      const parentParty = parties.find((p) => p.id === g.partyId);
+      const partyStatus = parentParty?.status || 'PENDING';
+      const computedStatus = getGuestAttendanceStatus(g, partyStatus);
+      if (computedStatus === 'CONFIRMED') {
+        if (g.hasOwnTransport === true) own++;
+        else if (g.hasOwnTransport === false) need++;
+        else unspecified++;
+      }
+    });
+
+    return { own, need, unspecified };
+  }, [guestDetails, parties]);
+
   // Filtered Guests list
   const filteredGuests = useMemo(() => {
     return guestDetails.filter((g) => {
@@ -156,6 +178,17 @@ export const AdminRsvpPage: React.FC = () => {
         return false;
       }
 
+      // Transport filter
+      if (transportFilter === 'OWN' && g.hasOwnTransport !== true) {
+        return false;
+      }
+      if (transportFilter === 'NEED' && g.hasOwnTransport !== false) {
+        return false;
+      }
+      if (transportFilter === 'UNSPECIFIED' && (g.hasOwnTransport !== null && g.hasOwnTransport !== undefined)) {
+        return false;
+      }
+
       // Search filter
       const fullName = `${g.firstName || ''} ${g.lastName || ''}`.toLowerCase();
       const partyName = (g.partyDisplayName || parentParty?.displayName || '').toLowerCase();
@@ -167,7 +200,7 @@ export const AdminRsvpPage: React.FC = () => {
 
       return true;
     });
-  }, [guestDetails, parties, statusFilter, dietOnly, searchTerm]);
+  }, [guestDetails, parties, statusFilter, transportFilter, dietOnly, searchTerm]);
 
   // Only events that have menu options configured are relevant for catering & menus
   const eventsWithMenu = useMemo(() => {
@@ -271,6 +304,20 @@ export const AdminRsvpPage: React.FC = () => {
             </span>
           </div>
         </div>
+
+        <div className={styles.kpiCard}>
+          <div className={`${styles.kpiIconWrapper} ${styles.kpiIconTransport}`}>🚗</div>
+          <div className={styles.kpiData}>
+            <span className={styles.kpiLabel}>Logística Transporte</span>
+            <span className={styles.kpiValue}>
+              {transportStats.own} <span className={styles.kpiSeparator}>/</span> {transportStats.need}
+            </span>
+            <span className={styles.kpiSubtext}>
+              🚗 {transportStats.own} propio · 🚌 {transportStats.need} autobús
+              {transportStats.unspecified > 0 ? ` (${transportStats.unspecified} sin indicar)` : ''}
+            </span>
+          </div>
+        </div>
       </div>
 
       {/* Tab Navigation */}
@@ -348,6 +395,26 @@ export const AdminRsvpPage: React.FC = () => {
                 </button>
               </div>
 
+              <div className={styles.transportFilter}>
+                <select
+                  className={styles.transportFilterSelect}
+                  value={transportFilter}
+                  onChange={(e) =>
+                    setTransportFilter(
+                      e.target.value as 'ALL' | 'OWN' | 'NEED' | 'UNSPECIFIED'
+                    )
+                  }
+                  aria-label="Filtrar por disponibilidad de transporte"
+                >
+                  <option value="ALL">🚗 Transporte: Todos</option>
+                  <option value="OWN">🚗 Con vehículo propio ({transportStats.own})</option>
+                  <option value="NEED">🚌 Necesitan transporte ({transportStats.need})</option>
+                  <option value="UNSPECIFIED">
+                    ❓ Sin especificar ({transportStats.unspecified})
+                  </option>
+                </select>
+              </div>
+
               <label
                 className={`${styles.dietOnlyToggle} ${dietOnly ? styles.dietOnlyToggleActive : ''}`}
               >
@@ -398,6 +465,7 @@ export const AdminRsvpPage: React.FC = () => {
                     <th className={styles.th}>Invitado</th>
                     <th className={styles.th}>Grupo / Familia</th>
                     <th className={styles.th}>Eventos & Asistencia</th>
+                    <th className={styles.th}>Transporte</th>
                     <th className={styles.th}>Alergias / Dieta</th>
                     <th className={styles.th} style={{ textAlign: 'right' }}>
                       Acción
@@ -466,6 +534,23 @@ export const AdminRsvpPage: React.FC = () => {
                           ) : (
                             <span className={`${styles.eventBadgeItem} ${styles.badgePending}`}>
                               ⏳ Pendiente de respuesta
+                            </span>
+                          )}
+                        </td>
+
+                        <td className={styles.td} data-label="Transporte">
+                          <span className={styles.mobileFieldLabel}>Transporte:</span>
+                          {guest.hasOwnTransport === true ? (
+                            <span className={`${styles.transportBadge} ${styles.transportOwn}`}>
+                              🚗 Vehículo propio
+                            </span>
+                          ) : guest.hasOwnTransport === false ? (
+                            <span className={`${styles.transportBadge} ${styles.transportNeed}`}>
+                              🚌 Necesita transporte
+                            </span>
+                          ) : (
+                            <span className={`${styles.transportBadge} ${styles.transportUnspecified}`}>
+                              — No especificado
                             </span>
                           )}
                         </td>
