@@ -106,3 +106,10 @@
   color: var(--color-text-on-primary);
   transform: translateX(-3px);
 }
+
+.clerkContainer :global(.cl-socialButtons),
+.clerkContainer :global(.cl-socialButtonsRoot),
+.clerkContainer :global(.cl-socialButtonsBlockButton),
+.clerkContainer :global(.cl-dividerRow) {
+  display: none !important;
+}
