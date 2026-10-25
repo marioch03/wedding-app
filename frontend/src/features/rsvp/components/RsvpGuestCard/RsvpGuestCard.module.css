@@ -250,6 +250,90 @@
   box-shadow: 0 0 0 3px var(--color-primary-light);
 }
 
+/* Disponibilidad de Transporte */
+.transportSection {
+  margin-top: 1.75rem;
+  padding-top: 1.5rem;
+  border-top: 1.5px solid var(--color-border);
+}
+
+.transportHint {
+  font-size: 0.85rem;
+  color: var(--color-text-muted, #6b7280);
+  margin: 0.25rem 0 1rem 0;
+  line-height: 1.4;
+}
+
+.transportToggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.transportButton {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-border);
+  background: #ffffff;
+  cursor: pointer;
+  text-align: left;
+  transition: all var(--transition-fast);
+}
+
+.transportButton:hover {
+  border-color: var(--color-primary-border);
+  background: rgba(255, 245, 240, 0.4);
+  transform: translateY(-1px);
+}
+
+.transportActiveYes {
+  border-color: #10b981;
+  background: #ecfdf5;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+}
+
+.transportActiveYes:hover {
+  border-color: #059669;
+  background: #d1fae5;
+}
+
+.transportActiveNo {
+  border-color: #f59e0b;
+  background: #fffbeb;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);
+}
+
+.transportActiveNo:hover {
+  border-color: #d97706;
+  background: #fef3c7;
+}
+
+.transportIcon {
+  font-size: 1.6rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.transportBtnText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.transportBtnTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-text-heading);
+}
+
+.transportBtnSub {
+  font-size: 0.78rem;
+  color: var(--color-text-muted, #6b7280);
+}
+
 @media (max-width: 600px) {
   .guestCard {
     padding: 1.75rem 1.25rem;
@@ -275,4 +359,10 @@
     text-align: center;
     padding: 0.5rem 0.5rem;
   }
+
+  .transportToggle {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
 }
+

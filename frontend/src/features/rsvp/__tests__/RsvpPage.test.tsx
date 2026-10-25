@@ -344,6 +344,46 @@ describe('Feature: RSVP Multi-paso e Integración (RsvpPage)', () => {
       await user.type(dietaryTextareas[0], 'Sin gluten');
       expect(dietaryTextareas[0]).toHaveValue('Sin gluten');
     });
+
+    it('muestra la sección de transporte al confirmar asistencia y permite alternar la opción', async () => {
+      const user = userEvent.setup();
+      renderRsvpFlow('/rsvp/valid-token-abc');
+
+      await waitFor(() => {
+        expect(screen.getByText('Familia Gómez Martínez')).toBeInTheDocument();
+      });
+
+      // Inicialmente no se muestra la sección de transporte si no se ha marcado asistencia a ningún evento
+      expect(screen.queryByText(/¿Dispones de transporte propio para el evento\?/i)).not.toBeInTheDocument();
+
+      // Al marcar asistencia a un evento (el primero: Ceremonia)
+      const asistirButtons = screen.getAllByRole('button', { name: /Asistiré/i });
+      await user.click(asistirButtons[0]);
+
+      // Ahora la sección de transporte debe ser visible
+      expect(screen.getByText(/¿Dispones de transporte propio para el evento\?/i)).toBeInTheDocument();
+
+      // Seleccionar "Sí, vehículo propio"
+      const ownTransportBtn = screen.getByRole('button', { name: /Sí, vehículo propio/i });
+      const needTransportBtn = screen.getByRole('button', { name: /No, necesito transporte/i });
+
+      expect(ownTransportBtn).toHaveAttribute('aria-pressed', 'false');
+      expect(needTransportBtn).toHaveAttribute('aria-pressed', 'false');
+
+      await user.click(ownTransportBtn);
+      expect(ownTransportBtn).toHaveAttribute('aria-pressed', 'true');
+      expect(needTransportBtn).toHaveAttribute('aria-pressed', 'false');
+
+      // Si se pulsa en "No, necesito transporte", cambia
+      await user.click(needTransportBtn);
+      expect(ownTransportBtn).toHaveAttribute('aria-pressed', 'false');
+      expect(needTransportBtn).toHaveAttribute('aria-pressed', 'true');
+
+      // Si se pulsa de nuevo en la opción activa, se deselecciona
+      await user.click(needTransportBtn);
+      expect(ownTransportBtn).toHaveAttribute('aria-pressed', 'false');
+      expect(needTransportBtn).toHaveAttribute('aria-pressed', 'false');
+    });
   });
 
   describe('Envío del Formulario (Success y Error)', () => {
@@ -376,6 +416,49 @@ describe('Feature: RSVP Multi-paso e Integración (RsvpPage)', () => {
       await user.click(editButton);
 
       expect(screen.getByText('Familia Gómez Martínez')).toBeInTheDocument();
+    });
+
+    it('envía la confirmación incluyendo el estado de transporte seleccionado', async () => {
+      let capturedBody: { guests?: Array<{ hasOwnTransport?: boolean | null }> } | null = null;
+      server.use(
+        http.post('*/api/v1/public/rsvp/:token', async ({ request }) => {
+          capturedBody = (await request.json()) as { guests?: Array<{ hasOwnTransport?: boolean | null }> };
+          return HttpResponse.json({
+            message: 'RSVP guardado correctamente',
+          });
+        })
+      );
+
+      const user = userEvent.setup();
+      renderRsvpFlow('/rsvp/valid-token-abc');
+
+      await waitFor(() => {
+        expect(screen.getByText('Familia Gómez Martínez')).toBeInTheDocument();
+      });
+
+      // Marcar asistencia para el primer invitado para habilitar la sección de transporte
+      const asistirButtons = screen.getAllByRole('button', { name: /Asistiré/i });
+      await user.click(asistirButtons[0]);
+
+      // Seleccionar opción "Sí, vehículo propio"
+      const ownTransportBtn = screen.getByRole('button', { name: /Sí, vehículo propio/i });
+      await user.click(ownTransportBtn);
+
+      // Rellenar nombre del acompañante
+      const plusOneNameInput = screen.getByPlaceholderText('Nombre');
+      await user.type(plusOneNameInput, 'Lucía');
+
+      // Enviar
+      const submitButton = screen.getByRole('button', { name: /Enviar Confirmación/i });
+      await user.click(submitButton);
+
+      await waitFor(() => {
+        expect(screen.getByText('¡Confirmación Enviada!')).toBeInTheDocument();
+      });
+
+      expect(capturedBody).not.toBeNull();
+      const payload = capturedBody as { guests?: Array<{ hasOwnTransport?: boolean | null }> } | null;
+      expect(payload?.guests?.[0].hasOwnTransport).toBe(true);
     });
 
     it('muestra un mensaje de error cuando el servidor rechaza el envío (400 / error de validación)', async () => {

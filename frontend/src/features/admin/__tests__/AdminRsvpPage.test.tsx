@@ -155,4 +155,69 @@ describe('AdminRsvpPage - Control RSVP & Exportación Catering', () => {
       expect(screen.getByText(/Asistencia: Marcos Gómez/i)).toBeInTheDocument();
     });
   });
+
+  it('muestra la información y badges de transporte en la tabla y en la tarjeta KPI', async () => {
+    renderWithRouter(<AdminRsvpPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Marcos Gómez')).toBeInTheDocument();
+    });
+
+    // Validar KPI de transporte
+    expect(screen.getByText('Logística Transporte')).toBeInTheDocument();
+
+    // Validar badges en la tabla
+    expect(screen.getAllByText(/Vehículo propio/i).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText(/Necesita transporte/i).length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('filtra los invitados según la opción de transporte seleccionada', async () => {
+    const user = userEvent.setup();
+    renderWithRouter(<AdminRsvpPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Marcos Gómez')).toBeInTheDocument();
+      expect(screen.getByText('Laura Vega')).toBeInTheDocument();
+    });
+
+    const transportSelect = screen.getByRole('combobox', {
+      name: /Filtrar por disponibilidad de transporte/i,
+    });
+
+    // Filtrar por quienes tienen vehículo propio
+    await user.selectOptions(transportSelect, 'OWN');
+    expect(screen.getByText('Marcos Gómez')).toBeInTheDocument();
+    expect(screen.queryByText('Laura Vega')).not.toBeInTheDocument();
+
+    // Filtrar por quienes necesitan transporte
+    await user.selectOptions(transportSelect, 'NEED');
+    expect(screen.queryByText('Marcos Gómez')).not.toBeInTheDocument();
+    expect(screen.getByText('Laura Vega')).toBeInTheDocument();
+  });
+
+  it('permite modificar la opción de transporte desde el modal de RSVP manual', async () => {
+    const user = userEvent.setup();
+    renderWithRouter(<AdminRsvpPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Marcos Gómez')).toBeInTheDocument();
+    });
+
+    const modifyButtons = screen.getAllByRole('button', { name: /Modificar/i });
+    await user.click(modifyButtons[0]);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Disponibilidad de transporte/i)).toBeInTheDocument();
+    });
+
+    const ownBtn = screen.getByRole('button', { name: /Vehículo propio/i });
+    const needBtn = screen.getByRole('button', { name: /Necesita transporte \/ autobús/i });
+
+    expect(ownBtn).toHaveAttribute('aria-pressed', 'true');
+    expect(needBtn).toHaveAttribute('aria-pressed', 'false');
+
+    await user.click(needBtn);
+    expect(ownBtn).toHaveAttribute('aria-pressed', 'false');
+    expect(needBtn).toHaveAttribute('aria-pressed', 'true');
+  });
 });

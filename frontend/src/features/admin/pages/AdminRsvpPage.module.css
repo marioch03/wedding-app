@@ -163,6 +163,18 @@
   color: var(--color-primary-dark);
 }
 
+.kpiIconTransport {
+  background: var(--color-accent-amber-light);
+  color: var(--color-accent-gold-dark);
+}
+
+.kpiSeparator {
+  font-size: 1.2rem;
+  font-weight: 400;
+  color: var(--color-text-muted);
+  margin: 0 0.15rem;
+}
+
 .kpiData {
   display: flex;
   flex-direction: column;
@@ -297,6 +309,31 @@
   width: 16px;
   height: 16px;
   cursor: pointer;
+}
+
+.transportFilter {
+  display: flex;
+  align-items: center;
+}
+
+.transportFilterSelect {
+  padding: 0.45rem 1rem;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--color-border);
+  background: var(--color-bg-subtle);
+  color: var(--color-text-heading);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+.transportFilterSelect:focus,
+.transportFilterSelect:hover {
+  border-color: var(--color-primary);
+  background: var(--color-bg-elevated);
 }
 
 /* Card & Table View */
@@ -496,6 +533,35 @@
   margin-top: 0.25rem;
   font-style: italic;
   max-width: 200px;
+}
+
+.transportBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.transportOwn {
+  background: var(--color-success-bg);
+  color: var(--color-success-dark);
+  border: 1px solid var(--color-success-border);
+}
+
+.transportNeed {
+  background: var(--color-warning-bg);
+  color: var(--color-warning-dark);
+  border: 1px solid var(--color-warning-border);
+}
+
+.transportUnspecified {
+  background: var(--color-bg-subtle);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
 }
 
 .modifyButton {
@@ -949,6 +1015,13 @@
     padding: 0.35rem 0.5rem;
     font-size: 0.8rem;
     border-radius: var(--radius-full);
+  }
+
+  .transportFilter,
+  .transportFilterSelect {
+    width: 100%;
+    min-height: 44px;
+    box-sizing: border-box;
   }
 
   /* Filtro de Dieta / Alergias */

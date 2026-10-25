@@ -666,6 +666,21 @@ export const handlers = [
   http.get('*/api/admin/rsvp/stats', () => {
     return HttpResponse.json(mockRsvpStats);
   }),
+  http.get('*/api/v1/admin/rsvp/parties/:partyId', () => {
+    return HttpResponse.json({
+      ...mockRsvpInfo,
+      guests: [
+        {
+          ...mockRsvpInfo.guests[0],
+          hasOwnTransport: true,
+        },
+        ...mockRsvpInfo.guests.slice(1),
+      ],
+    });
+  }),
+  http.put('*/api/v1/admin/rsvp/parties/:partyId', () => {
+    return HttpResponse.json({ message: 'RSVP guardado correctamente' });
+  }),
 
   http.get('*/api/v1/admin/guests', () => {
     return HttpResponse.json({
@@ -678,6 +693,7 @@ export const handlers = [
           guestType: 'ADULT',
           isPlusOne: false,
           dietaryRestrictions: '',
+          hasOwnTransport: true,
           createdAt: '2026-01-10T10:00:00Z',
           updatedAt: '2026-01-10T10:00:00Z',
         },
@@ -689,6 +705,7 @@ export const handlers = [
           guestType: 'ADULT',
           isPlusOne: false,
           dietaryRestrictions: 'Celíaca / Sin Gluten',
+          hasOwnTransport: false,
           createdAt: '2026-01-10T10:00:00Z',
           updatedAt: '2026-01-10T10:00:00Z',
         },
@@ -716,6 +733,7 @@ export const handlers = [
         email: 'laura@example.com',
         phone: '+34611223344',
         dietaryRestrictions: 'Celíaca / Sin Gluten',
+        hasOwnTransport: false,
         eventAttendances: [
           {
             eventId: 'ev-2',
@@ -740,6 +758,7 @@ export const handlers = [
       email: 'marcos@example.com',
       phone: '+34600112233',
       dietaryRestrictions: '',
+      hasOwnTransport: true,
       eventAttendances: [
         {
           eventId: 'ev-2',

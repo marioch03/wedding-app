@@ -304,6 +304,59 @@
   border-top: 1px dashed var(--color-border);
 }
 
+.transportRow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 0.65rem;
+  border-top: 1px dashed var(--color-border);
+}
+
+.transportButtons {
+  display: flex;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.transportBtn {
+  flex: 1;
+  min-width: 170px;
+  padding: 0.55rem 0.9rem;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  transition: all var(--transition-fast);
+}
+
+.transportBtn:hover {
+  border-color: var(--color-primary-border);
+  color: var(--color-text-heading);
+}
+
+.transportBtnActiveYes {
+  background: var(--color-success-bg);
+  border-color: var(--color-success);
+  color: var(--color-success-dark);
+  font-weight: 700;
+  box-shadow: var(--shadow-sm);
+}
+
+.transportBtnActiveNo {
+  background: var(--color-warning-bg);
+  border-color: var(--color-warning);
+  color: var(--color-warning-dark);
+  font-weight: 700;
+  box-shadow: var(--shadow-sm);
+}
+
 .modalFooter {
   padding: 1.25rem 2rem;
   border-top: 1px solid var(--color-border);
@@ -456,5 +509,15 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+  }
+
+  .transportButtons {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .transportBtn {
+    min-height: 42px;
+    width: 100%;
   }
 }

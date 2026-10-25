@@ -24,5 +24,12 @@ public record GuestRequest(
     String phone,
 
     @Size(max = 500, message = "Las restricciones dietéticas no pueden superar los 500 caracteres")
-    String dietaryRestrictions
-) {}
+    String dietaryRestrictions,
+
+    Boolean hasOwnTransport
+) {
+  public GuestRequest(String firstName, String lastName, GuestType guestType, Boolean isPlusOne,
+      String email, String phone, String dietaryRestrictions) {
+    this(firstName, lastName, guestType, isPlusOne, email, phone, dietaryRestrictions, null);
+  }
+}
