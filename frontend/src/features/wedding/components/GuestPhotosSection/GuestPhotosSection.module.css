@@ -41,9 +41,70 @@
 .subtitle {
   font-size: 1.05rem;
   color: var(--color-text-muted, #4b5563);
-  max-width: 600px;
-  margin: 0 auto 1.5rem;
+  max-width: 680px;
+  margin: 0 auto 2rem;
+  line-height: 1.7;
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+}
+
+.subtitle p {
+  margin: 0;
+  text-align: justify;
+  text-align-last: left;
+}
+
+.appCard {
+  background: var(--color-bg-card, #ffffff);
+  border: 1px solid var(--color-accent-gold-border, rgba(197, 160, 89, 0.35));
+  border-left: 4px solid var(--color-accent-gold, #c5a059);
+  border-radius: var(--radius-md, 12px);
+  padding: 1.1rem 1.25rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  text-align: left;
+}
+
+.appCard p {
+  margin: 0;
+  text-align: left;
+  text-align-last: left;
   line-height: 1.6;
+}
+
+.appLink {
+  color: var(--color-primary, #b8860b);
+  word-break: break-all;
+  font-weight: 600;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.appLink:hover {
+  color: var(--color-primary-dark, #8c6d23);
+}
+
+.albumCode {
+  display: inline-block;
+  background: var(--color-accent-gold-light, #fef9e7);
+  color: var(--color-accent-gold-dark, #8c6d23);
+  padding: 0.15rem 0.55rem;
+  border-radius: var(--radius-sm, 6px);
+  border: 1px solid rgba(197, 160, 89, 0.3);
+  letter-spacing: 0.05em;
+  font-family: monospace, monospace;
+  font-size: 0.95em;
+}
+
+.signature {
+  font-weight: 500;
+  color: var(--color-text-heading, #1f2937);
+  margin-top: 0.25rem;
+  text-align: left;
 }
 
 .actionRow {

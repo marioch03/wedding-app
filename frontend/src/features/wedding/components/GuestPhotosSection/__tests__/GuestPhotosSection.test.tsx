@@ -15,7 +15,7 @@ describe('Feature: Álbum de Fotos de los Invitados (GuestPhotosSection)', () =>
     render(<GuestPhotosSection />);
 
     expect(screen.getByText('Fotos de los Invitados')).toBeInTheDocument();
-    expect(screen.getByText(/¡Vuestra mirada de nuestro gran día!/i)).toBeInTheDocument();
+    expect(screen.getByText(/Esta historia también la contáis vosotros/i)).toBeInTheDocument();
 
     await waitFor(() => {
       expect(screen.getByText('👤 Tía Carmen')).toBeInTheDocument();

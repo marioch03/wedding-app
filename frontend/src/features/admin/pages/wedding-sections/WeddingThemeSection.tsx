@@ -40,14 +40,14 @@ export const WeddingThemeSection: React.FC<WeddingThemeSectionProps> = ({
               <input
                 type="color"
                 className={styles.nativeColorPicker}
-                value={primaryColor && primaryColor.startsWith('#') ? primaryColor : '#df6a4f'}
+                value={primaryColor && primaryColor.startsWith('#') ? primaryColor : '#df4ec4'}
                 onChange={(e) => onPrimaryColorChange(e.target.value)}
                 aria-label="Selector visual de color principal"
               />
               <input
                 type="text"
                 className={styles.colorHexInput}
-                placeholder="#DF6A4F (Color por defecto)"
+                placeholder="#DF4EC4 (Color por defecto)"
                 value={primaryColor}
                 maxLength={7}
                 onChange={(e) => onPrimaryColorChange(e.target.value)}
@@ -65,14 +65,14 @@ export const WeddingThemeSection: React.FC<WeddingThemeSectionProps> = ({
               <input
                 type="color"
                 className={styles.nativeColorPicker}
-                value={accentColor && accentColor.startsWith('#') ? accentColor : '#cba258'}
+                value={accentColor && accentColor.startsWith('#') ? accentColor : '#c69f68'}
                 onChange={(e) => onAccentColorChange(e.target.value)}
                 aria-label="Selector visual de color secundario"
               />
               <input
                 type="text"
                 className={styles.colorHexInput}
-                placeholder="#CBA258 (Dorado por defecto)"
+                placeholder="#C69F68 (Champagne por defecto)"
                 value={accentColor}
                 maxLength={7}
                 onChange={(e) => onAccentColorChange(e.target.value)}

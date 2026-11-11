@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { guestPhotosApi } from '../../../../lib/api/guestPhotos';
-import { getMediaUrl } from '../../../../common/utils/media';
-import { downloadFile } from '../../../../common/utils/download';
-import type { GuestPhoto } from '../../../../types';
-import { GuestPhotoUploadModal } from './GuestPhotoUploadModal';
-import styles from './GuestPhotosSection.module.css';
+import React, { useEffect, useRef, useState } from "react";
+import { downloadFile } from "../../../../common/utils/download";
+import { getMediaUrl } from "../../../../common/utils/media";
+import { guestPhotosApi } from "../../../../lib/api/guestPhotos";
+import type { GuestPhoto } from "../../../../types";
+import { GuestPhotoUploadModal } from "./GuestPhotoUploadModal";
+import styles from "./GuestPhotosSection.module.css";
 
 export const GuestPhotosSection: React.FC = () => {
   const [photos, setPhotos] = useState<GuestPhoto[]>([]);
@@ -19,7 +19,7 @@ export const GuestPhotosSection: React.FC = () => {
       const data = await guestPhotosApi.listPublic();
       setPhotos(data);
     } catch (err) {
-      console.error('Error al cargar fotos de invitados:', err);
+      console.error("Error al cargar fotos de invitados:", err);
     } finally {
       setIsLoading(false);
     }
@@ -33,31 +33,38 @@ export const GuestPhotosSection: React.FC = () => {
     setPhotos((prev) => [...newPhotos, ...prev]);
   };
 
-  const activePhoto = activePhotoIndex !== null && photos[activePhotoIndex] ? photos[activePhotoIndex] : null;
+  const activePhoto =
+    activePhotoIndex !== null && photos[activePhotoIndex]
+      ? photos[activePhotoIndex]
+      : null;
 
   const handlePrevPhoto = (e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
     if (photos.length <= 1) return;
-    setActivePhotoIndex((prev) => (prev !== null ? (prev - 1 + photos.length) % photos.length : null));
+    setActivePhotoIndex((prev) =>
+      prev !== null ? (prev - 1 + photos.length) % photos.length : null,
+    );
   };
 
   const handleNextPhoto = (e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
     if (photos.length <= 1) return;
-    setActivePhotoIndex((prev) => (prev !== null ? (prev + 1) % photos.length : null));
+    setActivePhotoIndex((prev) =>
+      prev !== null ? (prev + 1) % photos.length : null,
+    );
   };
 
   // Navegación mediante teclado (flechas y escape)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (activePhotoIndex === null || photos.length === 0) return;
-      if (e.key === 'Escape') setActivePhotoIndex(null);
-      if (e.key === 'ArrowLeft') handlePrevPhoto();
-      if (e.key === 'ArrowRight') handleNextPhoto();
+      if (e.key === "Escape") setActivePhotoIndex(null);
+      if (e.key === "ArrowLeft") handlePrevPhoto();
+      if (e.key === "ArrowRight") handleNextPhoto();
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [activePhotoIndex, photos.length]);
 
   // Gestos táctiles de deslizamiento (Swipe) en móvil
@@ -82,16 +89,16 @@ export const GuestPhotosSection: React.FC = () => {
   const handleDownload = async (e: React.MouseEvent, photo: GuestPhoto) => {
     e.stopPropagation();
     const url = getMediaUrl(photo.imageUrl);
-    const cleanUploader = (photo.uploaderName || 'invitado')
+    const cleanUploader = (photo.uploaderName || "invitado")
       .toLowerCase()
-      .replace(/[^a-z0-9]/gi, '-');
+      .replace(/[^a-z0-9]/gi, "-");
     const filename = `boda-invitados-${cleanUploader}-${photo.id.slice(0, 8)}.jpg`;
 
     try {
       setIsDownloading(true);
       await downloadFile(url, filename);
     } catch (err) {
-      console.error('Error al descargar la foto:', err);
+      console.error("Error al descargar la foto:", err);
     } finally {
       setIsDownloading(false);
     }
@@ -100,9 +107,9 @@ export const GuestPhotosSection: React.FC = () => {
   const formatDate = (isoString: string) => {
     try {
       const d = new Date(isoString);
-      return d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+      return d.toLocaleDateString("es-ES", { day: "numeric", month: "short" });
     } catch {
-      return '';
+      return "";
     }
   };
 
@@ -114,10 +121,56 @@ export const GuestPhotosSection: React.FC = () => {
             <span>📸</span> Álbum en Vivo
           </div>
           <h2 className={styles.title}>Fotos de los Invitados</h2>
-          <p className={styles.subtitle}>
-            ¡Vuestra mirada de nuestro gran día! Sube y comparte las fotos que captures durante la
-            celebración para que todos podamos disfrutarlas y recordarlas.
-          </p>
+          <div className={styles.subtitle}>
+            <p>Esta historia también la contáis vosotros! 📸</p>
+            <p>
+              Queremos recordar nuestro gran día desde todos los ángulos, y
+              sabemos que vosotros vais a ser los protagonistas de muchos de
+              esos momentos.
+            </p>
+            <p>
+              Las risas, los bailes, los brindis, las locuras, los momentazos
+              inesperados… ¡y esas fotos que seguramente nosotros ni siquiera
+              veremos! 😂
+            </p>
+            <p>
+              Así que queremos pediros algo: compartid con nosotros todas las
+              fotos y vídeos que hagáis durante la preboda, la boda y la
+              postboda.
+            </p>
+            <p>
+              Nos encantará descubrir nuestro día a través de vuestros ojos y
+              guardar cada uno de esos recuerdos para siempre.
+            </p>
+            <p>¡Disparad, compartid y no os dejéis ningún momentazo!</p>
+            <p>
+              ¡Sin excusas! Si os es más cómodo, como alternativa usad la app{" "}
+              <strong>Wedshoots</strong> para subir fotos y vídeos:
+            </p>
+            <div className={styles.appCard}>
+              <p>
+                👉 Descarga la app aquí:{" "}
+                <a
+                  href="http://www.wedshoots.com/download?albumId=ES324585bb"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.appLink}
+                >
+                  http://www.wedshoots.com/download?albumId=ES324585bb
+                </a>
+                <br />
+                👉 Una vez instalada podrás acceder al álbum introduciendo tu
+                nombre y el código de nuestro álbum:{" "}
+                <strong className={styles.albumCode}>ES324585bb</strong>
+              </p>
+            </div>
+            <p>¡Muchas gracias por ser parte de nuestra boda!</p>
+            <p className={styles.signature}>
+              Con mucho cariño,
+              <br />
+              Marisa &amp; Ricky ❤️
+            </p>
+          </div>
 
           <div className={styles.actionRow}>
             <button
@@ -126,21 +179,34 @@ export const GuestPhotosSection: React.FC = () => {
               onClick={() => setIsModalOpen(true)}
             >
               <span className={styles.uploadIcon}>📷</span>
-              <span>Subir Fotos de la Boda</span>
+              <span>Subir Fotos de la Boda, Preboda y Postboda</span>
             </button>
           </div>
         </header>
 
         {isLoading ? (
-          <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--color-text-muted)' }}>
+          <div
+            style={{
+              textAlign: "center",
+              padding: "3rem",
+              color: "var(--color-text-muted)",
+            }}
+          >
             Cargando el álbum de fotos...
           </div>
         ) : photos.length === 0 ? (
           <div className={styles.emptyState}>
-            <span className={styles.emptyIcon} role="img" aria-label="Cámara de fotos">📷</span>
+            <span
+              className={styles.emptyIcon}
+              role="img"
+              aria-label="Cámara de fotos"
+            >
+              📷
+            </span>
             <h3 className={styles.emptyTitle}>Aún no hay fotos en el álbum</h3>
             <p className={styles.emptySubtitle}>
-              ¡Sé el primero en compartir tus mejores momentos de la fiesta y congelar este día para siempre!
+              ¡Sé el primero en compartir tus mejores momentos de la fiesta y
+              congelar este día para siempre!
             </p>
             <button
               type="button"
@@ -160,7 +226,7 @@ export const GuestPhotosSection: React.FC = () => {
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') setActivePhotoIndex(index);
+                  if (e.key === "Enter") setActivePhotoIndex(index);
                 }}
                 aria-label={`Ver foto de ${photo.uploaderName}`}
               >
@@ -196,10 +262,16 @@ export const GuestPhotosSection: React.FC = () => {
                 </div>
                 <div className={styles.cardFooter}>
                   <div className={styles.authorRow}>
-                    <span className={styles.authorTag}>👤 {photo.uploaderName}</span>
-                    <span className={styles.timestamp}>{formatDate(photo.createdAt)}</span>
+                    <span className={styles.authorTag}>
+                      👤 {photo.uploaderName}
+                    </span>
+                    <span className={styles.timestamp}>
+                      {formatDate(photo.createdAt)}
+                    </span>
                   </div>
-                  {photo.caption && <p className={styles.captionText}>{photo.caption}</p>}
+                  {photo.caption && (
+                    <p className={styles.captionText}>{photo.caption}</p>
+                  )}
                 </div>
               </article>
             ))}
@@ -251,7 +323,7 @@ export const GuestPhotosSection: React.FC = () => {
                   <polyline points="7 10 12 15 17 10" />
                   <line x1="12" y1="15" x2="12" y2="3" />
                 </svg>
-                <span>{isDownloading ? 'Descargando...' : 'Descargar'}</span>
+                <span>{isDownloading ? "Descargando..." : "Descargar"}</span>
               </button>
 
               <button
@@ -291,14 +363,18 @@ export const GuestPhotosSection: React.FC = () => {
             <div className={styles.lightboxImageContainer}>
               <img
                 src={getMediaUrl(activePhoto.imageUrl)}
-                alt={activePhoto.caption || `Foto de ${activePhoto.uploaderName}`}
+                alt={
+                  activePhoto.caption || `Foto de ${activePhoto.uploaderName}`
+                }
                 className={styles.lightboxImg}
               />
             </div>
 
             <div className={styles.lightboxDetails}>
               <div className={styles.lightboxInfoRow}>
-                <span className={styles.lightboxAuthor}>👤 Foto de: {activePhoto.uploaderName}</span>
+                <span className={styles.lightboxAuthor}>
+                  👤 Foto de: {activePhoto.uploaderName}
+                </span>
                 <div className={styles.lightboxInfoRight}>
                   <button
                     type="button"
@@ -321,7 +397,9 @@ export const GuestPhotosSection: React.FC = () => {
                       <polyline points="7 10 12 15 17 10" />
                       <line x1="12" y1="15" x2="12" y2="3" />
                     </svg>
-                    <span>{isDownloading ? 'Descargando...' : 'Descargar'}</span>
+                    <span>
+                      {isDownloading ? "Descargando..." : "Descargar"}
+                    </span>
                   </button>
                   {photos.length > 1 && (
                     <span className={styles.lightboxCounter}>
@@ -331,7 +409,9 @@ export const GuestPhotosSection: React.FC = () => {
                 </div>
               </div>
               {activePhoto.caption && (
-                <p className={styles.lightboxCaption}>"{activePhoto.caption}"</p>
+                <p className={styles.lightboxCaption}>
+                  "{activePhoto.caption}"
+                </p>
               )}
             </div>
           </div>

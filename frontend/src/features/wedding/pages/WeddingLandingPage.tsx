@@ -81,6 +81,8 @@ export const WeddingLandingPage: React.FC = () => {
           <StorySection
             key={sectionId}
             storyTitle={wedding.content?.storyTitle}
+            storyDate={wedding.content?.storyDate}
+            storyLocation={wedding.content?.storyLocation}
             storyText={wedding.content?.storyText}
             storyImageUrl={wedding.content?.storyImageUrl}
           />

@@ -50,7 +50,7 @@
     var(--color-hero-overlay-dark)  0%,
     var(--color-hero-overlay-mid)   28%,
     var(--color-hero-overlay-warm)  58%,
-    rgba(250, 247, 242, 0.97)       90%,
+    rgba(253, 250, 252, 0.97)       90%,
     var(--color-bg)                 100%
   );
 }
@@ -65,8 +65,8 @@
   z-index: 2;
   background: radial-gradient(
     ellipse 110% 75% at 50% 5%,
-    transparent 30%,
-    rgba(6, 2, 1, 0.38) 100%
+    transparent 35%,
+    rgba(10, 10, 14, 0.32) 100%
   );
   pointer-events: none;
 }

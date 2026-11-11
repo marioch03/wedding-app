@@ -5,6 +5,10 @@ import styles from '../AdminWeddingPage.module.css';
 interface WeddingStorySectionProps {
   storyTitle: string;
   setStoryTitle: (value: string) => void;
+  storyDate: string;
+  setStoryDate: (value: string) => void;
+  storyLocation: string;
+  setStoryLocation: (value: string) => void;
   storyText: string;
   setStoryText: (value: string) => void;
   storyImageUrl: string;
@@ -19,6 +23,10 @@ interface WeddingStorySectionProps {
 export const WeddingStorySection: React.FC<WeddingStorySectionProps> = ({
   storyTitle,
   setStoryTitle,
+  storyDate,
+  setStoryDate,
+  storyLocation,
+  setStoryLocation,
   storyText,
   setStoryText,
   storyImageUrl,
@@ -36,7 +44,7 @@ export const WeddingStorySection: React.FC<WeddingStorySectionProps> = ({
         <div>
           <h2 className={styles.sectionTitle}>Nuestra Historia</h2>
           <span className={styles.sectionSubtitle}>
-            Comparte con vuestros seres queridos cómo os conocisteis y momentos memorables
+            Comparte con vuestros seres queridos cómo os conocisteis, fecha especial, lugar y momentos memorables
           </span>
         </div>
       </div>
@@ -72,7 +80,9 @@ export const WeddingStorySection: React.FC<WeddingStorySectionProps> = ({
                 <span>Sin foto seleccionada</span>
               </div>
             )}
-            <div className={styles.polaroidCaption}>Nuestra Historia ❦</div>
+            <div className={styles.polaroidCaption}>
+              {storyTitle ? `${storyTitle} ❦` : 'Nuestra Historia ❦'}
+            </div>
           </div>
 
           {/* Story Content Form */}
@@ -86,6 +96,36 @@ export const WeddingStorySection: React.FC<WeddingStorySectionProps> = ({
                 onChange={(e) => setStoryTitle(e.target.value)}
                 placeholder="Ej. Cómo empezó todo o El viaje hasta aquí"
               />
+            </div>
+
+            <div className={styles.formGrid}>
+              <div className={styles.formGroup}>
+                <label className={styles.label}>
+                  Fecha de la Historia
+                  <span className={styles.labelHint}>(Texto libre: ej. 18 de Julio de 2026 o Verano de 2018)</span>
+                </label>
+                <input
+                  type="text"
+                  className={styles.input}
+                  value={storyDate}
+                  onChange={(e) => setStoryDate(e.target.value)}
+                  placeholder="Ej. 18 de Octubre de 2026"
+                />
+              </div>
+
+              <div className={styles.formGroup}>
+                <label className={styles.label}>
+                  Ubicación / Lugar
+                  <span className={styles.labelHint}>(Solo texto: ej. Madrid, España o Cala Salada, Ibiza)</span>
+                </label>
+                <input
+                  type="text"
+                  className={styles.input}
+                  value={storyLocation}
+                  onChange={(e) => setStoryLocation(e.target.value)}
+                  placeholder="Ej. Madrid, España"
+                />
+              </div>
             </div>
 
             <div className={styles.formGroup}>
