@@ -3,49 +3,49 @@
    ========================================================================== */
 
 :root {
-  /* --- Paleta de Colores Base & Fondos --- */
-  --color-bg: #faf7f2;
-  --color-bg-secondary: #f4ede4;
-  --color-bg-subtle: #fbf5ee;
-  --color-bg-card: rgba(254, 250, 245, 0.94);
-  --color-bg-card-hover: #fffdf9;
-  --color-bg-elevated: #fdfaf6;
-  --color-bg-glass: rgba(254, 250, 245, 0.82);
-  --color-surface-white: #fffdf9;
-  --color-surface-cream: #faf5ee;
-  --color-surface-card: #fdfaf6;
-  --color-surface-hover: #f7eee4;
+  /* --- Paleta de Colores Base & Fondos (Marfil Perla & Rosa Pálido Editorial) --- */
+  --color-bg: #fdfafc;
+  --color-bg-secondary: #f6eff4;
+  --color-bg-subtle: #faf4f8;
+  --color-bg-card: rgba(254, 251, 253, 0.94);
+  --color-bg-card-hover: #ffffff;
+  --color-bg-elevated: #fefbfd;
+  --color-bg-glass: rgba(254, 251, 253, 0.84);
+  --color-surface-white: #ffffff;
+  --color-surface-cream: #faf4f8;
+  --color-surface-card: #fefbfd;
+  --color-surface-hover: #f5ebf2;
 
-  /* --- Colores Principales de Marca (Terracota Cálido Romántico) --- */
-  --color-primary: #df6a4f;
-  --color-primary-dark: #b84a32;
-  --color-primary-light: #fceed8;
-  --color-primary-border: #f3cfc2;
-  --color-primary-gradient: linear-gradient(135deg, #e3765c 0%, #be4930 100%);
-  --color-primary-glow: rgba(223, 106, 79, 0.28);
+  /* --- Colores Principales de Marca (Orquídea Romántico & Magenta Sofisticado) --- */
+  --color-primary: #df4ec4;
+  --color-primary-dark: #b32e9a;
+  --color-primary-light: #fbeaf7;
+  --color-primary-border: #f2c6ea;
+  --color-primary-gradient: linear-gradient(135deg, #e76ad0 0%, #b32e9a 100%);
+  --color-primary-glow: rgba(223, 78, 196, 0.28);
 
-  /* --- Colores de Acento Champagne & Oro --- */
-  --color-accent-gold: #cba258;
-  --color-accent-gold-dark: #a98037;
-  --color-accent-gold-light: #fdf6ec;
-  --color-accent-gold-border: #f1ddb6;
-  --color-accent-gold-gradient: linear-gradient(135deg, #d8b168 0%, #b88b39 100%);
-  --color-accent-amber: #e5a93c;
-  --color-accent-amber-light: #fff4e5;
-  --color-accent-sage: #5b7967;
-  --color-accent-sage-light: #eaf2ec;
+  /* --- Colores de Acento Champagne & Salvia Botánico --- */
+  --color-accent-gold: #c69f68;
+  --color-accent-gold-dark: #9c7640;
+  --color-accent-gold-light: #fbf6ef;
+  --color-accent-gold-border: #ebd9bf;
+  --color-accent-gold-gradient: linear-gradient(135deg, #d5b27e 0%, #a57d45 100%);
+  --color-accent-amber: #e2a44c;
+  --color-accent-amber-light: #fdf5e8;
+  --color-accent-sage: #5a7d6c;
+  --color-accent-sage-light: #eaf2ee;
 
-  /* --- Textos y Contrastes --- */
-  --color-text-heading: #2c1a16;
-  --color-text-body: #5c4741;
-  --color-text-muted: #8e756e;
+  /* --- Textos y Contrastes (Ciruela Carbón & Malva Cálido) --- */
+  --color-text-heading: #271724;
+  --color-text-body: #523d4d;
+  --color-text-muted: #856d7f;
   --color-text-on-primary: #ffffff;
 
   /* --- Bordes y Separadores --- */
-  --color-border: #ebdcd2;
-  --color-border-subtle: rgba(223, 106, 79, 0.12);
-  --color-border-strong: #dfc3b5;
-  --color-border-glass: rgba(255, 255, 255, 0.6);
+  --color-border: #eadde6;
+  --color-border-subtle: rgba(223, 78, 196, 0.12);
+  --color-border-strong: #d9c1d2;
+  --color-border-glass: rgba(255, 255, 255, 0.65);
 
   /* --- Estados y Validación --- */
   --color-success: #2e7d32;
@@ -65,44 +65,44 @@
   --color-info-border: #c7d2fe;
   --color-info-dark: #3730a3;
 
-  /* --- Hero: Texto sobre fondo oscuro --- */
+  /* --- Hero: Texto sobre fondo oscuro (Overlay neutro para respetar los colores reales de la foto) --- */
   --color-hero-text: #ffffff;
-  --color-hero-text-secondary: rgba(255, 255, 255, 0.88);
+  --color-hero-text-secondary: rgba(255, 255, 255, 0.9);
   --color-hero-glass-bg: rgba(255, 255, 255, 0.14);
   --color-hero-glass-border: rgba(255, 255, 255, 0.32);
-  --color-hero-orb-warm: rgba(223, 106, 79, 0.22);
-  --color-hero-orb-gold: rgba(203, 162, 88, 0.18);
-  --color-hero-overlay-dark: rgba(12, 5, 3, 0.68);
-  --color-hero-overlay-mid: rgba(70, 28, 14, 0.42);
-  --color-hero-overlay-warm: rgba(205, 105, 70, 0.18);
+  --color-hero-orb-warm: rgba(255, 255, 255, 0.06);
+  --color-hero-orb-gold: rgba(225, 210, 185, 0.10);
+  --color-hero-overlay-dark: rgba(14, 14, 18, 0.56);
+  --color-hero-overlay-mid: rgba(16, 16, 20, 0.32);
+  --color-hero-overlay-warm: rgba(16, 16, 20, 0.10);
 
   /* --- Login / Dark / RSVP Atmospheric Overlays --- */
-  --color-login-bg: #2c1a16;
-  --color-dark-surface: #2c1a16;
-  --color-dark-surface-deep: #1a0f0d;
-  --color-dark-surface-mid: #351f1c;
-  --color-rsvp-bg: #2e1d1a;
-  --color-rsvp-gradient-start: rgba(46, 29, 26, 0.7);
-  --color-rsvp-gradient-mid: rgba(226, 125, 96, 0.45);
-  --color-rsvp-gradient-end: rgba(255, 251, 247, 0.94);
-  --color-atmospheric-glow-terracotta: rgba(226, 125, 96, 0.35);
-  --color-atmospheric-glow-gold: rgba(212, 175, 55, 0.2);
-  --color-login-overlay-start: rgba(44, 26, 22, 0.78);
-  --color-login-overlay-mid: rgba(223, 106, 79, 0.42);
-  --color-login-overlay-end: rgba(44, 26, 22, 0.88);
+  --color-login-bg: #271724;
+  --color-dark-surface: #271724;
+  --color-dark-surface-deep: #160b14;
+  --color-dark-surface-mid: #361f32;
+  --color-rsvp-bg: #291726;
+  --color-rsvp-gradient-start: rgba(41, 23, 38, 0.72);
+  --color-rsvp-gradient-mid: rgba(223, 78, 196, 0.40);
+  --color-rsvp-gradient-end: rgba(253, 250, 252, 0.94);
+  --color-atmospheric-glow-terracotta: rgba(223, 78, 196, 0.32);
+  --color-atmospheric-glow-gold: rgba(198, 159, 104, 0.20);
+  --color-login-overlay-start: rgba(39, 23, 36, 0.78);
+  --color-login-overlay-mid: rgba(223, 78, 196, 0.38);
+  --color-login-overlay-end: rgba(39, 23, 36, 0.88);
   --color-text-on-dark-subtle: rgba(255, 255, 255, 0.85);
   --color-shadow-strong: rgba(0, 0, 0, 0.3);
 
   /* --- Modales, Tablas e Inputs --- */
-  --color-modal-backdrop: rgba(44, 26, 22, 0.48);
-  --color-modal-bg: #fdfaf6;
-  --color-input-bg: rgba(254, 251, 247, 0.95);
-  --color-input-bg-focus: #fffdfa;
+  --color-modal-backdrop: rgba(39, 23, 36, 0.48);
+  --color-modal-bg: #fdfafc;
+  --color-input-bg: rgba(254, 251, 253, 0.95);
+  --color-input-bg-focus: #ffffff;
   --color-input-border: var(--color-border);
-  --color-input-focus-ring: rgba(223, 106, 79, 0.18);
-  --color-table-header-bg: rgba(254, 248, 242, 0.9);
-  --color-table-row-hover: rgba(254, 248, 242, 0.55);
-  --color-table-row-even: rgba(254, 248, 242, 0.3);
+  --color-input-focus-ring: rgba(223, 78, 196, 0.20);
+  --color-table-header-bg: rgba(251, 244, 249, 0.9);
+  --color-table-row-hover: rgba(251, 244, 249, 0.55);
+  --color-table-row-even: rgba(251, 244, 249, 0.3);
 
   /* --- Tipografía --- */
   --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
@@ -110,13 +110,13 @@
   --font-mono: ui-monospace, Consolas, monospace;
 
   /* --- Sombras de Elevación & Glassmorphism --- */
-  --shadow-sm: 0 2px 8px rgba(44, 26, 22, 0.04);
-  --shadow-md: 0 8px 24px rgba(184, 74, 50, 0.08);
-  --shadow-lg: 0 16px 36px rgba(184, 74, 50, 0.12);
-  --shadow-glass: 0 8px 32px rgba(44, 26, 22, 0.06);
-  --shadow-xl: 0 20px 50px rgba(44, 26, 22, 0.25);
+  --shadow-sm: 0 2px 8px rgba(39, 23, 36, 0.04);
+  --shadow-md: 0 8px 24px rgba(179, 46, 154, 0.08);
+  --shadow-lg: 0 16px 36px rgba(179, 46, 154, 0.12);
+  --shadow-glass: 0 8px 32px rgba(39, 23, 36, 0.06);
+  --shadow-xl: 0 20px 50px rgba(39, 23, 36, 0.25);
   --shadow-primary: 0 8px 25px var(--color-primary-glow);
-  --shadow-primary-hover: 0 12px 30px rgba(184, 74, 50, 0.4);
+  --shadow-primary-hover: 0 12px 30px rgba(179, 46, 154, 0.38);
 
   /* --- Radios de Bordes --- */
   --radius-sm: 8px;
