@@ -70,6 +70,8 @@ export interface SectionVisibility {
 
 export interface WeddingContent {
   storyTitle?: string;
+  storyDate?: string;
+  storyLocation?: string;
   storyText?: string;
   storyImageUrl?: string;
   heroSubtitle?: string;

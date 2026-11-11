@@ -384,6 +384,46 @@ describe('Feature: Configuración de Boda y Secciones Prácticas (AdminWeddingPa
     expect(payload?.content.sectionOrder?.[0]).toBe('gallery');
     expect(payload?.content.sectionOrder?.[1]).toBe('story');
   });
+
+  it('permite configurar fecha y ubicación de la historia y guardarlos correctamente', async () => {
+    let capturedPayload: WeddingRequest | null = null;
+    server.use(
+      http.put('*/api/v1/admin/weddings/current', async ({ request }) => {
+        capturedPayload = (await request.json()) as WeddingRequest;
+        return HttpResponse.json({
+          ...mockWeddingAdmin,
+          ...capturedPayload,
+          updatedAt: new Date().toISOString(),
+        });
+      })
+    );
+
+    const user = userEvent.setup();
+    renderWithRouter(<AdminWeddingPage />);
+
+    await waitFor(() => {
+      expect(screen.getByDisplayValue(mockWeddingAdmin.partner1Name)).toBeInTheDocument();
+    });
+
+    const dateInput = screen.getByPlaceholderText(/18 de Octubre de 2026/i);
+    await user.clear(dateInput);
+    await user.type(dateInput, '18 de Octubre de 2026');
+
+    const locationInput = screen.getByPlaceholderText(/Madrid, España/i);
+    await user.clear(locationInput);
+    await user.type(locationInput, 'Finca El Olivar, Madrid');
+
+    const saveButtons = screen.getAllByRole('button', { name: /Guardar Configuración/i });
+    await user.click(saveButtons[0]);
+
+    await waitFor(() => {
+      expect(capturedPayload).not.toBeNull();
+    });
+
+    const payload = capturedPayload as WeddingRequest | null;
+    expect(payload?.content.storyDate).toBe('18 de Octubre de 2026');
+    expect(payload?.content.storyLocation).toBe('Finca El Olivar, Madrid');
+  });
 });
 
 

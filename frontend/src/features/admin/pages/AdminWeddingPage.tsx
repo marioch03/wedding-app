@@ -55,6 +55,8 @@ export const AdminWeddingPage: React.FC = () => {
 
   // Historia
   const [storyTitle, setStoryTitle] = useState('');
+  const [storyDate, setStoryDate] = useState('');
+  const [storyLocation, setStoryLocation] = useState('');
   const [storyText, setStoryText] = useState('');
   const [storyImageUrl, setStoryImageUrl] = useState('');
   const [uploadingStory, setUploadingStory] = useState(false);
@@ -102,6 +104,8 @@ export const AdminWeddingPage: React.FC = () => {
       setHeroSubtitle(content.heroSubtitle || '¡Nos casamos!');
       setCoverImageUrl(content.coverImageUrl || '');
       setStoryTitle(content.storyTitle || 'Cómo empezó todo');
+      setStoryDate(content.storyDate || '');
+      setStoryLocation(content.storyLocation || '');
       setStoryText(content.storyText || '');
       setStoryImageUrl(content.storyImageUrl || '');
 
@@ -332,6 +336,8 @@ export const AdminWeddingPage: React.FC = () => {
       heroSubtitle: heroSubtitle.trim() || undefined,
       coverImageUrl: coverImageUrl.trim() || undefined,
       storyTitle: storyTitle.trim() || undefined,
+      storyDate: storyDate.trim() || undefined,
+      storyLocation: storyLocation.trim() || undefined,
       storyText: storyText.trim() || undefined,
       storyImageUrl: storyImageUrl.trim() || undefined,
       galleryImages: galleryPhotos.length > 0 ? galleryPhotos : undefined,
@@ -472,6 +478,10 @@ export const AdminWeddingPage: React.FC = () => {
         <WeddingStorySection
           storyTitle={storyTitle}
           setStoryTitle={setStoryTitle}
+          storyDate={storyDate}
+          setStoryDate={setStoryDate}
+          storyLocation={storyLocation}
+          setStoryLocation={setStoryLocation}
           storyText={storyText}
           setStoryText={setStoryText}
           storyImageUrl={storyImageUrl}

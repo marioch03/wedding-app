@@ -1305,9 +1305,14 @@
   }
 
   /* Formularios e Inputs */
-  .formRow {
+  .formRow,
+  .formGrid {
     grid-template-columns: 1fr;
     gap: 1rem;
+  }
+
+  .formGridFull {
+    grid-column: span 1;
   }
 
   /* Caja Monograma y Cuenta Atrás */
