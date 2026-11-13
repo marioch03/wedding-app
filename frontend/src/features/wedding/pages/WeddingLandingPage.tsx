@@ -8,6 +8,7 @@ import { TimelineSection } from '../../events';
 import { GallerySection } from '../components/GallerySection/GallerySection';
 import { GuestPhotosSection } from '../components/GuestPhotosSection/GuestPhotosSection';
 import { AccommodationsSection } from '../components/AccommodationsSection/AccommodationsSection';
+import { JaenSection } from '../components/JaenSection/JaenSection';
 import { SongRequestSection } from '../components/SongRequestSection';
 import { ClarificationSection } from '../components/ClarificationSection/ClarificationSection';
 import { InfoSection } from '../components/InfoSection/InfoSection';
@@ -104,6 +105,15 @@ export const WeddingLandingPage: React.FC = () => {
           <AccommodationsSection
             key={sectionId}
             hotels={wedding.content?.hotels}
+          />
+        );
+      case 'jaen':
+        return (
+          <JaenSection
+            key={sectionId}
+            title={wedding.content?.jaenTitle}
+            text={wedding.content?.jaenText}
+            bars={wedding.content?.bars}
           />
         );
       case 'music':

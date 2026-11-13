@@ -18,6 +18,7 @@ describe('resolveSectionOrder', () => {
     const customOrder: SectionId[] = [
       'timeline',
       'accommodations',
+      'jaen',
       'music',
       'story',
       'gallery',

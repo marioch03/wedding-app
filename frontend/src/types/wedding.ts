@@ -39,12 +39,23 @@ export interface HotelItem {
   discountExpiresAt?: string;
 }
 
+export interface BarItem {
+  id: string;
+  name: string;
+  description?: string;
+  address?: string;
+  googleMapsUrl?: string;
+  websiteUrl?: string;
+  imageUrl?: string;
+}
+
 export type SectionId =
   | 'story'
   | 'gallery'
   | 'guestPhotos'
   | 'timeline'
   | 'accommodations'
+  | 'jaen'
   | 'music'
   | 'clarification'
   | 'info';
@@ -55,6 +66,7 @@ export const DEFAULT_SECTION_ORDER: SectionId[] = [
   'guestPhotos',
   'timeline',
   'accommodations',
+  'jaen',
   'music',
   'clarification',
   'info',
@@ -63,12 +75,15 @@ export const DEFAULT_SECTION_ORDER: SectionId[] = [
 export const DEFAULT_CLARIFICATION_TITLE =
   'Una pequeña aclaración sobre nuestra celebración 🤍';
 
+export const DEFAULT_JAEN_TITLE = 'Y en Jaén....¿qué? 🌿 🫒';
+
 export interface SectionVisibility {
   story?: boolean;
   gallery?: boolean;
   guestPhotos?: boolean;
   timeline?: boolean;
   accommodations?: boolean;
+  jaen?: boolean;
   music?: boolean;
   clarification?: boolean;
   info?: boolean;
@@ -87,6 +102,9 @@ export interface WeddingContent {
   dressCode?: string;
   accommodations?: string;
   hotels?: HotelItem[];
+  jaenTitle?: string;
+  jaenText?: string;
+  bars?: BarItem[];
   transportInfo?: string;
   customSections?: PracticalDetailSection[];
   customNotes?: string;

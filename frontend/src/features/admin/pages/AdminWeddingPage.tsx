@@ -7,12 +7,14 @@ import type {
   PracticalDetailSection,
   GalleryPhotoItem,
   HotelItem,
+  BarItem,
   SectionVisibility,
   SectionId,
 } from '../../../types';
 import {
   DEFAULT_SECTION_ORDER,
   DEFAULT_CLARIFICATION_TITLE,
+  DEFAULT_JAEN_TITLE,
 } from '../../../types';
 import { resolveSectionOrder } from '../../wedding/utils/sectionOrder';
 import { weddingApi } from '../../../lib/api';
@@ -27,6 +29,7 @@ import {
   WeddingStorySection,
   WeddingGallerySection,
   WeddingClarificationSection,
+  WeddingJaenSection,
   WeddingCustomSections,
   WeddingHotelsSection,
 } from './wedding-sections';
@@ -86,6 +89,11 @@ export const AdminWeddingPage: React.FC = () => {
   // Hoteles / Alojamientos
   const [hotels, setHotels] = useState<HotelItem[]>([]);
 
+  // Y en Jaén... ¿qué? (Texto + Bares Recomendados)
+  const [jaenTitle, setJaenTitle] = useState(DEFAULT_JAEN_TITLE);
+  const [jaenText, setJaenText] = useState('');
+  const [bars, setBars] = useState<BarItem[]>([]);
+
   // Visibilidad de Secciones
   const [sectionVisibility, setSectionVisibility] = useState<SectionVisibility>({
     story: true,
@@ -93,6 +101,7 @@ export const AdminWeddingPage: React.FC = () => {
     guestPhotos: true,
     timeline: true,
     accommodations: true,
+    jaen: true,
     music: true,
     clarification: true,
     info: true,
@@ -134,6 +143,9 @@ export const AdminWeddingPage: React.FC = () => {
       setClarificationText(content.clarificationText || '');
       setCustomSections(content.customSections || []);
       setHotels(content.hotels || []);
+      setJaenTitle(content.jaenTitle || DEFAULT_JAEN_TITLE);
+      setJaenText(content.jaenText || '');
+      setBars(content.bars || []);
 
       const visibility = content.sectionVisibility || {};
       setSectionVisibility({
@@ -142,6 +154,7 @@ export const AdminWeddingPage: React.FC = () => {
         guestPhotos: visibility.guestPhotos !== false,
         timeline: visibility.timeline !== false,
         accommodations: visibility.accommodations !== false,
+        jaen: visibility.jaen !== false,
         music: visibility.music !== false,
         clarification: visibility.clarification !== false,
         info: visibility.info !== false,
@@ -362,6 +375,9 @@ export const AdminWeddingPage: React.FC = () => {
       clarificationText: clarificationText.trim() || undefined,
       customSections: validSections.length > 0 ? validSections : undefined,
       hotels: hotels.length > 0 ? hotels : undefined,
+      jaenTitle: jaenTitle.trim() || DEFAULT_JAEN_TITLE,
+      jaenText: jaenText.trim() || undefined,
+      bars: bars.length > 0 ? bars : undefined,
       primaryColor: primaryColor.trim() || undefined,
       accentColor: accentColor.trim() || undefined,
       sectionVisibility,
@@ -553,6 +569,20 @@ export const AdminWeddingPage: React.FC = () => {
           hotels={hotels}
           setHotels={setHotels}
           onError={setMediaError}
+        />
+
+        {/* SECCIÓN 7: Y EN JAÉN....¿QUÉ? 🌿 🫒 */}
+        <WeddingJaenSection
+          jaenTitle={jaenTitle}
+          setJaenTitle={setJaenTitle}
+          jaenText={jaenText}
+          setJaenText={setJaenText}
+          bars={bars}
+          setBars={setBars}
+          onError={setMediaError}
+          saving={saving}
+          loading={loading}
+          saveSuccess={saveSuccess}
         />
       </form>
 

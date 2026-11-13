@@ -40,6 +40,12 @@ const SECTIONS_CONFIG_MAP: Record<SectionId, SectionConfig> = {
     icon: '🏨',
     description: 'Lista de alojamientos recomendados, tarifas con descuento y mapas.',
   },
+  jaen: {
+    key: 'jaen',
+    title: 'Y en Jaén....¿qué? 🌿 🫒',
+    icon: '🫒',
+    description: 'Texto sobre Jaén en formato justificado y recomendaciones de bares.',
+  },
   music: {
     key: 'music',
     title: 'Buzón de Canciones',

@@ -1,0 +1,501 @@
+/* ==========================================================================
+   JaenSection — «Y en Jaén....¿qué? 🌿 🫒» (Texto Justificado + Bares Recomendados)
+   ========================================================================== */
+
+.section {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: linear-gradient(
+    180deg,
+    var(--color-bg) 0%,
+    var(--color-bg-subtle) 35%,
+    var(--color-bg-secondary) 75%,
+    var(--color-bg) 100%
+  );
+}
+
+.bgGlowWarm {
+  position: absolute;
+  top: 8%;
+  left: -90px;
+  width: 480px;
+  height: 480px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--color-hero-orb-warm), transparent 70%);
+  filter: blur(85px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bgGlowGold {
+  position: absolute;
+  bottom: 10%;
+  right: -90px;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--color-hero-orb-gold), transparent 70%);
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 5.5rem 1.5rem 6rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* --------------------------------------------------------------------------
+   Cabecera de la Sección
+   -------------------------------------------------------------------------- */
+
+.header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.tag {
+  display: inline-block;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--color-primary-dark);
+  margin-bottom: 0.85rem;
+  padding: 0.35rem 1.15rem;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-light);
+  border: 1px solid var(--color-primary-border);
+  box-shadow: var(--shadow-sm);
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-size: clamp(2.1rem, 4.2vw, 3rem);
+  font-weight: 600;
+  color: var(--color-text-heading);
+  margin: 0 0 0.75rem;
+  line-height: 1.2;
+}
+
+.headerDivider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin: 0.75rem auto 0;
+  max-width: 220px;
+}
+
+.dividerLine {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--color-primary-border), transparent);
+}
+
+.dividerIcon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+/* --------------------------------------------------------------------------
+   Bloque de Texto Editorial en Formato Justificado
+   -------------------------------------------------------------------------- */
+
+.editorialCard {
+  background: var(--color-bg-elevated);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 2.75rem 3rem;
+  box-shadow: inset 0 1px 0 var(--color-border-glass), var(--shadow-sm);
+  margin-bottom: 3.75rem;
+}
+
+.editorialText {
+  font-size: 1.06rem;
+  line-height: 1.9;
+  color: var(--color-text-body);
+  margin: 0;
+  text-align: justify;
+  text-justify: inter-word;
+  hyphens: auto;
+  white-space: pre-line;
+}
+
+/* --------------------------------------------------------------------------
+   Subsección de Bares Recomendados
+   -------------------------------------------------------------------------- */
+
+.barsSection {
+  margin-top: 1rem;
+}
+
+.barsHeader {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.barsTag {
+  display: inline-block;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-accent-gold-dark);
+  margin-bottom: 0.6rem;
+  padding: 0.3rem 1rem;
+  border-radius: var(--radius-full);
+  background: var(--color-accent-gold-light);
+  border: 1px solid var(--color-accent-gold-border);
+  box-shadow: var(--shadow-sm);
+}
+
+.barsTitle {
+  font-family: var(--font-serif);
+  font-size: clamp(1.65rem, 3.2vw, 2.2rem);
+  font-weight: 600;
+  color: var(--color-text-heading);
+  margin: 0;
+}
+
+.columnList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.card {
+  background: var(--color-bg-elevated);
+  border-radius: var(--radius-lg);
+  border: 1.5px solid var(--color-border);
+  box-shadow: inset 0 1px 0 var(--color-border-glass), var(--shadow-md);
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal), border-color var(--transition-normal);
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: inset 0 1px 0 var(--color-border-glass), var(--shadow-lg), 0 12px 30px var(--color-primary-glow);
+  border-color: var(--color-primary-border);
+}
+
+.mediaContainer {
+  position: relative;
+  width: 260px;
+  min-width: 260px;
+  max-width: 260px;
+  background: linear-gradient(135deg, var(--color-bg-secondary) 0%, var(--color-bg-subtle) 100%);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-right: 1.5px solid var(--color-border);
+  min-height: 200px;
+  align-self: stretch;
+}
+
+.imageWrapper,
+.mapWrapper {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.barImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.mapIframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
+.mediaSwitch {
+  position: absolute;
+  top: 0.65rem;
+  right: 0.65rem;
+  z-index: 3;
+  display: flex;
+  gap: 0.25rem;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 0.2rem;
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.mediaSwitchBtn {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.activeSwitch {
+  background: #fff;
+  color: #1a1a1a;
+  box-shadow: var(--shadow-sm);
+}
+
+.typeBadgeWrapper {
+  position: absolute;
+  bottom: 0.75rem;
+  left: 0.75rem;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.typeBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-text-heading);
+  background: var(--color-bg-glass);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 0.3rem 0.7rem;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border-glass);
+  box-shadow: var(--shadow-sm);
+}
+
+.typeIcon {
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+.cardBody {
+  padding: 1.5rem 1.65rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  gap: 0.7rem;
+}
+
+.cardHeaderRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.barName {
+  font-family: var(--font-serif);
+  font-size: clamp(1.25rem, 2.2vw, 1.48rem);
+  font-weight: 600;
+  color: var(--color-text-heading);
+  margin: 0;
+  line-height: 1.25;
+}
+
+.addressRow {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  font-size: 0.88rem;
+  color: var(--color-text-muted);
+  line-height: 1.4;
+}
+
+.addressIcon {
+  flex-shrink: 0;
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+.addressText {
+  flex: 1;
+}
+
+.description {
+  font-size: 0.94rem;
+  line-height: 1.6;
+  color: var(--color-text-body);
+  margin: 0;
+  flex-grow: 1;
+  white-space: pre-line;
+}
+
+.cardActions {
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--color-border-subtle);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  align-items: center;
+}
+
+.actionIcon {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.mapButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  background: var(--color-accent-gold-light);
+  color: var(--color-accent-gold-dark);
+  border: 1.5px solid var(--color-accent-gold-border);
+  padding: 0.5rem 0.95rem;
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.mapButton:hover {
+  background: var(--color-accent-gold-border);
+  color: var(--color-text-heading);
+  border-color: var(--color-accent-gold);
+  transform: translateY(-1px);
+}
+
+.webButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  background: var(--color-primary-gradient);
+  color: var(--color-text-on-primary);
+  border: 1.5px solid var(--color-primary-dark);
+  padding: 0.5rem 0.95rem;
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 2px 8px var(--color-primary-glow);
+  transition: transform var(--transition-fast), filter var(--transition-fast);
+}
+
+.webButton:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.08);
+}
+
+.webTextFull {
+  display: inline;
+}
+
+.webTextShort {
+  display: none;
+}
+
+/* --------------------------------------------------------------------------
+   Adaptabilidad Móvil
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 768px) {
+  .container {
+    padding: 3.5rem 1.15rem 4.25rem;
+  }
+
+  .header {
+    margin-bottom: 2.25rem;
+  }
+
+  .editorialCard {
+    padding: 1.85rem 1.5rem;
+    margin-bottom: 2.75rem;
+  }
+
+  .editorialText {
+    font-size: 0.98rem;
+    line-height: 1.75;
+  }
+
+  .columnList {
+    gap: 1.1rem;
+  }
+
+  .card {
+    flex-direction: column;
+    border-radius: var(--radius-md);
+  }
+
+  .mediaContainer {
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+    height: 135px;
+    min-height: 135px;
+    max-height: 135px;
+    border-right: none;
+    border-bottom: 1.5px solid var(--color-border);
+  }
+
+  .cardBody {
+    padding: 1rem 1.1rem;
+    gap: 0.5rem;
+  }
+
+  .barName {
+    font-size: 1.15rem;
+  }
+
+  .description {
+    font-size: 0.88rem;
+  }
+
+  .cardActions {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 0.5rem;
+    padding-top: 0.65rem;
+  }
+
+  .mapButton,
+  .webButton {
+    flex: 1;
+    min-width: 0;
+    min-height: 38px;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.8rem;
+    white-space: nowrap;
+  }
+
+  .webTextFull {
+    display: none;
+  }
+
+  .webTextShort {
+    display: inline;
+  }
+}
+
+@media (max-width: 480px) {
+  .editorialCard {
+    padding: 1.4rem 1.15rem;
+    border-radius: var(--radius-md);
+  }
+
+  .editorialText {
+    font-size: 0.94rem;
+  }
+}
+
