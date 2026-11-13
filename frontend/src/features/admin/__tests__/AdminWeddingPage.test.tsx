@@ -341,9 +341,132 @@ describe('Feature: Configuración de Boda y Secciones Prácticas (AdminWeddingPa
       guestPhotos: true,
       timeline: true,
       accommodations: true,
+      jaen: true,
       music: false,
+      clarification: true,
       info: true,
     });
+  });
+
+  it('permite editar el texto sobre Jaén y añadir un bar recomendado en «Y en Jaén....¿qué? 🌿 🫒»', async () => {
+    let capturedPayload: WeddingRequest | null = null;
+    server.use(
+      http.put('*/api/v1/admin/weddings/current', async ({ request }) => {
+        capturedPayload = (await request.json()) as WeddingRequest;
+        return HttpResponse.json({
+          ...mockWeddingAdmin,
+          ...capturedPayload,
+          updatedAt: new Date().toISOString(),
+        });
+      })
+    );
+
+    const user = userEvent.setup();
+    renderWithRouter(<AdminWeddingPage />);
+
+    await waitFor(() => {
+      expect(screen.getByDisplayValue(mockWeddingAdmin.partner1Name)).toBeInTheDocument();
+    });
+
+    // Verificar texto de Jaén y editarlo
+    const jaenTextInput = screen.getByLabelText(
+      /Texto sobre Jaén \(se mostrará en formato justificado\)/i
+    );
+    await user.clear(jaenTextInput);
+    await user.type(
+      jaenTextInput,
+      'No podéis iros de Jaén sin recorrer las tascas alrededor de la Catedral.'
+    );
+
+    // Añadir un nuevo bar recomendado
+    const addBarBtn = screen.getByRole('button', {
+      name: /\+ Añadir Bar Recomendado/i,
+    });
+    await user.click(addBarBtn);
+
+    const barNameInput = screen.getByPlaceholderText(
+      /Ej\. Taberna El Gorrión o La Manchega/i
+    );
+    await user.type(barNameInput, 'La Manchega');
+
+    const barAddressInput = screen.getByPlaceholderText(
+      /Ej\. Calle Arco del Consuelo 7, Jaén/i
+    );
+    await user.type(barAddressInput, 'Calle Bernardo López 8, Jaén');
+
+    const saveBarBtn = screen.getByRole('button', { name: /✓ Añadir Bar/i });
+    await user.click(saveBarBtn);
+
+    expect(screen.getByText('La Manchega')).toBeInTheDocument();
+
+    // Guardar sección Jaén en el servidor
+    const saveJaenBtn = screen.getByRole('button', {
+      name: /Guardar Sección Jaén/i,
+    });
+    await user.click(saveJaenBtn);
+
+    await waitFor(() => {
+      expect(capturedPayload).not.toBeNull();
+    });
+
+    const payload = capturedPayload as WeddingRequest | null;
+    expect(payload?.content.jaenTitle).toBe('Y en Jaén....¿qué? 🌿 🫒');
+    expect(payload?.content.jaenText).toBe(
+      'No podéis iros de Jaén sin recorrer las tascas alrededor de la Catedral.'
+    );
+    expect(
+      payload?.content.bars?.some((b) => b.name === 'La Manchega')
+    ).toBe(true);
+  });
+
+  it('permite editar la sección «Una pequeña aclaración sobre nuestra celebración» y guardarla en el backend', async () => {
+    let capturedPayload: WeddingRequest | null = null;
+    server.use(
+      http.put('*/api/v1/admin/weddings/current', async ({ request }) => {
+        capturedPayload = (await request.json()) as WeddingRequest;
+        return HttpResponse.json({
+          ...mockWeddingAdmin,
+          ...capturedPayload,
+          updatedAt: new Date().toISOString(),
+        });
+      })
+    );
+
+    const user = userEvent.setup();
+    renderWithRouter(<AdminWeddingPage />);
+
+    await waitFor(() => {
+      expect(screen.getByDisplayValue(mockWeddingAdmin.partner1Name)).toBeInTheDocument();
+    });
+
+    const titleInput = screen.getByLabelText(/Título de la Aclaración/i);
+    expect(titleInput).toHaveValue(
+      'Una pequeña aclaración sobre nuestra celebración 🤍'
+    );
+
+    const textInput = screen.getByLabelText(/Texto Aclarativo para los Invitados/i);
+    await user.clear(textInput);
+    await user.type(
+      textInput,
+      'Aunque adoramos a los más pequeños, esta celebración será solo para adultos.'
+    );
+
+    const saveClarificationBtn = screen.getByRole('button', {
+      name: /Guardar Aclaración/i,
+    });
+    await user.click(saveClarificationBtn);
+
+    await waitFor(() => {
+      expect(capturedPayload).not.toBeNull();
+    });
+
+    const payload = capturedPayload as WeddingRequest | null;
+    expect(payload?.content.clarificationTitle).toBe(
+      'Una pequeña aclaración sobre nuestra celebración 🤍'
+    );
+    expect(payload?.content.clarificationText).toBe(
+      'Aunque adoramos a los más pequeños, esta celebración será solo para adultos.'
+    );
   });
 
   it('permite reordenar las secciones con los botones subir/bajar y enviarlo en el payload al guardar', async () => {

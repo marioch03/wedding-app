@@ -26,6 +26,13 @@ export function resolveSectionOrder(storedOrder?: unknown): SectionId[] {
   // Añadir cualquier sección faltante de la configuración por defecto
   for (const defaultId of DEFAULT_SECTION_ORDER) {
     if (!seen.has(defaultId)) {
+      if (defaultId === 'clarification') {
+        const infoIndex = resolved.indexOf('info');
+        if (infoIndex !== -1) {
+          resolved.splice(infoIndex, 0, defaultId);
+          continue;
+        }
+      }
       resolved.push(defaultId);
     }
   }

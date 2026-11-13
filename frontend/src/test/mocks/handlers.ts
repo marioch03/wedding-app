@@ -48,6 +48,12 @@ export const mockWeddingPublic: WeddingPublicResponse = {
       { question: '¿Hay aparcamiento?', answer: 'Sí, gratuito en la finca.' },
       { question: '¿Se admiten niños?', answer: 'Sí, contaremos con animación infantil.' },
     ],
+    clarificationTitle: 'Una pequeña aclaración sobre nuestra celebración 🤍',
+    clarificationText:
+      'Para que todos podamos disfrutar sin preocupaciones, nuestra celebración está pensada solo para adultos.',
+    jaenTitle: 'Y en Jaén....¿qué? 🌿 🫒',
+    jaenText:
+      'Jaén os espera con su impresionante Catedral, sus calles llenas de historia y su famosa cultura del tapeo.',
   },
 };
 

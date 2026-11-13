@@ -40,11 +40,23 @@ const SECTIONS_CONFIG_MAP: Record<SectionId, SectionConfig> = {
     icon: '🏨',
     description: 'Lista de alojamientos recomendados, tarifas con descuento y mapas.',
   },
+  jaen: {
+    key: 'jaen',
+    title: 'Y en Jaén....¿qué? 🌿 🫒',
+    icon: '🫒',
+    description: 'Texto sobre Jaén en formato justificado y recomendaciones de bares.',
+  },
   music: {
     key: 'music',
     title: 'Buzón de Canciones',
     icon: '🎵',
     description: 'Sugerencias musicales donde los invitados proponen temas para la fiesta.',
+  },
+  clarification: {
+    key: 'clarification',
+    title: 'Aclaración sobre la Celebración',
+    icon: '🤍',
+    description: 'Nota aclaratoria destacada para los invitados antes de las preguntas frecuentes.',
   },
   info: {
     key: 'info',

@@ -18,13 +18,29 @@ describe('resolveSectionOrder', () => {
     const customOrder: SectionId[] = [
       'timeline',
       'accommodations',
+      'jaen',
       'music',
       'story',
       'gallery',
       'guestPhotos',
+      'clarification',
       'info',
     ];
     expect(resolveSectionOrder(customOrder)).toEqual(customOrder);
+  });
+
+  it('sitúa clarification justo antes de info si se carga un orden antiguo sin clarification', () => {
+    const legacyOrder: SectionId[] = [
+      'story',
+      'gallery',
+      'guestPhotos',
+      'timeline',
+      'accommodations',
+      'music',
+      'info',
+    ];
+    const result = resolveSectionOrder(legacyOrder);
+    expect(result.indexOf('clarification')).toBe(result.indexOf('info') - 1);
   });
 
   it('añade al final las secciones faltantes si el array guardado está incompleto', () => {

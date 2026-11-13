@@ -1704,4 +1704,9 @@
   border-color: var(--color-border-strong);
 }
 
+.textareaJustified {
+  text-align: justify;
+}
+
+
 
