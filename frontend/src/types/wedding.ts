@@ -46,6 +46,7 @@ export type SectionId =
   | 'timeline'
   | 'accommodations'
   | 'music'
+  | 'clarification'
   | 'info';
 
 export const DEFAULT_SECTION_ORDER: SectionId[] = [
@@ -55,8 +56,12 @@ export const DEFAULT_SECTION_ORDER: SectionId[] = [
   'timeline',
   'accommodations',
   'music',
+  'clarification',
   'info',
 ];
+
+export const DEFAULT_CLARIFICATION_TITLE =
+  'Una pequeña aclaración sobre nuestra celebración 🤍';
 
 export interface SectionVisibility {
   story?: boolean;
@@ -65,6 +70,7 @@ export interface SectionVisibility {
   timeline?: boolean;
   accommodations?: boolean;
   music?: boolean;
+  clarification?: boolean;
   info?: boolean;
 }
 
@@ -84,6 +90,8 @@ export interface WeddingContent {
   transportInfo?: string;
   customSections?: PracticalDetailSection[];
   customNotes?: string;
+  clarificationTitle?: string;
+  clarificationText?: string;
   primaryColor?: string;
   accentColor?: string;
   sectionVisibility?: SectionVisibility;

@@ -10,7 +10,10 @@ import type {
   SectionVisibility,
   SectionId,
 } from '../../../types';
-import { DEFAULT_SECTION_ORDER } from '../../../types';
+import {
+  DEFAULT_SECTION_ORDER,
+  DEFAULT_CLARIFICATION_TITLE,
+} from '../../../types';
 import { resolveSectionOrder } from '../../wedding/utils/sectionOrder';
 import { weddingApi } from '../../../lib/api';
 import { mediaApi } from '../../../lib/api/media';
@@ -23,6 +26,7 @@ import {
   WeddingHeroSection,
   WeddingStorySection,
   WeddingGallerySection,
+  WeddingClarificationSection,
   WeddingCustomSections,
   WeddingHotelsSection,
 } from './wedding-sections';
@@ -70,6 +74,12 @@ export const AdminWeddingPage: React.FC = () => {
   const [dragOverGallery, setDragOverGallery] = useState(false);
   const galleryInputRef = useRef<HTMLInputElement>(null);
 
+  // Aclaración sobre la Celebración
+  const [clarificationTitle, setClarificationTitle] = useState(
+    DEFAULT_CLARIFICATION_TITLE
+  );
+  const [clarificationText, setClarificationText] = useState('');
+
   // Secciones Prácticas
   const [customSections, setCustomSections] = useState<PracticalDetailSection[]>([]);
 
@@ -84,6 +94,7 @@ export const AdminWeddingPage: React.FC = () => {
     timeline: true,
     accommodations: true,
     music: true,
+    clarification: true,
     info: true,
   });
 
@@ -117,6 +128,10 @@ export const AdminWeddingPage: React.FC = () => {
       });
       setGalleryPhotos(loadedGallery);
 
+      setClarificationTitle(
+        content.clarificationTitle || DEFAULT_CLARIFICATION_TITLE
+      );
+      setClarificationText(content.clarificationText || '');
       setCustomSections(content.customSections || []);
       setHotels(content.hotels || []);
 
@@ -128,6 +143,7 @@ export const AdminWeddingPage: React.FC = () => {
         timeline: visibility.timeline !== false,
         accommodations: visibility.accommodations !== false,
         music: visibility.music !== false,
+        clarification: visibility.clarification !== false,
         info: visibility.info !== false,
       });
 
@@ -341,6 +357,9 @@ export const AdminWeddingPage: React.FC = () => {
       storyText: storyText.trim() || undefined,
       storyImageUrl: storyImageUrl.trim() || undefined,
       galleryImages: galleryPhotos.length > 0 ? galleryPhotos : undefined,
+      clarificationTitle:
+        clarificationTitle.trim() || DEFAULT_CLARIFICATION_TITLE,
+      clarificationText: clarificationText.trim() || undefined,
       customSections: validSections.length > 0 ? validSections : undefined,
       hotels: hotels.length > 0 ? hotels : undefined,
       primaryColor: primaryColor.trim() || undefined,
@@ -504,6 +523,17 @@ export const AdminWeddingPage: React.FC = () => {
           onUploadGalleryFiles={handleUploadGalleryFiles}
           onDeletePhoto={handleDeleteGalleryPhoto}
           onUpdateCaption={handleUpdateGalleryCaption}
+        />
+
+        {/* SECCIÓN: ACLARACIÓN SOBRE LA CELEBRACIÓN */}
+        <WeddingClarificationSection
+          clarificationTitle={clarificationTitle}
+          setClarificationTitle={setClarificationTitle}
+          clarificationText={clarificationText}
+          setClarificationText={setClarificationText}
+          saving={saving}
+          loading={loading}
+          saveSuccess={saveSuccess}
         />
 
         {/* SECCIÓN 5: DETALLES PRÁCTICOS PARA INVITADOS */}

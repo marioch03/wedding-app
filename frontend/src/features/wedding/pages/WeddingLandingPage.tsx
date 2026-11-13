@@ -9,6 +9,7 @@ import { GallerySection } from '../components/GallerySection/GallerySection';
 import { GuestPhotosSection } from '../components/GuestPhotosSection/GuestPhotosSection';
 import { AccommodationsSection } from '../components/AccommodationsSection/AccommodationsSection';
 import { SongRequestSection } from '../components/SongRequestSection';
+import { ClarificationSection } from '../components/ClarificationSection/ClarificationSection';
 import { InfoSection } from '../components/InfoSection/InfoSection';
 import { FooterSection } from '../components/FooterSection/FooterSection';
 import { WeddingSkeleton } from '../components/WeddingSkeleton/WeddingSkeleton';
@@ -107,6 +108,14 @@ export const WeddingLandingPage: React.FC = () => {
         );
       case 'music':
         return <SongRequestSection key={sectionId} />;
+      case 'clarification':
+        return (
+          <ClarificationSection
+            key={sectionId}
+            title={wedding.content?.clarificationTitle}
+            text={wedding.content?.clarificationText}
+          />
+        );
       case 'info':
         return (
           <InfoSection

@@ -46,6 +46,12 @@ const SECTIONS_CONFIG_MAP: Record<SectionId, SectionConfig> = {
     icon: '🎵',
     description: 'Sugerencias musicales donde los invitados proponen temas para la fiesta.',
   },
+  clarification: {
+    key: 'clarification',
+    title: 'Aclaración sobre la Celebración',
+    icon: '🤍',
+    description: 'Nota aclaratoria destacada para los invitados antes de las preguntas frecuentes.',
+  },
   info: {
     key: 'info',
     title: 'Detalles Prácticos & FAQs',

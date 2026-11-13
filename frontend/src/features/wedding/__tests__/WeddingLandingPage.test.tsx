@@ -35,7 +35,22 @@ describe('Feature: Visibilidad Condicional de Secciones (WeddingLandingPage)', (
     expect(screen.getByText(/Fotos de los Invitados/i)).toBeInTheDocument(); // Guest Photos
     expect(screen.getByText(/Hoteles y Alojamientos/i)).toBeInTheDocument(); // Accommodations
     expect(screen.getByText(/¿Qué canción no puede faltar\?/i)).toBeInTheDocument(); // Song suggestions
+    expect(
+      screen.getByText(/Una pequeña aclaración sobre nuestra celebración/i)
+    ).toBeInTheDocument(); // Clarification
     expect(screen.getByText(/Preguntas Frecuentes/i)).toBeInTheDocument(); // FAQs / Info
+
+    // La aclaración debe aparecer antes de Preguntas Frecuentes por defecto
+    const clarificationEl = screen.getByText(
+      /Una pequeña aclaración sobre nuestra celebración/i
+    );
+    const faqEl = screen.getByText(/Preguntas Frecuentes/i);
+    expect(
+      Boolean(
+        clarificationEl.compareDocumentPosition(faqEl) &
+          Node.DOCUMENT_POSITION_FOLLOWING
+      )
+    ).toBe(true);
   });
 
   it('oculta las secciones configuradas con false en sectionVisibility', async () => {

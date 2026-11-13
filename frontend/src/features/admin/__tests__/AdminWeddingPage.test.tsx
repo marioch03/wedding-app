@@ -342,8 +342,59 @@ describe('Feature: Configuración de Boda y Secciones Prácticas (AdminWeddingPa
       timeline: true,
       accommodations: true,
       music: false,
+      clarification: true,
       info: true,
     });
+  });
+
+  it('permite editar la sección «Una pequeña aclaración sobre nuestra celebración» y guardarla en el backend', async () => {
+    let capturedPayload: WeddingRequest | null = null;
+    server.use(
+      http.put('*/api/v1/admin/weddings/current', async ({ request }) => {
+        capturedPayload = (await request.json()) as WeddingRequest;
+        return HttpResponse.json({
+          ...mockWeddingAdmin,
+          ...capturedPayload,
+          updatedAt: new Date().toISOString(),
+        });
+      })
+    );
+
+    const user = userEvent.setup();
+    renderWithRouter(<AdminWeddingPage />);
+
+    await waitFor(() => {
+      expect(screen.getByDisplayValue(mockWeddingAdmin.partner1Name)).toBeInTheDocument();
+    });
+
+    const titleInput = screen.getByLabelText(/Título de la Aclaración/i);
+    expect(titleInput).toHaveValue(
+      'Una pequeña aclaración sobre nuestra celebración 🤍'
+    );
+
+    const textInput = screen.getByLabelText(/Texto Aclarativo para los Invitados/i);
+    await user.clear(textInput);
+    await user.type(
+      textInput,
+      'Aunque adoramos a los más pequeños, esta celebración será solo para adultos.'
+    );
+
+    const saveClarificationBtn = screen.getByRole('button', {
+      name: /Guardar Aclaración/i,
+    });
+    await user.click(saveClarificationBtn);
+
+    await waitFor(() => {
+      expect(capturedPayload).not.toBeNull();
+    });
+
+    const payload = capturedPayload as WeddingRequest | null;
+    expect(payload?.content.clarificationTitle).toBe(
+      'Una pequeña aclaración sobre nuestra celebración 🤍'
+    );
+    expect(payload?.content.clarificationText).toBe(
+      'Aunque adoramos a los más pequeños, esta celebración será solo para adultos.'
+    );
   });
 
   it('permite reordenar las secciones con los botones subir/bajar y enviarlo en el payload al guardar', async () => {
